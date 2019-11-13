@@ -13,16 +13,19 @@ def preprocess(dataroot):
     offset = mat['offset']
     resolution = mat['resolution'][0][0]
 
-    channel_data = mat['channel_data']
+    swing = 1
+    channel_data = mat['swing'] if swing else np.mean(mat['channel_data'],axis=1)
 
     #New data variable List with element = [Value,k=48 nog vragen, position]
     data = []
 
     for id in rx_id:
-        for i in range(0,channel_data.shape[4]):
-            for j in range(0,channel_data.shape[5]):
+        for i in range(0,channel_data.shape[3]):
+            for j in range(0,channel_data.shape[4]):
                 for measurement_id in range(0,num_meas):
-                    tmp_data = channel_data[:,:,id,0,i,j,measurement_id]
+                    #Select 1 measurement and reshape in the 6,6 grid of the LEDS
+                    tmp_data = channel_data[:,id,0,i,j,measurement_id].reshape((6,6))
+                    #Calculate position of measurement device
                     x = offset[id][0] + i*resolution
                     y = offset[id][1] + j*resolution
                     position = [x, y]
@@ -34,6 +37,7 @@ def preprocess(dataroot):
     train_data = data[:int(0.8*len(data))]
     test_data = data[int(0.8*len(data)):]
 
+    #Writing db to file
     with open(os.path.join(dataroot,'train_data.data'), 'wb') as f:
         pickle.dump(train_data, f)
 

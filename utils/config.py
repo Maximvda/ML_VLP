@@ -25,11 +25,16 @@ def parse_args():
 
     #Dataset options
     parser.add_argument('--dataroot', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/dataset/database", required=False, help="Path to the dataset")
+    parser.add_argument('--result_root', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/results", required=False, help="Path to the result directory")
+
+    #Model options
+    parser.add_argument('--nf', type=int, default=64, help="The numer of features for the model layers")
 
     #Training options
     parser.add_argument('--epochs', type=int, default=50, help="The number of epochs to run")
     parser.add_argument('--batch_size', type=int, default=32, help="The size of the batch for training")
     parser.add_argument('--learning_rate', type=float, default=2e-4, help="Learning rate of the optimizer")
+    parser.add_argument('--checkpoint_freq', type=int, default=1, help="Setting checkpoint frequency in number of epochs")
 
     return check_args(parser.parse_args())
 

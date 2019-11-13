@@ -2,12 +2,14 @@ import traceback
 
 from utils.config import parse_args
 from dataset.setup_database import setup_database
+from models.CNN import CNN
 
 def main(args):
-    dataLoader = setup_database(args)
-    input, output = next(iter(dataLoader))
-    print(input)
-    print(output)
+    data_loader = setup_database(args)
+
+    model = CNN(args,data_loader)
+    if args.is_train:
+        model.train(args)
     return
 
 def evaluate(args):
