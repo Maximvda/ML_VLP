@@ -4,7 +4,7 @@ import random
 import os
 import pickle
 
-def preprocess(dataroot):
+def preprocess(dataroot, normalise=False):
     #Load matlab file
     mat = scipy.io.loadmat(os.path.join(dataroot,'dataset.mat'))
     #Initialising some variables
@@ -15,6 +15,7 @@ def preprocess(dataroot):
 
     swing = 1
     channel_data = mat['swing'] if swing else np.mean(mat['channel_data'],axis=1)
+    input_norm = np.max(channel_data)/2
 
     #New data variable List with element = [Value,k=48 nog vragen, position]
     data = []
@@ -28,6 +29,13 @@ def preprocess(dataroot):
                     #Calculate position of measurement device
                     x = offset[id][0] + i*resolution
                     y = offset[id][1] + j*resolution
+
+                    #Normalisation for input and output
+                    if normalise:
+                        tmp_data = (tmp_data-input_norm)/input_norm
+                        x = x/3000
+                        y = y/3000
+
                     position = [x, y]
                     tmp_data = [tmp_data, position]
                     data.append(tmp_data)

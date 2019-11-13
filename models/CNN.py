@@ -1,9 +1,11 @@
+import torch
 import torch.nn as nn
 import torch.optim as optim
 
 from models.architecture import cnn
 from utils.initModel import initModel
 from utils.initModel import saveCheckpoint
+from eval.utils import visualise
 
 class CNN(object):
     def __init__(self,args, data_loader):
@@ -25,7 +27,8 @@ class CNN(object):
 
     def train(self, args):
         #Initialising the loss function Mean square error
-        criterion = nn.MSELoss()
+        #criterion = nn.BCEWithLogitsLoss()
+        criterion = nn.BCELoss()
 
         print("Starting training loop")
         while self.epoch < args.epochs:
@@ -34,22 +37,26 @@ class CNN(object):
                 self.model.zero_grad()
 
                 #Get a data sample
-                input = data[0]
-                output = data[1]
+                input = data[0].type(torch.FloatTensor).to(args.device)
+                output = data[1].to(args.device)
                 batchSize = input.size(0)
+                #print(self.model)
 
                 #Forward through model and calculate loss
-                print(input.size())
-                prediction = self.model(input)
+                prediction = self.model(input)[:,:,0,0]
                 loss = criterion(prediction, output)
                 loss.backward()
                 self.optim.step()
 
                 #Store training stats
                 self.loss.append(loss.item())
-
-                if i % 50 == 0:
-                    print('[{}/{}]\tLoss: {}'.format(i, len(self.data_loader),loss.item()))
+                visualise(output, prediction)
+                with torch.no_grad():
+                    if i % 50 == 0:
+                        print('[{}/{}]\tPrediction: {}\tTarget: {}\tLoss: {}'.format(
+                        i, len(self.data_loader), prediction.cpu().numpy()[0], output.cpu().numpy()[0], loss.item()))
+                        if args.visualise:
+                            visualise(output, prediction)
 
             self.epoch += 1
 

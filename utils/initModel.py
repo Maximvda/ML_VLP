@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import os
 
@@ -18,6 +19,10 @@ def initModel(self, device):
         self.optim.load_state_dict(checkpoint['optim'])
         self.epoch = checkpoint['epoch']
         self.loss = checkpoint['loss']
+        for state in self.optim.state.values():
+            for k, v in state.items():
+                if torch.is_tensor(v):
+                    state[k] = v.cuda()
     else:
         self.model.apply(weights_init)
 

@@ -21,9 +21,8 @@ class data(Dataset):
         input = self.data[idx][0]
         output = self.data[idx][1]
 
-
-        input = torch.from_numpy(input).to(self.device)
+        input = torch.from_numpy(input)
         input = torch.unsqueeze(input,0)
-        output = torch.FloatTensor(output).to(self.device)
+        output = torch.FloatTensor(output)
 
         return input, output

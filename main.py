@@ -6,6 +6,7 @@ from models.CNN import CNN
 
 def main(args):
     data_loader = setup_database(args)
+    data = next(iter(data_loader))
 
     model = CNN(args,data_loader)
     if args.is_train:
