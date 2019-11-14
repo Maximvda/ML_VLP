@@ -5,7 +5,9 @@ import torch.optim as optim
 from models.architecture import cnn
 from utils.initModel import initModel
 from utils.initModel import saveCheckpoint
-from eval.utils import visualise
+from utils.utils import visualise
+from eval.eval import eval
+from utils.utils import makePlot
 
 class CNN(object):
     def __init__(self,args, data_loader):
@@ -25,9 +27,10 @@ class CNN(object):
 
         initModel(self, args.device)
 
+        self.eval = eval(args)
+
     def train(self, args):
-        #Initialising the loss function Mean square error
-        #criterion = nn.BCEWithLogitsLoss()
+        #Initialising the loss function Binary Cross Entropy loss
         criterion = nn.BCELoss()
 
         print("Starting training loop")
@@ -39,8 +42,6 @@ class CNN(object):
                 #Get a data sample
                 input = data[0].type(torch.FloatTensor).to(args.device)
                 output = data[1].to(args.device)
-                batchSize = input.size(0)
-                #print(self.model)
 
                 #Forward through model and calculate loss
                 prediction = self.model(input)[:,:,0,0]
@@ -50,7 +51,6 @@ class CNN(object):
 
                 #Store training stats
                 self.loss.append(loss.item())
-                visualise(output, prediction)
                 with torch.no_grad():
                     if i % 50 == 0:
                         print('[{}/{}]\tPrediction: {}\tTarget: {}\tLoss: {}'.format(
@@ -63,9 +63,19 @@ class CNN(object):
             if self.epoch % args.checkpoint_freq == 0:
                 saveCheckpoint(self)
 
+            if args.save_training_stats:
+                self.eval.saveStats(self.model)
+
 
         saveCheckpoint(self)
-        print("Training finished")
+        print("Training finished\nCreating plots of training and evaluation statistics")
+        self.createPlots()
+
+    def createPlots(self):
+        makePlot(self.loss, 'plot_training.png', 'Training loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
+        loss, distance = self.eval.getLossDistance()
+        makePlot(loss, 'plot_eval.png', 'Evaluation loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
+        makePlot(distance, 'plot_distance.png', 'Average distance of predicted point to actual position in function of epochs.', ['Epoch', 'Distance (cm)'], self.result_root)
 
     def return_Generator(self):
         return self.Gen
