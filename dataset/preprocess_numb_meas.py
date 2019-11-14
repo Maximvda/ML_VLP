@@ -9,7 +9,7 @@ def preprocess(dataroot, normalise=False):
     mat = scipy.io.loadmat(os.path.join(dataroot,'dataset.mat'))
     #Initialising some variables
     rx_id = mat['rx_id'][0]-1
-    no_it = mat['no_it'][0][0]
+    num_meas = mat['number_of_meas'][0][0]
     offset = mat['offset']
     resolution = mat['resolution'][0][0]
 
@@ -23,9 +23,9 @@ def preprocess(dataroot, normalise=False):
     for id in rx_id:
         for i in range(0,channel_data.shape[3]):
             for j in range(0,channel_data.shape[4]):
-                for it in range(0,no_it):
+                for measurement_id in range(0,num_meas):
                     #Select 1 measurement and reshape in the 6,6 grid of the LEDS
-                    tmp_data = channel_data[:,id,it,i,j].reshape((6,6))
+                    tmp_data = channel_data[:,id,0,i,j,measurement_id].reshape((6,6))
                     #Calculate position of measurement device
                     x = offset[id][0] + i*resolution
                     y = offset[id][1] + j*resolution

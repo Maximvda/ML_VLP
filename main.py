@@ -3,6 +3,7 @@ import traceback
 from utils.config import parse_args
 from dataset.setup_database import setup_database
 from models.CNN import CNN
+from eval.eval import eval
 
 def main(args):
     data_loader = setup_database(args)
@@ -10,9 +11,9 @@ def main(args):
     model = CNN(args,data_loader)
     if args.is_train:
         model.train(args)
-    return
-
-def evaluate(args):
+    else:
+        eval_obj = eval(args, model.getModel())
+        eval_obj.demo()
     return
 
 if __name__ == '__main__':
@@ -20,10 +21,8 @@ if __name__ == '__main__':
     try:
         args = parse_args()
         print("Arguments parsed")
-        if args.is_train:
-            main(args)
-        else:
-            evaluate(args)
+        main(args)
+
     except Exception as e:
         print(e)
         traceback.print_exc()

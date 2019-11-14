@@ -27,11 +27,12 @@ class CNN(object):
 
         initModel(self, args.device)
 
-        self.eval = eval(args)
+        self.eval = eval(args, self.model)
 
     def train(self, args):
         #Initialising the loss function Binary Cross Entropy loss
         criterion = nn.BCELoss()
+        #criterion = nn.MSELoss()
 
         print("Starting training loop")
         while self.epoch < args.epochs:
@@ -77,8 +78,8 @@ class CNN(object):
         makePlot(loss, 'plot_eval.png', 'Evaluation loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
         makePlot(distance, 'plot_distance.png', 'Average distance of predicted point to actual position in function of epochs.', ['Epoch', 'Distance (cm)'], self.result_root)
 
-    def return_Generator(self):
-        return self.Gen
+    def getModel(self):
+        return self.model
 
     def get_epoch(self):
         return self.epoch

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 #Shows a grid of the possible positions of the measurement device
 #The predicted positions for a batch are plotted
 #The target position is also shown with a arrow from the prediction to the target
-def visualise(target, prediction):
+def visualise(target, prediction, pause=0.0001):
     plt.ion()
     plt.clf()
     plt.axis([0,1, 0, 1])
@@ -17,7 +17,7 @@ def visualise(target, prediction):
 
     plt.plot(target[:,0], target[:,1], 'go')
     plt.plot(prediction[:,0], prediction[:,1], 'ro')
-    plt.pause(0.0101)
+    plt.pause(pause)
     plt.show()
 
 #Calculates the distance between two points a and b
