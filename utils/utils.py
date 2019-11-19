@@ -25,6 +25,7 @@ def visualise(target, prediction, pause=0.0001):
 #The mean distance is calculated when x and y are lists of same length
 def calcDistance(x,y):
     dist = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)
+    #print(dist*300)
     return torch.mean(dist).item()
 
 

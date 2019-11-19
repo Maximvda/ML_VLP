@@ -27,6 +27,7 @@ class eval(object):
             self.loss = checkpoint['loss']
             self.distance = checkpoint['distance']
             self.best_model.load_state_dict(checkpoint['best_model'])
+        self.best_model.eval()
 
     def calcMetrics(self, model):
         criterion = nn.BCELoss()
@@ -77,7 +78,7 @@ class eval(object):
                 output = data[1].to(self.device)
                 prediction = self.best_model(input)[:,:,0,0]
                 distance.append(calcDistance(prediction, output))
-                visualise(output, prediction, pause=0.5)
+                visualise(output, prediction, pause=0.3)
 
         #The average distance over the entire test set is calculated
         dist = sum(distance)/len(distance)
