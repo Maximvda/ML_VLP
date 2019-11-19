@@ -21,7 +21,7 @@ def str2list(v):
 def parse_args():
     parser = argparse.ArgumentParser(description="Visible Light Positioning with Machine Learning")
 
-    parser.add_argument('--is_train', type=str2bool, default='True')
+    parser.add_argument('--is_train', type=str2bool, default='True', help="Set to true if you want to train model or false to evaluate it")
     parser.add_argument('--cuda', type=str2bool, default='True', help="Availability of cuda gpu")
 
     #Dataset options
