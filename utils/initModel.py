@@ -2,6 +2,13 @@ import torch
 import torch.nn as nn
 import os
 
+from models.architecture import cnn
+
+def initModel(data_loader, nf):
+    input, output = next(iter(data_loader))
+    size = [input.size(2), input.size(3)]
+    return cnn(size, 1, nf)
+
 def weights_init(m):
     classname = m.__class__.__name__
     if classname.find('conv') != -1:
@@ -10,7 +17,7 @@ def weights_init(m):
         nn.init.normal_(m.weight.data, 1.0, 0.02)
         nn.init.constant_(m.bias.data, 0)
 
-def initModel(self, device):
+def loadModel(self, device):
     resultpath = os.path.join(self.result_root,'checkpoint.pth')
     if os.path.isfile(resultpath):
         print("Restoring checkpoint")

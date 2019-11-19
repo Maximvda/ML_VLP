@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from models.architecture import cnn
 from utils.initModel import initModel
+from utils.initModel import loadModel
 from utils.initModel import saveCheckpoint
 from utils.utils import visualise
 from eval.eval import eval
@@ -19,15 +19,13 @@ class CNN(object):
         self.result_root = args.result_root
 
         #Setup CNN and optimiser and initialise their previous checkpoint
-        input, output = next(iter(data_loader))
-        size = [input.size(2), input.size(3)]
-        self.model = cnn(size, 1, args.nf)
+        self.model = initModel(data_loader, args.nf)
 
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
-        initModel(self, args.device)
+        loadModel(self, args.device)
 
-        self.eval = eval(args, self.model)
+        self.eval = eval(args)
 
     def train(self, args):
         #Initialising the loss function Binary Cross Entropy loss
@@ -65,7 +63,7 @@ class CNN(object):
                 saveCheckpoint(self)
 
             if args.save_training_stats:
-                self.eval.saveStats(self.model)
+                self.eval.saveStats(self.model, self.epoch)
 
 
         saveCheckpoint(self)

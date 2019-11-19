@@ -40,14 +40,17 @@ def preprocess(dataroot, normalise=False):
                     tmp_data = [tmp_data, position]
                     data.append(tmp_data)
 
-    #Randomly shuffling and splitting data in train and test set
+    #Randomly shuffling and splitting data in train, val and test set
+    #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
     random.shuffle(data)
-    train_data = data[:int(0.8*len(data))]
+    train_data = data[:int(0.64*len(data))]
+    val_data = data[int(0.64*len(data)):int(0.8*len(data))]
     test_data = data[int(0.8*len(data)):]
 
     #Writing db to file
     with open(os.path.join(dataroot,'train_data.data'), 'wb') as f:
         pickle.dump(train_data, f)
-
+    with open(os.path.join(dataroot,'val_data.data'), 'wb') as f:
+        pickle.dump(test_data, f)
     with open(os.path.join(dataroot,'test_data.data'), 'wb') as f:
         pickle.dump(test_data, f)
