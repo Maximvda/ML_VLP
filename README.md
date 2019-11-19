@@ -16,15 +16,15 @@ This code uses the Pytorch framework version 1.3.1 and a couple of python librar
 
 ### Usage
 
-The code can be run by running the following command
+The code can be run by running the following command.
 ```
 python main.py
 ```
-Additional arguments can be passed to this command to change some of the behaviour. Descriptions of these extra arguments can be seen by running
+Additional arguments can be passed to this command to change some of the behaviour. Descriptions of these extra arguments can be seen by running.
 ```
 python main.py --help
 ```
-Default values of these arguments can be set in [config](https://github.com/Maximvda/ML_VLP/blob/master/utils/config.py)
+Default values of these arguments can be set in [config](https://github.com/Maximvda/ML_VLP/blob/master/utils/config.py).
 
 ## Training and running tests
 
