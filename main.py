@@ -9,6 +9,7 @@ def main(args):
         model = CNN(args)
         model.train(args)
     else:
+        #Best performing model is loaded and evaluated on the test set
         evalObj = eval_obj(args)
         evalObj.demo()
     return

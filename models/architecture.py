@@ -1,6 +1,7 @@
 import torch.nn as nn
 import numpy as np
 
+#No comment just print the model to see its layers
 class cnn(nn.Module):
     def __init__(self, size, nc, nf, use_sigmoid=True):
         super(cnn, self).__init__()

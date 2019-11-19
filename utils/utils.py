@@ -4,8 +4,8 @@ import os
 import matplotlib.pyplot as plt
 
 #Shows a grid of the possible positions of the measurement device
-#The predicted positions for a batch are plotted
-#The target position is also shown with a arrow from the prediction to the target
+#The predicted positions for a batch are plotted in red
+#The real position is plotted in green while a line shows the distance between predicted and real position
 def visualise(target, prediction, pause=0.0001):
     plt.ion()
     plt.clf()
@@ -30,7 +30,7 @@ def calcDistance(x,y):
 
 
 #Makes a plot data and saves it to the result directory with given filename
-#The title of the plot is also taken as argument
+#The title and labels of the plot are also taken as arguments
 def makePlot(data, filename, title, labels, result_root):
     plt.figure(figsize=(10,5))
     plt.title(title)

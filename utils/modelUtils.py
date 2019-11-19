@@ -4,11 +4,13 @@ import os
 
 from models.architecture import cnn
 
+#Initialises a model from the cnn architecture for a given input size
 def initModel(data_loader, nf):
     input, output = next(iter(data_loader))
     size = [input.size(2), input.size(3)]
     return cnn(size, 1, nf)
 
+#Initialises the weights of the model
 def weights_init(m):
     classname = m.__class__.__name__
     if classname.find('conv') != -1:
@@ -17,10 +19,12 @@ def weights_init(m):
         nn.init.normal_(m.weight.data, 1.0, 0.02)
         nn.init.constant_(m.bias.data, 0)
 
+#Saves the best performing model to model.pth file
 def saveBestModel(result_root, model):
     path = os.path.join(result_root,'model.pth')
     torch.save({'model': model.state_dict()}, path)
 
+#Loads the best model from the saved path and loads onto device
 def loadBestModel(result_root, model, device):
     path = os.path.join(result_root,'model.pth')
     if os.path.isfile(path):
@@ -28,7 +32,7 @@ def loadBestModel(result_root, model, device):
         save = torch.load(path, map_location=device)
         model.load_state_dict(save['model'])
 
-
+#Loads the entire state of the training process to continue afterwards
 def loadCheckpoint(self, device):
     resultpath = os.path.join(self.result_root,'checkpoint.pth')
     if os.path.isfile(resultpath):
@@ -51,6 +55,7 @@ def loadCheckpoint(self, device):
 
     self.model.to(device)
 
+#Saves the entire state of the training process to continue afterwards
 def saveCheckpoint(self):
     path = os.path.join(self.result_root,'checkpoint.pth')
     torch.save({

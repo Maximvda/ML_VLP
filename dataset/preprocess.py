@@ -4,6 +4,7 @@ import random
 import os
 import pickle
 
+#Preprocess the matlab and store necessary variables into files for training
 def preprocess(dataroot, normalise=False):
     #Load matlab file
     mat = scipy.io.loadmat(os.path.join(dataroot,'dataset.mat'))
@@ -13,13 +14,13 @@ def preprocess(dataroot, normalise=False):
     offset = mat['offset']
     resolution = mat['resolution'][0][0]
 
+    #choose which type of data to use swing or channel_data
     swing = 1
     channel_data = mat['swing'] if swing else np.mean(mat['channel_data'],axis=1)
     input_norm = np.max(channel_data)/2
 
-    #New data variable List with element = [Value,k=48 nog vragen, position]
+    #New data variable, list of all data points
     data = []
-
     for id in rx_id:
         for i in range(0,channel_data.shape[3]):
             for j in range(0,channel_data.shape[4]):

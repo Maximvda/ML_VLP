@@ -11,6 +11,7 @@ from utils.utils import makePlot
 from dataset.setup_database import setup_database
 from utils.utils import calcDistance
 
+#Class to train cnn architecture and save desired results and statistics during training
 class CNN(object):
     def __init__(self,args):
         print("Setting up CNN model")
@@ -31,7 +32,6 @@ class CNN(object):
     def train(self, args):
         #Initialising the loss function Binary Cross Entropy loss
         criterion = nn.BCELoss()
-        #criterion = nn.MSELoss()
 
         print("Starting training loop")
         while self.learning:
@@ -63,11 +63,12 @@ class CNN(object):
             #Calculate the performance on the validation set and store best performing model
             self.calcPerformance(args.device)
 
+            #If checkpoint freq is reached store training state
             if self.epoch % args.checkpoint_freq == 0:
                 saveCheckpoint(self)
 
-            #Stop training if there has been no improvement over the last 25 epochs
-            if self.best_epoch - self.epoch >= 25:
+            #Stop training if there has been no improvement over the last 50 epochs
+            if self.epoch - self.best_epoch >= 50:
                 self.learning = False
 
 
@@ -94,6 +95,8 @@ class CNN(object):
         #The distance is denormalised to cm's
         dist = dist*300
         print("Distance on val set: {}cm".format(dist))
+
+        #If performance of new model is better then all previous ones it is saved 
         if dist < self.min_distance:
             print("Dist: {}\tis smaller then min distance: {}".format(dist,self.min_distance))
             self.min_distance = dist
@@ -104,9 +107,9 @@ class CNN(object):
 
     def createPlots(self):
         makePlot(self.loss, 'plot_training.png', 'Training loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
-        loss, distance = self.eval.getLossDistance()
-        makePlot(loss, 'plot_eval.png', 'Evaluation loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
-        makePlot(distance, 'plot_distance.png', 'Average distance of predicted point to actual position in function of epochs.', ['Epoch', 'Distance (cm)'], self.result_root)
+        #makePlot(loss, 'plot_eval.png', 'Evaluation loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
+        print("Min on validation set: ", min(self.distance))
+        makePlot(self.distance, 'plot_distance.png', 'Average distance of predicted point to actual position in function of epochs on validation set.', ['Epoch', 'Distance (cm)'], self.result_root)
 
     def getModel(self):
         return self.model

@@ -4,6 +4,8 @@ import random
 import os
 import pickle
 
+##DEPRECEATED CODE WRONG MATLAB FILE STRUCTURE
+
 def preprocess(dataroot, normalise=False):
     #Load matlab file
     mat = scipy.io.loadmat(os.path.join(dataroot,'dataset.mat'))
