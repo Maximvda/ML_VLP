@@ -33,23 +33,16 @@ def parse_args():
     parser.add_argument('--nf', type=int, default=64, help="The numer of features for the model layers")
 
     #Training options
-    parser.add_argument('--epochs', type=int, default=150, help="The number of epochs to run")
     parser.add_argument('--batch_size', type=int, default=32, help="The size of the batch for training")
     parser.add_argument('--learning_rate', type=float, default=2e-4, help="Learning rate of the optimiser")
-    parser.add_argument('--checkpoint_freq', type=int, default=1, help="Setting checkpoint frequency in number of epochs")
+    parser.add_argument('--checkpoint_freq', type=int, default=1, help="Setting checkpoint frequency in number of epochs to store training state")
     parser.add_argument('--visualise', type=str2bool, default='False', help="Visualising the training process with a plot")
-    parser.add_argument('--save_training_stats', type=str2bool, default='True', help="Save training stats such as loss and performance on test set")
 
     return check_args(parser.parse_args())
 
 def check_args(args):
     if not args.cuda:
         print("Consider running code on gpu enabled device")
-
-    try:
-        assert args.epochs >= 1
-    except:
-        print("Number of epochs must be greater or equal to one")
 
     try:
         assert args.batch_size >= 1

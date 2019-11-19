@@ -17,7 +17,19 @@ def weights_init(m):
         nn.init.normal_(m.weight.data, 1.0, 0.02)
         nn.init.constant_(m.bias.data, 0)
 
-def loadModel(self, device):
+def saveBestModel(result_root, model):
+    path = os.path.join(result_root,'model.pth')
+    torch.save({'model': model.state_dict()}, path)
+
+def loadBestModel(result_root, model, device):
+    path = os.path.join(result_root,'model.pth')
+    if os.path.isfile(path):
+        print("Restoring best model")
+        save = torch.load(path, map_location=device)
+        model.load_state_dict(save['model'])
+
+
+def loadCheckpoint(self, device):
     resultpath = os.path.join(self.result_root,'checkpoint.pth')
     if os.path.isfile(resultpath):
         print("Restoring checkpoint")
@@ -26,6 +38,10 @@ def loadModel(self, device):
         self.optim.load_state_dict(checkpoint['optim'])
         self.epoch = checkpoint['epoch']
         self.loss = checkpoint['loss']
+        self.learning = checkpoint['learning']
+        self.min_distance = checkpoint['min_distance']
+        self.distance = checkpoint['distance']
+        self.best_epoch = checkpoint['best_epoch']
         for state in self.optim.state.values():
             for k, v in state.items():
                 if torch.is_tensor(v):
@@ -39,6 +55,10 @@ def saveCheckpoint(self):
     path = os.path.join(self.result_root,'checkpoint.pth')
     torch.save({
             'epoch': self.epoch,
+            'learning': self.learning,
+            'distance': self.distance,
+            'min_distance': self.min_distance,
+            'best_epoch': self.best_epoch,
             'model': self.model.state_dict(),
             'optim': self.optim.state_dict(),
             'loss': self.loss,

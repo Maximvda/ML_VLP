@@ -2,30 +2,31 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from utils.initModel import initModel
-from utils.initModel import loadModel
-from utils.initModel import saveCheckpoint
+from utils.modelUtils import initModel
+from utils.modelUtils import loadCheckpoint
+from utils.modelUtils import saveCheckpoint
+from utils.modelUtils import saveBestModel
 from utils.utils import visualise
-from eval.eval import eval
 from utils.utils import makePlot
+from dataset.setup_database import setup_database
+from utils.utils import calcDistance
 
 class CNN(object):
-    def __init__(self,args, data_loader):
+    def __init__(self,args):
         print("Setting up CNN model")
         #Initialise some variables
-        self.epoch = 0
-        self.data_loader = data_loader
-        self.loss = []
+        self.epoch = 0;     self.best_epoch = 0;
+        self.learning = True
+        self.data_loader = setup_database(args); self.val_data_loader = setup_database(args, 'val')
+        self.loss = [];     self.distance = []
         self.result_root = args.result_root
+        self.min_distance = 3000
 
         #Setup CNN and optimiser and initialise their previous checkpoint
-        self.model = initModel(data_loader, args.nf)
-
+        self.model = initModel(self.data_loader, args.nf)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
-        loadModel(self, args.device)
-
-        self.eval = eval(args)
+        loadCheckpoint(self, args.device)
 
     def train(self, args):
         #Initialising the loss function Binary Cross Entropy loss
@@ -33,8 +34,8 @@ class CNN(object):
         #criterion = nn.MSELoss()
 
         print("Starting training loop")
-        while self.epoch < args.epochs:
-            print('Epoch: {}/{}'.format(self.epoch, args.epochs))
+        while self.learning:
+            print('Epoch: {}'.format(self.epoch))
             for i, data in enumerate(self.data_loader):
                 self.model.zero_grad()
 
@@ -51,7 +52,7 @@ class CNN(object):
                 #Store training stats
                 self.loss.append(loss.item())
                 with torch.no_grad():
-                    if i % 50 == 0:
+                    if i % 250 == 0:
                         print('[{}/{}]\tPrediction: {}\tTarget: {}\tLoss: {}'.format(
                         i, len(self.data_loader), prediction.cpu().numpy()[0], output.cpu().numpy()[0], loss.item()))
                         if args.visualise:
@@ -59,16 +60,47 @@ class CNN(object):
 
             self.epoch += 1
 
+            #Calculate the performance on the validation set and store best performing model
+            self.calcPerformance(args.device)
+
             if self.epoch % args.checkpoint_freq == 0:
                 saveCheckpoint(self)
 
-            if args.save_training_stats:
-                self.eval.saveStats(self.model, self.epoch)
+            #Stop training if there has been no improvement over the last 25 epochs
+            if self.best_epoch - self.epoch >= 25:
+                self.learning = False
 
 
-        saveCheckpoint(self)
         print("Training finished\nCreating plots of training and evaluation statistics")
+        saveCheckpoint(self)
         self.createPlots()
+
+    def calcPerformance(self, device):
+        print("Calculating performance on validation set.")
+        distance = []
+        self.model.eval()
+        for i, data in enumerate(self.val_data_loader):
+            with torch.no_grad():
+                input = data[0].type(torch.FloatTensor).to(device)
+                output = data[1].to(device)
+
+                prediction = self.model(input)[:,:,0,0]
+
+                #Calculate the distance between predicted and target points
+                distance.append(calcDistance(prediction, output))
+
+        #The average distance over the entire test set is calculated
+        dist = sum(distance)/len(distance)
+        #The distance is denormalised to cm's
+        dist = dist*300
+        print("Distance on val set: {}cm".format(dist))
+        if dist < self.min_distance:
+            print("Dist: {}\tis smaller then min distance: {}".format(dist,self.min_distance))
+            self.min_distance = dist
+            saveBestModel(self.result_root, self.model)
+            self.best_epoch = self.epoch
+        self.distance.append(dist)
+        self.model.train()
 
     def createPlots(self):
         makePlot(self.loss, 'plot_training.png', 'Training loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
