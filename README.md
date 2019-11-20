@@ -33,3 +33,4 @@ Todo
 ## Author
 
 * **Maxim Van den Abeele**
+* **Jona Beysens** - *Matlab Implementation*
