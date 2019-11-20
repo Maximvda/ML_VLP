@@ -28,7 +28,14 @@ Default values of these arguments can be set in [config](https://github.com/Maxi
 
 ## Training and running tests
 
-Todo
+ToDo
+
+## Required features (ToDo)
+* Model with only couple of LEDs as input and their ID
+* Model trained on only centre LEDs and see how accurate positions are around the centre
+* Model with a less dense LED grid
+
+* Simulation to generate training data base on model of the LED
 
 ## Author
 

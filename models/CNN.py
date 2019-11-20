@@ -68,7 +68,7 @@ class CNN(object):
                 saveCheckpoint(self)
 
             #Stop training if there has been no improvement over the last 50 epochs
-            if self.epoch - self.best_epoch >= 50:
+            if self.epoch - self.best_epoch >= 25:
                 self.learning = False
 
 
@@ -96,7 +96,7 @@ class CNN(object):
         dist = dist*300
         print("Distance on val set: {}cm".format(dist))
 
-        #If performance of new model is better then all previous ones it is saved 
+        #If performance of new model is better then all previous ones it is saved
         if dist < self.min_distance:
             print("Dist: {}\tis smaller then min distance: {}".format(dist,self.min_distance))
             self.min_distance = dist
