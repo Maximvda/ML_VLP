@@ -36,6 +36,11 @@ ToDo
 * Model with a less dense LED grid
 ###
 * Simulation to generate training data base on model of the LED
+###
+* Implement hight estimation, previous height 182cm new data height 192cm
+### Possible improvements
+* Add more layers to network
+* Change loss to BCE(distance, 0)
 
 ## Authors
 
