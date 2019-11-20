@@ -30,7 +30,7 @@ Default values of these arguments can be set in [config](https://github.com/Maxi
 
 Todo
 
-## Author
+## Authors
 
 * **Maxim Van den Abeele**
 * **Jona Beysens** - *Matlab Implementation*
