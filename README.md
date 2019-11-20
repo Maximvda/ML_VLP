@@ -37,6 +37,7 @@ ToDo
 
 * Simulation to generate training data base on model of the LED
 
-## Author
+## Authors
 
 * **Maxim Van den Abeele**
+* **Jona Beysens** - *Matlab Implementation*
