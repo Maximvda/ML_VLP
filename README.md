@@ -34,7 +34,7 @@ ToDo
 * Model with only couple of LEDs as input and their ID
 * Model trained on only centre LEDs and see how accurate positions are around the centre
 * Model with a less dense LED grid
-
+###
 * Simulation to generate training data base on model of the LED
 
 ## Authors
