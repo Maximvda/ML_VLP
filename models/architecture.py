@@ -8,6 +8,9 @@ class cnn(nn.Module):
         num_downs = int(min(size[0],size[1])-2)
 
         submodule = DownConv(nc, nf)
+        #submodule = DownConv(nc, nf, 3)
+        #submodule = DownConv(nf, 2*nf, submodule=submodule)
+
 
         prev_f_mult = 1
         f_mult = 1
@@ -25,12 +28,14 @@ class cnn(nn.Module):
         self.main = nn.Sequential(*model)
 
     def forward(self, input):
+        #output = self.conv1(input)
+        #print(output.size())
         return self.main(input)
 
 class DownConv(nn.Module):
-    def __init__(self,input_nc, output_nc, final=False, submodule=None):
+    def __init__(self,input_nc, output_nc, kernel=4, final=False, submodule=None):
         super(DownConv, self).__init__()
-        down_conv = nn.Conv2d(input_nc, output_nc, kernel_size=4, stride=1, padding=1, bias=False)
+        down_conv = nn.Conv2d(input_nc, output_nc, kernel_size=kernel, stride=1, padding=1, bias=False)
         down_norm = nn.BatchNorm2d(output_nc)
         down_relu = nn.LeakyReLU(0.2, True)
         dropout = nn.Dropout(0.5)

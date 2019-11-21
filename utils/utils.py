@@ -39,3 +39,13 @@ def makePlot(data, filename, title, labels, result_root):
     plt.ylabel(labels[1])
     resultpath = os.path.join(result_root, filename)
     plt.savefig(resultpath)
+
+#Save all the relevant arguments in a textfile such that the model,
+#the kind of data and test can be identified after training
+def saveArguments(args):
+    fileText = 'Number of features: {}\nBatch size: {}\nLearning rate: {}'.format(
+                    args.nf, args.batch_size, args.learning_rate)
+    fileName = os.path.join(args.result_root,'parameters.txt')
+    f = open(fileName,'w')
+    f.write(fileText)
+    f.close()

@@ -31,16 +31,11 @@ Default values of these arguments can be set in [config](https://github.com/Maxi
 ToDo
 
 ## Required features (ToDo)
-* Model with only couple of LEDs as input and their ID
+* **[Check]** Model with only couple of LEDs as input and their ID
 * Model trained on only centre LEDs and see how accurate positions are around the centre
 * Model with a less dense LED grid
 ###
 * Simulation to generate training data base on model of the LED
-###
-* Implement hight estimation, previous height 182cm new data height 192cm
-### Possible improvements
-* Add more layers to network
-* Change loss to BCE(distance, 0)
 
 ## Authors
 

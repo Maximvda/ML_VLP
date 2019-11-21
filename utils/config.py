@@ -2,6 +2,8 @@ import argparse
 import torch
 import os
 
+from utils.utils import saveArguments
+
 def str2bool(v):
     if v.lower() in ('true', 'yes', '1', 't', 'y'):
         return True
@@ -28,6 +30,8 @@ def parse_args():
     parser.add_argument('--dataroot', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/dataset/database", required=False, help="Path to the dataset")
     parser.add_argument('--result_root', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/results", required=False, help="Path to the result directory")
     parser.add_argument('--normalise', type=str2bool, default="True", help="If set to true dataset input and output are normalised")
+    parser.add_argument('--TX_density', type=int, default=36, help='Select the led configuartion with certain density.')
+    parser.add_argument('--TX_input', type=int, default=1, help="Limit the amount of inputs of the network to only the best received signals.")
 
     #Model options
     parser.add_argument('--nf', type=int, default=64, help="The numer of features for the model layers")
@@ -45,6 +49,11 @@ def check_args(args):
         print("Consider running code on gpu enabled device")
 
     try:
+        assert args.TX_input > 0 and args.TX_input <= 36
+    except:
+        print("TX_input must have a value between one and 36")
+
+    try:
         assert args.batch_size >= 1
     except:
         print("Batch size must be greater or equal to one")
@@ -53,5 +62,6 @@ def check_args(args):
         os.mkdir(args.result_root)
 
     args.device = torch.device("cuda:0" if (torch.cuda.is_available() and args.cuda) else "cpu")
+    saveArguments(args)
 
     return args
