@@ -32,10 +32,13 @@ ToDo
 
 ## Required features (ToDo)
 * **[Check]** Model with only couple of LEDs as input and their ID
-* Model trained on only centre LEDs and see how accurate positions are around the centre
-* Model with a less dense LED grid
+* Model with a less dense LED grid and different configurations
+* Create plot of distance for increasingly number of TX being used
 ###
 * Simulation to generate training data base on model of the LED
+### Possible improvements
+* Add more layers to network
+* Change loss to BCE(distance,0)
 
 ## Authors
 

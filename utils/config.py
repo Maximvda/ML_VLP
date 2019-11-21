@@ -31,7 +31,7 @@ def parse_args():
     parser.add_argument('--result_root', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/results", required=False, help="Path to the result directory")
     parser.add_argument('--normalise', type=str2bool, default="True", help="If set to true dataset input and output are normalised")
     parser.add_argument('--TX_density', type=int, default=36, help='Select the led configuartion with certain density.')
-    parser.add_argument('--TX_input', type=int, default=1, help="Limit the amount of inputs of the network to only the best received signals.")
+    parser.add_argument('--TX_input', type=int, default=3, help="Limit the amount of inputs of the network to only the best received signals.")
 
     #Model options
     parser.add_argument('--nf', type=int, default=64, help="The numer of features for the model layers")

@@ -23,10 +23,11 @@ class CNN(object):
         self.result_root = args.result_root
         self.min_distance = 3000
 
-        #Setup CNN and optimiser and initialise their previous checkpoint
+        #Setup CNN and optimiser
         self.model = initModel(self.data_loader, args.nf)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
+        #Load the previous training checkpoint
         loadCheckpoint(self, args.device)
 
     def train(self, args):

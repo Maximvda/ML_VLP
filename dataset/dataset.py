@@ -21,7 +21,7 @@ class data(Dataset):
 
         #Transform to torch tensor and to desired dimension and type
         input = torch.from_numpy(input)
-        input = torch.unsqueeze(input,0)
+        input = torch.unsqueeze(input,0).type(torch.FloatTensor)
         output = torch.FloatTensor(output)
 
         return input, output
