@@ -36,6 +36,9 @@ ToDo
 * Model with a less dense LED grid
 ###
 * Simulation to generate training data base on model of the LED
+### Possible improvements
+* Add more layers to network
+* Change loss to BCE(distance,0)
 
 ## Authors
 
