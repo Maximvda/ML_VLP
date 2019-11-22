@@ -7,6 +7,7 @@ from utils.utils import makePlot
 #For each possible number of TX_inputs a model is trained
 #The achieved distance on the val set is then plotted in function of the epoch for each model
 def experiment1(args):
+    print("Performing experiment 1")
     #Initialise some variables
     args.TX_config = 1
     val_dist = [] #Holds all distances on the val set during training
@@ -19,7 +20,7 @@ def experiment1(args):
         os.mkdir(pth)
 
     #Loop over all possible TX_inputs
-    for i in range(0,36):
+    for i in range(1,37):
         #Setup result root
         args.result_root = os.path.join(pth, 'TX_input_' + str(i))
         os.mkdir(args.result_root)
@@ -34,8 +35,6 @@ def experiment1(args):
         args.is_train = False
         test_dist.append(main(args))
 
-
-
     #Create plot comparing the performance
     filename = 'TX_input_distance.png'
     title = 'Performance improvement by using more TX to predict the RX position.'
@@ -44,7 +43,39 @@ def experiment1(args):
 
 
 def experiment2(args):
-    print("Experiment 2")
+    print("Performing experiment 2")
+    #Initialise some variables
+    args.TX_input = 36
+    val_dist = [] #Holds all distances on the val set during training
+    test_dist = []
+    data_labels = []
+
+    #Setup dir for all results of experiment 1
+    pth = os.path.join(args.result_root, 'experiment_2')
+    if not os.path.exists(pth):
+        os.mkdir(pth)
+
+    #Loop over all possible TX_inputs
+    for i in range(1,7):
+        #Setup result root
+        args.result_root = os.path.join(pth, 'TX_config_' + str(i))
+        os.mkdir(args.result_root)
+
+        args.TX_input = i
+        data_labels.append('TX config: {}'.format(i))
+
+        #Train the model for the specific TX_input
+        val_dist.append(main(args))
+
+        #If model is trained check achieved distance on test set
+        args.is_train = False
+        test_dist.append(main(args))
+
+    #Create plot comparing the performance
+    filename = 'TX_config_distance.png'
+    title = 'Influence of different TX configuartions on position estimation.'
+    labels = ['Epoch', 'Distance (cm)']
+    makePlot(val_dist, filename, title, labels, pth, data_labels)
 
 def runExperiment(args):
     {1: experiment1(args),
