@@ -117,3 +117,6 @@ class CNN(object):
 
     def get_epoch(self):
         return self.epoch
+
+    def get_distance(self):
+        return self.distance

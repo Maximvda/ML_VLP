@@ -25,6 +25,7 @@ def parse_args():
 
     parser.add_argument('--is_train', type=str2bool, default='True', help="Set to true if you want to train model or false to evaluate it")
     parser.add_argument('--cuda', type=str2bool, default='True', help="Availability of cuda gpu")
+    parser.add_arguments('--experiment', type=int, default=None, help='Select a certain experiment to run or leave default None to train a single model.')
 
     #Dataset options
     parser.add_argument('--dataroot', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/dataset/database", required=False, help="Path to the dataset")
@@ -40,6 +41,7 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=32, help="The size of the batch for training")
     parser.add_argument('--learning_rate', type=float, default=2e-4, help="Learning rate of the optimiser")
     parser.add_argument('--checkpoint_freq', type=int, default=1, help="Setting checkpoint frequency in number of epochs to store training state")
+
     parser.add_argument('--visualise', type=str2bool, default='False', help="Visualising the training process with a plot")
 
     return check_args(parser.parse_args())

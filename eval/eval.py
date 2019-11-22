@@ -65,3 +65,4 @@ class eval_obj(object):
         #The distance is denormalised to cm's
         dist = dist*300
         print("Distance on test set is: {}cm".format(dist))
+        return dist
