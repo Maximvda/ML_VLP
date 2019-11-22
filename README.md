@@ -30,12 +30,14 @@ Default values of these arguments can be set in [config](https://github.com/Maxi
 
 ToDo
 ### Different LED configurations
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/LED_Configuartions.png" width="48">
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/LED_Configuartions.png" width="256">
 
 ## Required features (ToDo)
 * **[Check]** Model with only couple of LEDs as input and their ID
-* Model with a less dense LED grid and different configurations
+* **[Check]** Model with a less dense LED grid and different configurations
 * Create plot of distance for increasingly number of TX being used
+* Implement different kind of experiments
+* Dynamic model size depending on number of inputs. **Exp:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
 ###
 * Simulation to generate training data base on model of the LED
 ### Possible improvements
