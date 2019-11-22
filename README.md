@@ -37,7 +37,8 @@ ToDo
 * **[Check]** Model with a less dense LED grid and different configurations
 * Create plot of distance for increasingly number of TX being used
 * Implement different kind of experiments
-* Dynamic model size depending on number of inputs. **Exp:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
+* Dynamic model size depending on number of inputs. **Example:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
+* Experiment difference between dynamic and fixed model
 ###
 * Simulation to generate training data base on model of the LED
 ### Possible improvements
