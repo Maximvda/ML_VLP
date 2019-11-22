@@ -1,7 +1,6 @@
 import traceback
 
 from utils.config import parse_args
-from utils.experiments import runExperiment
 from models.CNN import CNN
 from eval.eval import eval_obj
 
@@ -23,7 +22,8 @@ if __name__ == '__main__':
         if args.experiment == None:
             main(args)
         else:
-            runExperiment(args)
+            from utils.experiments import experiment
+            experiment(args)
 
     except Exception as e:
         print(e)

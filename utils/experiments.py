@@ -20,15 +20,17 @@ def experiment1(args):
         os.mkdir(pth)
 
     #Loop over all possible TX_inputs
-    for i in range(1,37):
+    for i in range(1,3):
         #Setup result root
         args.result_root = os.path.join(pth, 'TX_input_' + str(i))
-        os.mkdir(args.result_root)
+        if not os.path.exists(args.result_root):
+            os.mkdir(args.result_root)
 
         args.TX_input = i
         data_labels.append('Number of TX: {}'.format(i))
 
         #Train the model for the specific TX_input
+        args.is_train = True
         val_dist.append(main(args))
 
         #If model is trained check achieved distance on test set
@@ -77,6 +79,6 @@ def experiment2(args):
     labels = ['Epoch', 'Distance (cm)']
     makePlot(val_dist, filename, title, labels, pth, data_labels)
 
-def runExperiment(args):
+def experiment(args):
     {1: experiment1(args),
      2: experiment2(args)}[args.experiment]

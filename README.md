@@ -8,7 +8,7 @@ The code can be cloned to a local directory by using the standard git command.
 ```
 git clone https://github.com/Maximvda/ML_VLP.git
 ```
-As of now the code cannot be run as the dataset is not yet publicly available. If you still desire to use this code, adaptations will be required to the dataset and preprocessing python files in order to work with a new dataset.  For new datasets it is likely that adaptations will also be required to the network architecture.
+As of now the code cannot be instantly run as the dataset is not yet publicly available. If you still desire to use this code, adaptations will be required to the dataset and the preprocessing of it. For new datasets it is likely that adaptations will also be required to the network architecture.
 
 ### Prerequisites
 
@@ -16,7 +16,7 @@ This code uses the Pytorch framework version 1.3.1 and a couple of python librar
 
 ### Usage
 
-The code can be run by running the following command.
+A model can be trained, using the default settings by running the following command.
 ```
 python main.py
 ```
@@ -25,6 +25,12 @@ Additional arguments can be passed to this command to change some of the behavio
 python main.py --help
 ```
 Default values of these arguments can be set in [config](https://github.com/Maximvda/ML_VLP/blob/master/utils/config.py).
+## Experiments
+A couple of predefined experiments can also be run by using the argument --experiment.
+### Experiment 1
+The first experiment will start by training a model that only uses the best received signal as input so only from one TX. A new model is trained after the first one is finished but now using the two best received signals. This is repeated till all the signals are used. This experiment investigates the influence of using increasingly more inputs in the model on the position estimation.
+
+
 
 ## Training and running tests
 

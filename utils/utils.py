@@ -2,6 +2,7 @@ import torch
 import os
 
 import matplotlib.pyplot as plt
+plt.switch_backend('Agg')
 
 #Shows a grid of the possible positions of the measurement device
 #The predicted positions for a batch are plotted in red
@@ -39,7 +40,7 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None):
         plt.plot(data)
     else:
         for i in range(0,len(data)):
-            plt.plot(data[i], data_labels[i])
+            plt.plot(data[i], label=data_labels[i])
     plt.xlabel(labels[0])
     plt.ylabel(labels[1])
     resultpath = os.path.join(result_root, filename)

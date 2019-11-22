@@ -25,7 +25,7 @@ def parse_args():
 
     parser.add_argument('--is_train', type=str2bool, default='True', help="Set to true if you want to train model or false to evaluate it")
     parser.add_argument('--cuda', type=str2bool, default='True', help="Availability of cuda gpu")
-    parser.add_arguments('--experiment', type=int, default=None, help='Select a certain experiment to run or leave default None to train a single model.')
+    parser.add_argument('--experiment', type=int, default=None, help='Select a certain experiment to run or leave default None to train a single model.')
 
     #Dataset options
     parser.add_argument('--dataroot', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/dataset/database", required=False, help="Path to the dataset")
