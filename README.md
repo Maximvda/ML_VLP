@@ -29,6 +29,8 @@ Default values of these arguments can be set in [config](https://github.com/Maxi
 ## Training and running tests
 
 ToDo
+### Different LED configurations
+![alt text](https://github.com/Maximvda/ML_VLP/blob/media/LED_Configuartions.png)
 
 ## Required features (ToDo)
 * **[Check]** Model with only couple of LEDs as input and their ID

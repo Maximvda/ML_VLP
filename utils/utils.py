@@ -49,3 +49,7 @@ def saveArguments(args):
     f = open(fileName,'w')
     f.write(fileText)
     f.close()
+
+#This function returns an array with the LEDs needed to create a certain
+#LED configuartion
+def getDensity(TX_density):

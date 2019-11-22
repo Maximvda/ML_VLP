@@ -4,6 +4,7 @@ import random
 import os
 import pickle
 
+from utils.utils import getDensity
 #Preprocess the matlab and store necessary variables into files for training
 def preprocess(dataroot, TX_density, TX_input, normalise=False):
     #Load matlab file
@@ -18,6 +19,14 @@ def preprocess(dataroot, TX_density, TX_input, normalise=False):
     swing = 1
     channel_data = mat['swing'] if swing else np.mean(mat['channel_data'],axis=1)
     input_norm = np.max(channel_data)/2
+
+    #Set the LEDs which are not used for the desired density to 0
+    for led in getDensity(TX_density):
+        break if led is None
+        channel_data[led,:,:,:,:] = 0
+
+    print(channel_data[:,0,0,0,0])
+    print(x)
 
 
     #Shuffles the received signals in such a way that the LEDs
