@@ -20,7 +20,7 @@ def experiment1(args):
         os.mkdir(pth)
 
     #Loop over all possible TX_inputs
-    for i in range(1,3):
+    for i in range(1,37):
         #Setup result root
         args.result_root = os.path.join(pth, 'TX_input_' + str(i))
         if not os.path.exists(args.result_root):
@@ -43,6 +43,8 @@ def experiment1(args):
     labels = ['Epoch', 'Distance (cm)']
     makePlot(val_dist, filename, title, labels, pth, data_labels)
 
+    print("Distance on test set for all models: ", test_dist)
+
 
 def experiment2(args):
     print("Performing experiment 2")
@@ -61,12 +63,14 @@ def experiment2(args):
     for i in range(1,7):
         #Setup result root
         args.result_root = os.path.join(pth, 'TX_config_' + str(i))
-        os.mkdir(args.result_root)
+        if not os.path.exists(args.result_root):
+            os.mkdir(args.result_root)
 
-        args.TX_input = i
+        args.TX_config = i
         data_labels.append('TX config: {}'.format(i))
 
-        #Train the model for the specific TX_input
+        #Train the model for the specific TX_config
+        args.is_train = True
         val_dist.append(main(args))
 
         #If model is trained check achieved distance on test set
@@ -79,6 +83,10 @@ def experiment2(args):
     labels = ['Epoch', 'Distance (cm)']
     makePlot(val_dist, filename, title, labels, pth, data_labels)
 
+    print("Distance on test set for all models: ", test_dist)
+
 def experiment(args):
-    {1: experiment1(args),
-     2: experiment2(args)}[args.experiment]
+    if args.experiment == 1:
+        experiment1(args)
+    elif args.experiment == 2:
+        experiment2(args)

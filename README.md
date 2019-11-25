@@ -1,6 +1,6 @@
 # Visible Light Positioning with Machine Learning
 
-The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2m while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 3m^2. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each led. These measurements are then used as input for our machine learning algorithm while the position of the measurement is used as our desired output. The first experiments result in an average accuracy of 1.9cm on the test set.
+The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2m while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 3m^2. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each LED. These measurements are then used as input for our machine learning algorithm, while the position of the measurement is used as our desired output. The first experiments result in an average accuracy of 1.9cm on the test set.
 
 ## Getting Started
 
@@ -25,24 +25,30 @@ Additional arguments can be passed to this command to change some of the behavio
 python main.py --help
 ```
 Default values of these arguments can be set in [config](https://github.com/Maximvda/ML_VLP/blob/master/utils/config.py).
+
+### Different TX configurations
+One of the arguments allows you to change the TX configuration. This makes it possible to run multiple experiments using the 6x6 LED grid. Choosing a specific configuration means that all the TX which are not selected are set to zero. The different possible configurations that are implemented can be seen in the figure below. If you wish to add a different configuration then that is possible in the [preprocessing](https://github.com/Maximvda/ML_VLP/blob/master/dataset/preprocess.py) file.
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/LED_Configuartions.png" width="512">
+
 ## Experiments
 A couple of predefined experiments can also be run by using the argument --experiment.
+
 ### Experiment 1
-The first experiment will start by training a model that only uses the best received signal as input so only from one TX. A new model is trained after the first one is finished but now using the two best received signals. This is repeated till all the signals are used. This experiment investigates the influence of using increasingly more inputs in the model on the position estimation.
+Experiment one looks at how much performance improvement you get by using more received signals as input for the network. The experiment starts with a model that only uses one signal as input. This signal is the received signal with the highest RSS. More signals are added throughout the experiment each time adding the next best signal, the one with the highest RSS. Of course, when only one signal is used the position estimate will be bad.
+The first experiment will start by training a model that only uses the best received signal as input, so only from one TX. A new model is trained after the first one is finished but now using the two best received signals. This is repeated till all the signals are used. This experiment investigates the influence of using increasingly more inputs in the model on the position estimation.
 
-
+### Experiment 2
+The second experiment investigates the performance difference between different TX configurations. A sweep is performed over the 6 different, predefined TX configurations. For each of these a model is trained and the performance of these is evaluated against each other. A plot is made showing the distance on the validation set during the training process. The table (ref) shows the best obtained score on the test set for each model.
 
 ## Training and running tests
 
 ToDo
-### Different LED configurations
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/LED_Configuartions.png" width="512">
 
 ## Required features (ToDo)
 * **[Check]** Model with only couple of LEDs as input and their ID
 * **[Check]** Model with a less dense LED grid and different configurations
-* Create plot of distance for increasingly number of TX being used
-* Implement different kind of experiments
+* **[Check]** Create plot of distance for increasingly number of TX being used
+* **[Check]** Implement different kind of experiments
 * Dynamic model size depending on number of inputs. **Example:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
 * Experiment difference between dynamic and fixed model
 ###
