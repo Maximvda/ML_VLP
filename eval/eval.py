@@ -15,7 +15,7 @@ class eval_obj(object):
         #Initialising some variables
         self.test_data_loader = setup_database(args, 'test')
         self.device = args.device
-        self.best_model = initModel(self.test_data_loader, args.nf).to(args.device)
+        self.best_model = initModel(self.test_data_loader, args.nf, args.extra_layers).to(args.device)
         self.visualise = args.visualise
 
         loadBestModel(args.result_root, self.best_model, args.device)

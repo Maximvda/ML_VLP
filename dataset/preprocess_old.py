@@ -25,9 +25,11 @@ def setConfiguartion(channel_data, TX_config):
                 6: [id for id in all_TX if id not in l6],}[TX_config]:
         channel_data[TX,:,:,:,:] = 0
 
-def readMatFile(file, data, TX_config, TX_input, normalise):
+
+#Preprocess the Matlab database and store necessary variables into files for training
+def preprocess(dataroot, TX_config, TX_input, normalise=False):
     #Load matlab file
-    mat = scipy.io.loadmat(file)
+    mat = scipy.io.loadmat(os.path.join(dataroot,'dataset.mat'))
     #Initialising some variables
     rx_id = mat['rx_id'][0]-1
     no_it = mat['no_it'][0][0]
@@ -58,23 +60,24 @@ def readMatFile(file, data, TX_config, TX_input, normalise):
     #    tmp = (channel_data-input_norm)/input_norm
     #    arr.append([[tmp[:,id,it,i,j], [x[i], y[j]]] for i in range(0,len(x)-2) for j in range(0,len(y)) for it in range(0,no_it)][0])
 
+
     #New data variable, list of all data points
+    data = []
     #Iterate over each measurement (each RX, each x and y position and each iteration)
     for id in rx_id:
         for x in range(0,channel_data.shape[3]):
-            if len(channel_data.shape) == 4:
+            for y in range(0,channel_data.shape[4]):
                 for it in range(0,no_it):
                     #Select 1 measurement
-                    tmp_data = channel_data[:,id,it,x]
+                    tmp_data = channel_data[:,id,it,x,y]
                     #Sort measurement from high to low and select TX_input highest element
                     high_el = np.sort(tmp_data)[::-1][TX_input-1]
                     #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
                     tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((6,6))
 
                     #Calculate position of the RX for this measurement
-                    y = int(file.split("_")[-1][:-4])
-                    pos_x = offset[id][0] + y*resolution
-                    pos_y = offset[id][1] + x*resolution
+                    pos_x = offset[id][0] + x*resolution
+                    pos_y = offset[id][1] + y*resolution
 
                     #Normalisation for input and output
                     if normalise:
@@ -83,50 +86,21 @@ def readMatFile(file, data, TX_config, TX_input, normalise):
                         pos_y = pos_y/3000
 
                     position = [pos_x, pos_y]
-                    tmp_data = [tmp_data, position, mat['height']]
+                    tmp_data = [tmp_data, position]
                     data.append(tmp_data)
-            else:
-                for y in range(0,channel_data.shape[4]):
-                    for it in range(0,no_it):
-                        #Select 1 measurement
-                        tmp_data = channel_data[:,id,it,x,y]
-                        #Sort measurement from high to low and select TX_input highest element
-                        high_el = np.sort(tmp_data)[::-1][TX_input-1]
-                        #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                        tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((6,6))
-
-                        #Calculate position of the RX for this measurement
-                        pos_x = offset[id][0] + x*resolution
-                        pos_y = offset[id][1] + y*resolution
-
-                        #Normalisation for input and output
-                        if normalise:
-                            tmp_data = (tmp_data-input_norm)/input_norm
-                            pos_x = pos_x/3000
-                            pos_y = pos_y/3000
-
-                        position = [pos_x, pos_y]
-                        tmp_data = [tmp_data, position, mat['height']]
-                        data.append(tmp_data)
-
-#Preprocess the Matlab database and store necessary variables into files for training
-def preprocess(dataroot, TX_config, TX_input, normalise=False):
-    data = []
-    pth = os.path.join(dataroot,'mat_files')
-    files = os.listdir(pth)
-    for file in files:
-        if 'height1' in file:
-            print(file)
-            readMatFile(os.path.join(pth,file), data, TX_config, TX_input, normalise)
 
     #Randomly shuffling and splitting data in train, val and test set
     #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
     random.shuffle(data)
-    dict = {'train': data[:int(0.64*len(data))],
-            'val':   data[int(0.64*len(data)):int(0.8*len(data))],
-            'test':  data[int(0.8*len(data)):]}
+    train_data = data[:int(0.64*len(data))]
+    val_data = data[int(0.64*len(data)):int(0.8*len(data))]
+    test_data = data[int(0.8*len(data)):]
 
     #Writing db to file
     extension = '_'.join((str(TX_config),str(TX_input))) + '.data'
-    with open(os.path.join(dataroot,'data_' + extension), 'wb') as f:
-        pickle.dump(dict, f)
+    with open(os.path.join(dataroot,'train_data_' + extension), 'wb') as f:
+        pickle.dump(train_data, f)
+    with open(os.path.join(dataroot,'val_data_' + extension), 'wb') as f:
+        pickle.dump(test_data, f)
+    with open(os.path.join(dataroot,'test_data_' + extension), 'wb') as f:
+        pickle.dump(test_data, f)

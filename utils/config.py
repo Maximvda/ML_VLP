@@ -26,6 +26,7 @@ def parse_args():
     parser.add_argument('--is_train', type=str2bool, default='True', help="Set to true if you want to train model or false to evaluate it")
     parser.add_argument('--cuda', type=str2bool, default='True', help="Availability of cuda gpu")
     parser.add_argument('--experiment', type=int, default=None, help='Select a certain experiment to run or leave default None to train a single model.')
+    parser.add_argument('--simulate', type=str2bool, default="False")
 
     #Dataset options
     parser.add_argument('--dataroot', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/dataset/database", required=False, help="Path to the dataset")
@@ -36,6 +37,7 @@ def parse_args():
 
     #Model options
     parser.add_argument('--nf', type=int, default=64, help="The numer of features for the model layers")
+    parser.add_argument('--extra_layers', type=int, default=0, help="The number of extra layers in the model such that it has more parameters.")
 
     #Training options
     parser.add_argument('--batch_size', type=int, default=32, help="The size of the batch for training")

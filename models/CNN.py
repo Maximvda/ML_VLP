@@ -24,7 +24,7 @@ class CNN(object):
         self.min_distance = 3000
 
         #Setup CNN and optimiser
-        self.model = initModel(self.data_loader, args.nf)
+        self.model = initModel(self.data_loader, args.nf, args.extra_layers)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
         #Load the previous training checkpoint
@@ -33,6 +33,7 @@ class CNN(object):
     def train(self, args):
         #Initialising the loss function Binary Cross Entropy loss
         criterion = nn.BCELoss()
+        #criterion = nn.MSELoss()
 
         print("Starting training loop")
         while self.learning:
@@ -46,7 +47,9 @@ class CNN(object):
 
                 #Forward through model and calculate loss
                 prediction = self.model(input)[:,:,0,0]
-                loss = criterion(prediction, output)
+                distance = (output-prediction)**2
+                zero = torch.full(output.size(), 0, device=args.device)
+                loss = criterion(distance, zero)
                 loss.backward()
                 self.optim.step()
 
