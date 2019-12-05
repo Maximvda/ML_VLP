@@ -21,7 +21,7 @@ if __name__ == '__main__':
         args = parse_args()
         print("Arguments parsed")
         if args.simulate:
-            testbed_simulation()
+            testbed_simulation(args.dataroot)
         elif args.experiment == None:
             main(args)
         else:

@@ -4,6 +4,8 @@ import random
 import os
 import pickle
 
+from simulation.simulation import testbed_simulation
+
 #Sets all RX signals from TX that are not in the chosen configuartion to 0
 #The different TX configuartions can be found on Github page
 def setConfiguartion(channel_data, TX_config):
@@ -23,9 +25,9 @@ def setConfiguartion(channel_data, TX_config):
                 4: [id for id in all_TX if id not in l4],
                 5: [id for id in all_TX if id not in l5],
                 6: [id for id in all_TX if id not in l6],}[TX_config]:
-        channel_data[TX,:,:,:,:] = 0
+        channel_data[TX] = 0
 
-def readMatFile(file, data, TX_config, TX_input, normalise):
+def readMatFile(file, data, TX_config, TX_input, normalise, rng_state):
     #Load matlab file
     mat = scipy.io.loadmat(file)
     #Initialising some variables
@@ -47,6 +49,7 @@ def readMatFile(file, data, TX_config, TX_input, normalise):
     #are not in the correct position as they are in the testbed.
     #So the led on position 2,4 of the 6x6 grid can be replaced to position 5,1 in the 6x6 matrix
     #This decouples the LEDs measurement from its spatial position in the testbed
+    np.random.set_state(rng_state)
     np.random.shuffle(channel_data)
 
     #pos_x_mm = mat['pos_x_mm'][0]
@@ -109,16 +112,37 @@ def readMatFile(file, data, TX_config, TX_input, normalise):
                         tmp_data = [tmp_data, position, mat['height']]
                         data.append(tmp_data)
 
-#Preprocess the Matlab database and store necessary variables into files for training
-def preprocess(dataroot, TX_config, TX_input, normalise=False):
-    data = []
-    pth = os.path.join(dataroot,'mat_files')
-    files = os.listdir(pth)
-    for file in files:
-        if 'height1' in file:
-            print(file)
-            readMatFile(os.path.join(pth,file), data, TX_config, TX_input, normalise)
+def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise):
+    file = os.path.join(dataroot,'simulationdata.data')
+    if os.path.exists(file):
+        print("Preprocessing simulation data")
+        #Open the file with data
+        with open(file, 'rb') as f:
+            dict = pickle.load(f)
+        channel_data = dict['channel_data']
+        pos_RX = dict['pos_RX']
+        pos_TX = dict['pos_TX']
 
+        input_norm = np.max(channel_data)/2
+        setConfiguartion(channel_data, TX_config)
+        np.random.set_state(rng_state)
+        np.random.shuffle(channel_data)
+        data = []
+        for RX in pos_RX:
+            tmp_data = channel_data[:, int(RX[0]/10), int(RX[1]/10)]
+            #Sort measurement from high to low and select TX_input highest element
+            high_el = np.sort(tmp_data)[::-1][TX_input-1]
+            #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
+            tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((6,6))
+            tmp_data = (tmp_data-input_norm)/input_norm
+            #Still have to implement multiple heights for simulation
+            data.append([tmp_data, [RX[0]/3000, RX[1]/3000], 1870])
+
+        saveData(data, dataroot, TX_config, TX_input, simulate=True)
+    else:
+        print("Simulation data doesn't exist")
+
+def saveData(data, dataroot, TX_config, TX_input, simulate=False):
     #Randomly shuffling and splitting data in train, val and test set
     #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
     random.shuffle(data)
@@ -127,6 +151,21 @@ def preprocess(dataroot, TX_config, TX_input, normalise=False):
             'test':  data[int(0.8*len(data)):]}
 
     #Writing db to file
+    pretension = 'simulation_data_' if simulate else 'data_'
     extension = '_'.join((str(TX_config),str(TX_input))) + '.data'
-    with open(os.path.join(dataroot,'data_' + extension), 'wb') as f:
+    with open(os.path.join(dataroot,pretension + extension), 'wb') as f:
         pickle.dump(dict, f)
+
+#Preprocess the Matlab database and store necessary variables into files for training
+def preprocess(dataroot, TX_config, TX_input, normalise=False):
+    data = []
+    pth = os.path.join(dataroot,'mat_files')
+    files = os.listdir(pth)
+    rng_state = np.random.get_state()
+    for file in files:
+        if 'row' in file:
+            print(file)
+            readMatFile(os.path.join(pth,file), data, TX_config, TX_input, normalise, rng_state)
+    saveData(data, dataroot, TX_config, TX_input)
+
+    process_simulation(dataroot, TX_config, TX_input,rng_state, normalise)

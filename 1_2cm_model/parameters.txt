@@ -1,0 +1,3 @@
+Number of features: 64
+Batch size: 32
+Learning rate: 0.0002

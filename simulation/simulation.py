@@ -10,7 +10,7 @@ import pickle
 def calculateRSS(d, psi):
     m = -np.log(2)/(np.log(np.cos(np.radians(15))))
     g_psi = 1
-    phi = 0
+    phi = psi
     if 0 <= psi <= 90:
         H = ((m+1)*1.1)/(2*np.pi*d**2)*np.cos(np.radians(phi))**m*g_psi*np.cos(np.radians(psi))
     else:
@@ -43,29 +43,28 @@ def row_simulation():
         angle.append(psi)
         RSS.append(calculateRSS(d,psi))
 
-    plt.plot(angle)
-    plt.show()
-
 #Simulate testbed and generate data
 #First TX offset from origin: 50mm,50mm,1870mm
 def testbed_simulation(dataroot):
-    data = []
-    angle = []
-    pos_RX = [0,0,0]
-    pos_TX = [[x, y, 1870] for y in np.arange(250,3000,500) for x in np.arange(250,3000,500)]
-    pos_RX = [[x, y, 0] for x in np.arange(0,3000,10) for y in np.arange(0,3000,10)]
+    print("Running simulation and storing data")
+    file = os.path.join(dataroot,'simulationdata.data')
+    if not os.path.exists(file):
+        channel_data = np.zeros((36,300,300))
+        pos_TX = [[x, y, 1870] for y in np.arange(250,3000,500) for x in np.arange(250,3000,500)]
+        pos_RX = [[x, y, 0] for x in np.arange(0,3000,10) for y in np.arange(0,3000,10)]
 
-    for RX in pos_RX:
-        RSS = []
-        for TX in pos_TX:
-            d, psi = getDistAndAngle(RX, TX)
-            RSS.append(calculateRSS(d,psi))
+        for RX in pos_RX:
+            RSS = []
+            for TX in pos_TX:
+                d, psi = getDistAndAngle(RX, TX)
+                RSS.append(calculateRSS(d,psi))
 
-        data.append([RSS,[RX[0], RX[1]]])
 
-    with open(os.path.join(dataroot,'simulationdata.data'), 'wb') as f:
-        pickle.dump(data, f)
-    print(len(data))
+            channel_data[:, int(RX[0]/10), int(RX[1]/10)] = RSS
 
-if __name__ == '__main__':
-    testbed_simulation('/Users/mariequartier/Documents/ML_VLP/simulation')
+        dict = {'channel_data': channel_data,
+                'pos_TX': pos_TX,
+                'pos_RX': pos_RX}
+
+        with open(file, 'wb') as f:
+            pickle.dump(dict, f)
