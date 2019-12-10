@@ -41,7 +41,7 @@ def parse_args():
 
     #Training options
     parser.add_argument('--batch_size', type=int, default=32, help="The size of the batch for training")
-    parser.add_argument('--learning_rate', type=float, default=2e-4, help="Learning rate of the optimiser")
+    parser.add_argument('--learning_rate', type=float, default=1e-4, help="Learning rate of the optimiser")
     parser.add_argument('--checkpoint_freq', type=int, default=1, help="Setting checkpoint frequency in number of epochs to store training state")
 
     parser.add_argument('--visualise', type=str2bool, default='False', help="Visualising the training process with a plot")

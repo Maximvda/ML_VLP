@@ -156,6 +156,18 @@ def saveData(data, dataroot, TX_config, TX_input, simulate=False):
     with open(os.path.join(dataroot,pretension + extension), 'wb') as f:
         pickle.dump(dict, f)
 
+#Get offset of the first LED (X = 230mm and y =170mm)
+#random shuffle needs to be off and run on all data
+def get_offsets(data):
+    max = 0
+    for item in data:
+        val = item[0][0][0]
+        if val > max:
+            max = val
+            best = item
+
+    print(best)
+
 #Preprocess the Matlab database and store necessary variables into files for training
 def preprocess(dataroot, TX_config, TX_input, normalise=False):
     data = []

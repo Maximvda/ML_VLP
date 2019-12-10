@@ -6,8 +6,8 @@ from torch.utils.data import Dataset
 
 #Expansion of the Dataset class to fit our dataset
 class data(Dataset):
-    def __init__(self, path, split):
-        if split == 'train' or split == 'val':
+    def __init__(self, path, split, simulate):
+        if simulate:
             str = path.split("/")[-1]
             str = 'simulation_' + str
             rest = "/".join(path.split("/")[:-1])

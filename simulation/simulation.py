@@ -3,6 +3,16 @@ import matplotlib.pyplot as plt
 import os
 import pickle
 
+
+def getPositionTX():
+    ##Actual position of the TX (roughly measured)
+    return [[230, 170, 1920], [730, 175, 1920], [1240, 170, 1920], [1740, 170, 1920], [2240, 170, 1920], [2740, 170, 1920],
+            [230, 670, 1920], [720, 725, 1835], [1230, 670, 1920], [1735, 670, 1920], [2225, 725, 1835], [2725, 670, 1920],
+            [230, 1170, 1920], [730, 1170, 1920], [1240, 1170, 1920], [1745, 1170, 1920], [2245, 1170, 1920], [2735, 1170, 1920],
+            [230, 1670, 1920], [730, 1670, 1920], [1240, 1670, 1920], [1745, 1670, 1920], [2245, 1670, 1920], [2735, 1670, 1920],
+            [230, 2170, 1920], [720, 2225, 1835], [1235, 2170, 1920], [1720, 2170, 1920], [2220, 2225, 1835], [2710, 2170, 1920],
+            [215, 2670, 1920], [715, 2670, 1920], [1245, 2670, 1920], [1730, 2670, 1920], [2245, 2670, 1920], [2730, 2670, 1920]]
+
 #Calculates the Received Signal Strength RSS
 #d is the distance between TX and RX in mm
 #phi is irradiation angle
@@ -50,7 +60,8 @@ def testbed_simulation(dataroot):
     file = os.path.join(dataroot,'simulationdata.data')
     if not os.path.exists(file):
         channel_data = np.zeros((36,300,300))
-        pos_TX = [[x, y, 1870] for y in np.arange(250,3000,500) for x in np.arange(250,3000,500)]
+        #pos_TX = [[x, y, 1870] for y in np.arange(250,3000,500) for x in np.arange(250,3000,500)]
+        pos_TX = getPositionTX()
         pos_RX = [[x, y, 0] for x in np.arange(0,3000,10) for y in np.arange(0,3000,10)]
 
         for RX in pos_RX:

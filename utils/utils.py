@@ -27,6 +27,10 @@ def calcDistance(x,y):
     dist = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)
     return torch.mean(dist).item()
 
+def calcBias(x,y):
+    bias = [x[:,0]-y[:,0], x[:,1]-y[:,1]]
+    return torch.mean(bias[0]).item(), torch.mean(bias[1]).item()
+
 
 #Makes a plot data and saves it to the result directory with given filename
 #The title and labels of the plot are also taken as arguments

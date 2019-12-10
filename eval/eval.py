@@ -7,6 +7,7 @@ from utils.modelUtils import initModel
 from utils.modelUtils import loadBestModel
 from utils.utils import calcDistance
 from utils.utils import visualise
+from utils.utils import calcBias
 
 #Object to evaluate the performance of the model on the test set
 class eval_obj(object):
@@ -49,6 +50,7 @@ class eval_obj(object):
     #If visualise is enables these distances are visualy plotted
     def demo(self):
         distance = []
+        x = []; y = []
         for i, data in enumerate(self.test_data_loader):
             with torch.no_grad():
                 #forward batch of test data through the network
@@ -56,6 +58,8 @@ class eval_obj(object):
                 output = data[1].to(self.device)
                 prediction = self.best_model(input)[:,:,0,0]
                 distance.append(calcDistance(prediction, output))
+                x1, y1 = calcBias(prediction, output)
+                x.append(x1); y.append(y1)
 
                 if self.visualise:
                      visualise(output, prediction, pause=0.1)
@@ -65,4 +69,5 @@ class eval_obj(object):
         #The distance is denormalised to cm's
         dist = dist*300
         print("Distance on test set is: {}cm".format(dist))
+        print("Bias on x: {}\ton y: {}".format(sum(x)/len(x), sum(y)/len(y)))
         return dist

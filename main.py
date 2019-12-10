@@ -3,7 +3,6 @@ import traceback
 from utils.config import parse_args
 from models.CNN import CNN
 from eval.eval import eval_obj
-from simulation.simulation import testbed_simulation
 
 def main(args):
     if args.is_train:
@@ -20,9 +19,7 @@ if __name__ == '__main__':
     try:
         args = parse_args()
         print("Arguments parsed")
-        if args.simulate:
-            testbed_simulation(args.dataroot)
-        elif args.experiment == None:
+        if args.experiment == None:
             main(args)
         else:
             from utils.experiments import experiment
