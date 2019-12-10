@@ -45,18 +45,16 @@ The second experiment investigates the performance difference between different 
 ToDo
 
 ## Required features (ToDo)
-* - [x] Model with only couple of LEDs as input and their ID
-* **[Check]** Model with a less dense LED grid and different configurations
-* **[Check]** Create plot of distance for increasingly number of TX being used
-* **[Check]** Implement different kind of experiments
-* Dynamic model size depending on number of inputs. **Example:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
-* Experiment difference between dynamic and fixed model
-* - [] Add height to the model
-- [] Check the accuracy in specific area's (square subtracted from square)
-- [] Experiment training on simulation data and testing on real data
-- [] Experiment using transfer learning (adding a bit of real data to the simulation data)
-- [] Experiment investigating the influence of how much data that is used (subsets of the dataset to train)
-- []
+- [x] Model with only couple of LEDs as input and their ID
+- [x] Model with a less dense LED grid and different configurations
+- [x] Create plot of distance for increasingly number of TX being used
+- [ ] Dynamic model size depending on number of inputs. **Example:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
+- [ ] Experiment difference between dynamic and fixed model
+- [ ] Add height to the model
+- [ ] Check the accuracy in specific area's (square subtracted from square)
+- [ ] Experiment training on simulation data and testing on real data
+- [ ] Experiment using transfer learning (adding a bit of real data to the simulation data)
+- [ ] Experiment investigating the influence of how much data that is used (subsets of the dataset to train)
 ###
 * Simulation to generate training data base on model of the LED
 ### Possible improvements
