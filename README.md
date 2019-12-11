@@ -48,18 +48,21 @@ ToDo
 - [x] Model with only couple of LEDs as input and their ID
 - [x] Model with a less dense LED grid and different configurations
 - [x] Create plot of distance for increasingly number of TX being used
-- [x] Dynamic model size depending on number of inputs. **Example:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
+- [ ] Dynamic model size depending on number of inputs. **Example:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
 - [ ] Experiment difference between dynamic and fixed model
 - [ ] Add height to the model
 - [ ] Check the accuracy in specific area's (square subtracted from square)
 - [ ] Experiment training on simulation data and testing on real data
 - [ ] Experiment using transfer learning (adding a bit of real data to the simulation data)
 - [ ] Experiment investigating the influence of how much data that is used (subsets of the dataset to train)
+- [ ] Experiment looking at improvement when a less dense grid is used for the simulation and test. Because now grid is so dense that position is already well known when you know beneath which TX you are.
 ###
 - [x] Simulation to generate training data base on model of the LED
 ### Possible improvements
 - [ ] Add more layers to network
 - [x] Change loss to BCE(distance,0)
+- [ ] Position relative to TX
+- [ ] Moving average (Kalman filter or something else) when position is estimated (moving around in a room position will never jump but is continously changing)
 
 ## Authors
 

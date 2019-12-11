@@ -39,12 +39,10 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
     swing = 1
     channel_data = mat['swing'] if swing else np.mean(mat['channel_data'],axis=1)
     input_norm = np.max(channel_data)/2
+    shape = np.ceil(np.sqrt(channel_data.shape[0])) if dynamic else 6
 
     #Set the TX which are not used for the desired density to 0
     channel_data = setConfiguartion(channel_data, TX_config)
-    print(channel_data.shape)
-    print(channel_data.shape[0])
-    print(np.ceil(np.sqrt(channel_data.shape[0]])))
     #Shuffles the received signals in such a way that the LEDs
     #are not in the correct position as they are in the testbed.
     #So the led on position 2,4 of the 6x6 grid can be replaced to position 5,1 in the 6x6 matrix
@@ -72,11 +70,7 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
                     #Sort measurement from high to low and select TX_input highest element
                     high_el = np.sort(tmp_data)[::-1][TX_input-1]
                     #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                    tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
-                    print(channel_data.shape)
-                    print(len(tmp_data))
-                    print(heykes)
-                    tmp_data = tmp_data.reshape((wtf212313,5)) if dynamic else tmp_data.reshape((6,6))
+                    tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((shape,shape))
 
                     #Calculate position of the RX for this measurement
                     y = int(file.split("_")[-1][:-4])
