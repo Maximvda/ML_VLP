@@ -25,6 +25,7 @@ def parse_args():
 
     parser.add_argument('--is_train', type=str2bool, default='True', help="Set to true if you want to train model or false to evaluate it")
     parser.add_argument('--cuda', type=str2bool, default='True', help="Availability of cuda gpu")
+    parser.add_argument('--gpu_number', type=int, default=None, help="Number of gpu that will be used")
     parser.add_argument('--experiment', type=int, default=None, help='Select a certain experiment to run or leave default None to train a single model.')
     parser.add_argument('--simulate', type=str2bool, default="False")
 
@@ -51,6 +52,18 @@ def parse_args():
 def check_args(args):
     if not args.cuda:
         print("Consider running code on gpu enabled device")
+    else:
+        if torch.cuda.device_count() > 1:
+            print("Check which GPU is not in use and set the gpu_number argument accordingly.")
+            try:
+                assert args.gpu_number is not None
+                args.device = torch.device('cuda', args.gpu_number)
+            except:
+                print("Set gpu_number argument.")
+
+
+        else:
+            args.device = torch.device("cuda:0" if (torch.cuda.is_available() and args.cuda) else "cpu")
 
     try:
         assert 1 <= args.TX_config <= 6
@@ -70,7 +83,7 @@ def check_args(args):
     if not os.path.exists(args.result_root):
         os.mkdir(args.result_root)
 
-    args.device = torch.device("cuda:0" if (torch.cuda.is_available() and args.cuda) else "cpu")
+
     saveArguments(args)
 
     return args
