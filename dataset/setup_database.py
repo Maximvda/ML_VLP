@@ -17,7 +17,7 @@ def setup_database(args, split="train"):
     #If file not present it may still need to be preprocessed
     if not os.path.isfile(path):
         print("Pre-processing dataset")
-        preprocess(args.dataroot, args.TX_config, args.TX_input, args.normalise)
+    preprocess(args.dataroot, args.TX_config, args.TX_input, args.normalise, args.dynamic)
 
     #Initialise dataset and setup a data loader
     dataset = data(path, split, args.simulate)

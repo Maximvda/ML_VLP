@@ -11,23 +11,21 @@ from simulation.simulation import testbed_simulation
 def setConfiguartion(channel_data, TX_config):
     all_TX = [i for i in range(0,36)]
     #list TXs needed for specific configuartion
-    l2 = [0,2,4,12,14,16,24,26,28]
-    l3 = [7,10,25,28]
-    l4 = [0,2,3,5,12,14,15,17,18,20,21,23,30,32,33,35]
-    l5 = [0,5,14,15,20,21,30,35]
-    l6 = [14,15,20,21]
+    list_dict = {
+    1: all_TX,
+    2: [0,2,4,12,14,16,24,26,28],
+    3: [7,10,25,28],
+    4: [0,2,3,5,12,14,15,17,18,20,21,23,30,32,33,35],
+    5: [0,5,14,15,20,21,30,35],
+    6: [14,15,20,21]}
     #Remove needed TX from all TX to get all TX which need to be set to 0
     #Select appropriate configuartion acoording to TX_config and iterate over TX
     #Set all these TX to 0
-    for TX in { 1: [],
-                2: [id for id in all_TX if id not in l2],
-                3: [id for id in all_TX if id not in l3],
-                4: [id for id in all_TX if id not in l4],
-                5: [id for id in all_TX if id not in l5],
-                6: [id for id in all_TX if id not in l6],}[TX_config]:
-        channel_data[TX] = 0
+    list = [] if TX_config == 1 else [id for id in all_TX if id not in list_dict[TX_config]]
+    return np.delete(channel_data, list, 0)
 
-def readMatFile(file, data, TX_config, TX_input, normalise, rng_state):
+
+def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
     #Load matlab file
     mat = scipy.io.loadmat(file)
     #Initialising some variables
@@ -43,8 +41,10 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state):
     input_norm = np.max(channel_data)/2
 
     #Set the TX which are not used for the desired density to 0
-    setConfiguartion(channel_data, TX_config)
-
+    channel_data = setConfiguartion(channel_data, TX_config)
+    print(channel_data.shape)
+    print(channel_data.shape[0])
+    print(np.ceil(np.sqrt(channel_data.shape[0]])))
     #Shuffles the received signals in such a way that the LEDs
     #are not in the correct position as they are in the testbed.
     #So the led on position 2,4 of the 6x6 grid can be replaced to position 5,1 in the 6x6 matrix
@@ -72,7 +72,11 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state):
                     #Sort measurement from high to low and select TX_input highest element
                     high_el = np.sort(tmp_data)[::-1][TX_input-1]
                     #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                    tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((6,6))
+                    tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
+                    print(channel_data.shape)
+                    print(len(tmp_data))
+                    print(heykes)
+                    tmp_data = tmp_data.reshape((wtf212313,5)) if dynamic else tmp_data.reshape((6,6))
 
                     #Calculate position of the RX for this measurement
                     y = int(file.split("_")[-1][:-4])
@@ -112,7 +116,7 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state):
                         tmp_data = [tmp_data, position, mat['height']]
                         data.append(tmp_data)
 
-def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise):
+def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynamic):
     file = os.path.join(dataroot,'simulationdata.data')
     if os.path.exists(file):
         print("Preprocessing simulation data")
@@ -169,7 +173,7 @@ def get_offsets(data):
     print(best)
 
 #Preprocess the Matlab database and store necessary variables into files for training
-def preprocess(dataroot, TX_config, TX_input, normalise=False):
+def preprocess(dataroot, TX_config, TX_input, normalise, dynamic):
     data = []
     pth = os.path.join(dataroot,'mat_files')
     files = os.listdir(pth)
@@ -177,7 +181,7 @@ def preprocess(dataroot, TX_config, TX_input, normalise=False):
     for file in files:
         if 'row' in file:
             print(file)
-            readMatFile(os.path.join(pth,file), data, TX_config, TX_input, normalise, rng_state)
+            readMatFile(os.path.join(pth,file), data, TX_config, TX_input, normalise, rng_state, dynamic)
     saveData(data, dataroot, TX_config, TX_input)
 
     process_simulation(dataroot, TX_config, TX_input,rng_state, normalise)

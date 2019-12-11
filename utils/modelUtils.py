@@ -7,8 +7,11 @@ from models.architecture import cnn
 #Initialises a model from the cnn architecture for a given input size
 def initModel(data_loader, nf, extra_layers):
     input, output = next(iter(data_loader))
-    size = [input.size(2), input.size(3)]
-    return cnn(size, 1, nf, extra_layers)
+    try:
+        assert input.size(2) == input.size(3)
+    except:
+        print("Input size is not square please make sure it is.")
+    return cnn(input.size(2), 1, nf, extra_layers)
 
 #Initialises the weights of the model
 def weights_init(m):

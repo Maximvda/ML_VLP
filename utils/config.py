@@ -34,7 +34,8 @@ def parse_args():
     parser.add_argument('--result_root', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/results", required=False, help="Path to the result directory")
     parser.add_argument('--normalise', type=str2bool, default="True", help="If set to true dataset input and output are normalised")
     parser.add_argument('--TX_config', type=int, default=1, help='Select the TX configuartion with a certain density. Configurations can be found at https://github.com/Maximvda/ML_VLP')
-    parser.add_argument('--TX_input', type=int, default=36, help="Limit the amount of inputs of the network to only the best received signals.")
+    parser.add_argument('--TX_input', type=int, default=36, help="Limit the amount of inputs of the network to only the best received signals")
+    parser.add_argument('--dynamic', type=str2bool, default="False", help="Sizes the input data according to the number of TX if set to true")
 
     #Model options
     parser.add_argument('--nf', type=int, default=64, help="The numer of features for the model layers")
@@ -60,8 +61,6 @@ def check_args(args):
                 args.device = torch.device('cuda', args.gpu_number)
             except:
                 print("Set gpu_number argument.")
-
-
         else:
             args.device = torch.device("cuda:0" if (torch.cuda.is_available() and args.cuda) else "cpu")
 
@@ -82,7 +81,6 @@ def check_args(args):
 
     if not os.path.exists(args.result_root):
         os.mkdir(args.result_root)
-
 
     saveArguments(args)
 
