@@ -8,7 +8,7 @@ from simulation.simulation import testbed_simulation
 
 #Sets all RX signals from TX that are not in the chosen configuartion to 0
 #The different TX configuartions can be found on Github page
-def setConfiguartion(channel_data, TX_config):
+def setConfiguartion(channel_data, TX_config, dynamic):
     all_TX = [i for i in range(0,36)]
     #list TXs needed for specific configuartion
     list_dict = {
@@ -22,7 +22,12 @@ def setConfiguartion(channel_data, TX_config):
     #Select appropriate configuartion acoording to TX_config and iterate over TX
     #Set all these TX to 0
     list = [] if TX_config == 1 else [id for id in all_TX if id not in list_dict[TX_config]]
-    return np.delete(channel_data, list, 0)
+    if dynamic:
+        return np.delete(channel_data, list, 0), len(list_dict[TX_config])
+    else:
+        for it in list:
+            channel_data[it] = 0
+        return channel_data, len(list_dict[TX_config])
 
 
 def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
@@ -39,10 +44,11 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
     swing = 1
     channel_data = mat['swing'] if swing else np.mean(mat['channel_data'],axis=1)
     input_norm = np.max(channel_data)/2
-    shape = np.ceil(np.sqrt(channel_data.shape[0])) if dynamic else 6
 
     #Set the TX which are not used for the desired density to 0
-    channel_data = setConfiguartion(channel_data, TX_config)
+    channel_data, lenData = setConfiguartion(channel_data, TX_config, dynamic)
+    TX_input = lenData if TX_input >= lenData else TX_input
+    shape = int(np.ceil(np.sqrt(channel_data.shape[0]))) if dynamic else 6
     #Shuffles the received signals in such a way that the LEDs
     #are not in the correct position as they are in the testbed.
     #So the led on position 2,4 of the 6x6 grid can be replaced to position 5,1 in the 6x6 matrix
@@ -122,7 +128,9 @@ def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynam
         pos_TX = dict['pos_TX']
 
         input_norm = np.max(channel_data)/2
-        setConfiguartion(channel_data, TX_config)
+        channel_data, iets = setConfiguartion(channel_data, TX_config, dynamic)
+        TX_input = lenData if TX_input >= lenData else TX_input
+        shape = int(np.ceil(np.sqrt(channel_data.shape[0]))) if dynamic else 6
         np.random.set_state(rng_state)
         np.random.shuffle(channel_data)
         data = []
@@ -131,16 +139,16 @@ def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynam
             #Sort measurement from high to low and select TX_input highest element
             high_el = np.sort(tmp_data)[::-1][TX_input-1]
             #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-            tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((6,6))
+            tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((shape,shape))
             tmp_data = (tmp_data-input_norm)/input_norm
             #Still have to implement multiple heights for simulation
             data.append([tmp_data, [RX[0]/3000, RX[1]/3000], 1870])
 
-        saveData(data, dataroot, TX_config, TX_input, simulate=True)
+        saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=True)
     else:
         print("Simulation data doesn't exist")
 
-def saveData(data, dataroot, TX_config, TX_input, simulate=False):
+def saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=False):
     #Randomly shuffling and splitting data in train, val and test set
     #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
     random.shuffle(data)
@@ -150,7 +158,7 @@ def saveData(data, dataroot, TX_config, TX_input, simulate=False):
 
     #Writing db to file
     pretension = 'simulation_data_' if simulate else 'data_'
-    extension = '_'.join((str(TX_config),str(TX_input))) + '.data'
+    extension = '_'.join((str(TX_config), str(TX_input), str(dynamic))) + '.data'
     with open(os.path.join(dataroot,pretension + extension), 'wb') as f:
         pickle.dump(dict, f)
 
@@ -176,6 +184,6 @@ def preprocess(dataroot, TX_config, TX_input, normalise, dynamic):
         if 'row' in file:
             print(file)
             readMatFile(os.path.join(pth,file), data, TX_config, TX_input, normalise, rng_state, dynamic)
-    saveData(data, dataroot, TX_config, TX_input)
+    saveData(data, dataroot, TX_config, TX_input, dynamic)
 
-    process_simulation(dataroot, TX_config, TX_input,rng_state, normalise)
+    process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynamic)

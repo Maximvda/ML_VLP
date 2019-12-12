@@ -24,31 +24,9 @@ class eval_obj(object):
         #Setting the model to evaluation mode
         self.best_model.eval()
 
-    #Calculates the distance between predicted and real position within a certain area
-    #The area is given through two points p1 and p2 defining a rectangle between them
-    def distanceArea(self, p1, p2):
-        min_x = min((p1[0],p2[0])); max_x = max((p1[0],p2[0]))
-        min_y = min((p1[1],p2[1])); max_y = max((p1[1],p2[1]))
-
-        distance = []
-        with torch.no_grad():
-            for i, data in enumerate(self.test_data_loader):
-                position = data[1]
-                if (max_x < position[0] < min_x) or (max_y < position[1] < min_y):
-                    continue
-                input = data[0].to(self.device)
-                prediction = self.best_model(input)[:,:,0,0]
-                distance.append(calcDistance(prediction, output))
-
-        #The average distance over the entire test set is calculated
-        dist = sum(distance)/len(distance)
-        #The distance is denormalised to cm's
-        dist = dist*300
-        print("Distance on test set within area: p1 {}\tp2 {}\nis: {}cm".format(p1,p2,dist))
-
     #Calculates the distance between predicted and real position of the samples in the test set
     #If visualise is enables these distances are visualy plotted
-    def demo(self):
+    def demo(self, area1=None, area2=None):
         distance = []
         x = []; y = []
         for i, data in enumerate(self.test_data_loader):
@@ -57,7 +35,7 @@ class eval_obj(object):
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)
                 prediction = self.best_model(input)[:,:,0,0]
-                distance.append(calcDistance(prediction, output))
+                distance.append(calcDistance(prediction, output, area1, area2))
                 x1, y1 = calcBias(prediction, output)
                 x.append(x1); y.append(y1)
 
@@ -65,9 +43,12 @@ class eval_obj(object):
                      visualise(output, prediction, pause=0.1)
 
         #The average distance over the entire test set is calculated
-        dist = sum(distance)/len(distance)
+        dist = sum(filter(None,distance))/len(distance)
         #The distance is denormalised to cm's
         dist = dist*300
-        print("Distance on test set is: {}cm".format(dist))
+        if area1 is not None:
+            print("Distance on test set within area1: {}\tarea2: {}\tis: {}cm".format(area1,area2,dist))
+        else:
+            print("Distance on test set is: {}cm".format(dist))
         print("Bias on x: {}\ton y: {}".format(sum(x)/len(x), sum(y)/len(y)))
         return dist
