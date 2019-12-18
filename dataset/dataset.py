@@ -6,12 +6,7 @@ from torch.utils.data import Dataset
 
 #Expansion of the Dataset class to fit our dataset
 class data(Dataset):
-    def __init__(self, path, split, simulate):
-        if simulate:
-            str = path.split("/")[-1]
-            str = 'simulation_' + str
-            rest = "/".join(path.split("/")[:-1])
-            path = os.path.join(rest,str)
+    def __init__(self, path, split):
         #Open the file with data
         with open(path, 'rb') as f:
             self.data = pickle.load(f)[split]
