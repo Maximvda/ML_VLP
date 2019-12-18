@@ -128,7 +128,7 @@ def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynam
         pos_TX = dict['pos_TX']
 
         input_norm = np.max(channel_data)/2
-        channel_data, iets = setConfiguartion(channel_data, TX_config, dynamic)
+        channel_data, lenData = setConfiguartion(channel_data, TX_config, dynamic)
         TX_input = lenData if TX_input >= lenData else TX_input
         shape = int(np.ceil(np.sqrt(channel_data.shape[0]))) if dynamic else 6
         np.random.set_state(rng_state)
