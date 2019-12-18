@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import os
 import pickle
 
+from utils.utils import printProgBar
+
 
 def getPositionTX():
     ##Actual position of the TX (roughly measured)
@@ -64,7 +66,10 @@ def testbed_simulation(dataroot):
         pos_TX = getPositionTX()
         pos_RX = [[x, y, 0] for x in np.arange(0,3000,1) for y in np.arange(0,3000,1)]
 
+        counter = 0
         for RX in pos_RX:
+            counter += 1
+            printProgBar(counter, len(pos_RX))
             RSS = []
             for TX in pos_TX:
                 d, psi = getDistAndAngle(RX, TX)

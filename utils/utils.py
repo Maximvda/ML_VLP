@@ -100,3 +100,9 @@ def saveArguments(args):
     f = open(fileName,'w')
     f.write(fileText)
     f.close()
+
+def printProgBar(done, total_size):
+    percent = ("{0:." + str(0) + "f}").format(100 * (done / float(total_size)))
+    filledLength = int(50 * done // total_size)
+    bar = "#" * filledLength + '-' * (50 - filledLength)
+    print('\r%s |%s| %s%% %s' % ("Progress", bar, percent, ""), end = '\r')
