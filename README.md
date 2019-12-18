@@ -51,7 +51,7 @@ ToDo
 - [x] Dynamic model size depending on number of inputs. **Example:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
 - [ ] Experiment difference between dynamic and fixed model, do it for good TX_config
 - [ ] Add height to the model
-- [ ] Check the accuracy in specific area's (square subtracted from square)
+- [x] Check the accuracy in specific area's (square subtracted from square)
 - [ ] Experiment training on simulation data and testing on real data
 - [ ] Experiment using transfer learning (adding a bit of real data to the simulation data)
 - [ ] Experiment investigating the influence of how much data that is used (subsets of the dataset to train)

@@ -30,8 +30,8 @@ def parse_args():
     parser.add_argument('--simulate', type=str2bool, default="False")
 
     #Dataset options
-    parser.add_argument('--dataroot', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/dataset/database", required=False, help="Path to the dataset")
-    parser.add_argument('--result_root', default="/home/maxim/Documents/School/Jaar 6/Thesis/Code/results", required=False, help="Path to the result directory")
+    parser.add_argument('--dataroot', default=None, required=False, help="Path to the dataset")
+    parser.add_argument('--result_root', default=None, required=False, help="Path to the result directory")
     parser.add_argument('--normalise', type=str2bool, default="True", help="If set to true dataset input and output are normalised")
     parser.add_argument('--TX_config', type=int, default=1, help='Select the TX configuartion with a certain density. Configurations can be found at https://github.com/Maximvda/ML_VLP')
     parser.add_argument('--TX_input', type=int, default=36, help="Limit the amount of inputs of the network to only the best received signals")
@@ -58,9 +58,11 @@ def check_args(args):
             print("Check which GPU is not in use and set the gpu_number argument accordingly.")
             try:
                 assert args.gpu_number is not None
+                print("GPU number set to: {}",format(args.gpu_number))
                 args.device = torch.device('cuda', args.gpu_number)
             except:
                 print("Set gpu_number argument.")
+                raise
         else:
             args.device = torch.device("cuda:0" if (torch.cuda.is_available() and args.cuda) else "cpu")
 
@@ -78,7 +80,9 @@ def check_args(args):
         assert args.batch_size >= 1
     except:
         print("Batch size must be greater or equal to one")
-
+    root = os.getcwd()
+    args.dataroot = os.path.join(root,'dataset/database') if args.dataroot == None else args.dataroot
+    args.result_root = os.path.join(root,'results') if args.result_root == None else args.result_root
     if not os.path.exists(args.result_root):
         os.mkdir(args.result_root)
 

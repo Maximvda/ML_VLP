@@ -2,6 +2,7 @@ import torch
 import os
 
 import matplotlib.pyplot as plt
+plt.switch_backend('Agg')
 
 #Shows a grid of the possible positions of the measurement device
 #The predicted positions for a batch are plotted in red

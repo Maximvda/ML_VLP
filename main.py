@@ -12,7 +12,7 @@ def main(args):
     else:
         #Best performing model is loaded and evaluated on the test set
         evalObj = eval_obj(args)
-        evalObj.demo([[500,750],[1000,1750]], [[100,250],[4000,2750]])
+        #evalObj.demo([[500,750],[1000,1750]], [[100,250],[4000,2750]])
         return evalObj.demo()
 
 if __name__ == '__main__':

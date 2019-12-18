@@ -41,11 +41,25 @@ class cnn(nn.Module):
             sigmoid = nn.Sigmoid()
             model = [submodule] + [sigmoid]
 
-        self.main = nn.Sequential(*model)
+        #self.main = nn.Sequential(*model)
+
+        #2.55cm on validation set
+        #self.main = nn.Sequential(nn.Linear(36,512),nn.LeakyReLU(0.2, True), nn.Linear(512,2), nn.Sigmoid())
+
+        #1.1cm on validation set
+        #self.main = nn.Sequential(nn.Linear(36,512),nn.LeakyReLU(0.2, True),nn.Linear(512,1024),nn.LeakyReLU(0.2, True), nn.Linear(1024,2), nn.Sigmoid())
+
+        #0.87 cm on validation set
+        #self.main = nn.Sequential(nn.Linear(36,256),nn.LeakyReLU(0.2, True),nn.Linear(256,512),nn.LeakyReLU(0.2, True),nn.Linear(512,1024),nn.LeakyReLU(0.2, True), nn.Linear(1024,2), nn.Sigmoid())
+
+        #0.92 on validation set
+        #self.main = nn.Sequential(nn.Linear(36,256),nn.LeakyReLU(0.2, True),nn.Linear(256,512),nn.LeakyReLU(0.2, True),nn.Linear(512,256),nn.LeakyReLU(0.2, True), nn.Linear(256,2), nn.Sigmoid())
+
+        #0.78 on validation set
+        self.main = nn.Sequential(nn.Linear(36,256),nn.LeakyReLU(0.2, True), nn.Linear(256,512),nn.LeakyReLU(0.2, True),nn.Linear(512,1024),nn.LeakyReLU(0.2, True),nn.Linear(1024,512),nn.LeakyReLU(0.2, True),nn.Linear(512,256),nn.LeakyReLU(0.2, True), nn.Linear(256,2), nn.Sigmoid())
 
     def forward(self, input):
-        #output = self.conv1(input)
-        #print(output.size())
+        input = input.view(-1,36)
         return self.main(input)
 
 class DownConv(nn.Module):

@@ -22,9 +22,10 @@ class CNN(object):
         self.loss = [];     self.distance = []
         self.result_root = args.result_root
         self.min_distance = 3000
+        self.step = int(len(self.data_loader)/5)
 
         #Setup CNN and optimiser
-        self.model = initModel(self.data_loader, args.nf, args.extra_layers)
+        self.model = initModel(self.data_loader, args.nf, args.extra_layers).to(args.device)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
         #Load the previous training checkpoint
@@ -46,7 +47,8 @@ class CNN(object):
                 output = data[1].to(args.device)
 
                 #Forward through model and calculate loss
-                prediction = self.model(input)[:,:,0,0]
+                #prediction = self.model(input)[:,:,0,0]
+                prediction = self.model(input)
                 distance = (output-prediction)**2
                 zero = torch.full(output.size(), 0, device=args.device)
                 loss = criterion(distance, zero)
@@ -56,7 +58,7 @@ class CNN(object):
                 #Store training stats
                 self.loss.append(loss.item())
                 with torch.no_grad():
-                    if i % 250 == 0:
+                    if i % self.step == 0:
                         print('[{}/{}]\tPrediction: {}\tTarget: {}\tLoss: {}'.format(
                         i, len(self.data_loader), prediction.cpu().numpy()[0], output.cpu().numpy()[0], loss.item()))
                         if args.visualise:
@@ -89,7 +91,8 @@ class CNN(object):
                 input = data[0].type(torch.FloatTensor).to(device)
                 output = data[1].to(device)
 
-                prediction = self.model(input)[:,:,0,0]
+                #prediction = self.model(input)[:,:,0,0]
+                prediction = self.model(input)
 
                 #Calculate the distance between predicted and target points
                 distance.append(calcDistance(prediction, output))

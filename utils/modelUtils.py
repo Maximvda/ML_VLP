@@ -52,7 +52,7 @@ def loadCheckpoint(self, device):
         for state in self.optim.state.values():
             for k, v in state.items():
                 if torch.is_tensor(v):
-                    state[k] = v.cuda()
+                    state[k] = v.to(device)
     else:
         self.model.apply(weights_init)
 
