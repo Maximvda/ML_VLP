@@ -49,8 +49,8 @@ class CNN(object):
                 #Forward through model and calculate loss
                 #prediction = self.model(input)[:,:,0,0]
                 prediction = self.model(input)
-                distance = (output-prediction)**2
-                zero = torch.full(output.size(), 0, device=args.device)
+                distance = torch.sum((output-prediction)**2,1)
+                zero = torch.full(distance.size(), 0, device=args.device)
                 loss = criterion(distance, zero)
                 loss.backward()
                 self.optim.step()
