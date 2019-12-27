@@ -56,7 +56,7 @@ class cnn(nn.Module):
         #self.main = nn.Sequential(nn.Linear(36,256),nn.LeakyReLU(0.2, True),nn.Linear(256,512),nn.LeakyReLU(0.2, True),nn.Linear(512,256),nn.LeakyReLU(0.2, True), nn.Linear(256,2), nn.Sigmoid())
 
         #0.78 on validation set
-        self.main = nn.Sequential(nn.Linear(36,256),nn.LeakyReLU(0.2, True), nn.Linear(256,512),nn.LeakyReLU(0.2, True),nn.Linear(512,1024),nn.LeakyReLU(0.2, True),nn.Linear(1024,512),nn.LeakyReLU(0.2, True),nn.Linear(512,256),nn.LeakyReLU(0.2, True), nn.Linear(256,2), nn.Sigmoid())
+        self.main = nn.Sequential(nn.Linear(36,256),nn.LeakyReLU(0.2, True), nn.Linear(256,512),nn.LeakyReLU(0.2, True),nn.Linear(512,1024),nn.LeakyReLU(0.2, True),nn.Linear(1024,512),nn.LeakyReLU(0.2, True),nn.Linear(512,256),nn.LeakyReLU(0.2, True), nn.Linear(256,3), nn.Sigmoid())
 
     def forward(self, input):
         input = input.view(-1,36)

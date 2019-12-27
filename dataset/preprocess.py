@@ -89,8 +89,8 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
                         pos_x = pos_x/3000
                         pos_y = pos_y/3000
 
-                    position = [pos_x, pos_y]
-                    tmp_data = [tmp_data, position, mat['height']]
+                    position = [pos_x, pos_y, mat['height']]
+                    tmp_data = [tmp_data, position]
                     data.append(tmp_data)
             else:
                 for y in range(0,channel_data.shape[4]):
@@ -112,8 +112,8 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
                             pos_x = pos_x/3000
                             pos_y = pos_y/3000
 
-                        position = [pos_x, pos_y]
-                        tmp_data = [tmp_data, position, mat['height']]
+                        position = [pos_x, pos_y, mat['height']]
+                        tmp_data = [tmp_data, position]
                         data.append(tmp_data)
 
 def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynamic):
@@ -142,7 +142,7 @@ def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynam
             tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((shape,shape))
             tmp_data = (tmp_data-input_norm)/input_norm
             #Still have to implement multiple heights for simulation
-            data.append([tmp_data, [RX[0]/3000, RX[1]/3000], 1870])
+            data.append([tmp_data, [RX[0]/3000, RX[1]/3000, 1870]])
 
         saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=True)
     else:

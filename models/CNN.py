@@ -95,13 +95,14 @@ class CNN(object):
                 prediction = self.model(input)
 
                 #Calculate the distance between predicted and target points
-                distance.append(calcDistance(prediction, output))
+                dist, dist_z = calcDistance(prediction, output)
+                distance.append(dist)
 
         #The average distance over the entire test set is calculated
         dist = sum(distance)/len(distance)
         #The distance is denormalised to cm's
         dist = dist*300
-        print("Distance on val set: {}cm".format(dist))
+        print("Distance on val set: {}cm\nPrediction for height: {}cm".format(dist,dist_z*300))
 
         #If performance of new model is better then all previous ones it is saved
         if dist < self.min_distance:

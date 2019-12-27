@@ -58,9 +58,9 @@ def row_simulation():
 #Simulate testbed and generate data
 #First TX offset from origin: 50mm,50mm,1870mm
 def testbed_simulation(dataroot):
-    print("Running simulation and storing data")
     file = os.path.join(dataroot,'simulationdata.data')
     if not os.path.exists(file):
+        print("Running simulation and storing data")
         channel_data = np.zeros((36,300,300))
         #pos_TX = [[x, y, 1870] for y in np.arange(250,3000,500) for x in np.arange(250,3000,500)]
         pos_TX = getPositionTX()

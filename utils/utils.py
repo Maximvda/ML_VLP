@@ -25,9 +25,10 @@ def visualise(target, prediction, pause=0.0001):
 #Euclidian distance = sqrt((ax-bx))^2+(ay-by)^2)
 #The mean distance is calculated when x and y are lists of same length
 def calcDistance(x,y, area1=None, area2=None):
+    z_dist = torch.mean(torch.sqrt((x[:,2]-y[:,02)**2)).item()
     if area1 is None:
         dist = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)
-        return torch.mean(dist).item()
+        return torch.mean(dist).item(), z_dist
     else:
         iList = checkArea(y, area1, area2)
         dist = []
@@ -37,7 +38,7 @@ def calcDistance(x,y, area1=None, area2=None):
             return None
         else:
             dist = torch.cat(dist)
-            return torch.mean(dist).item()
+            return torch.mean(dist).item(), z_dist
 
 
 #Calculates the distance between predicted and real position within a certain area
