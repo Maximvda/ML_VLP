@@ -38,6 +38,7 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
     no_it = mat['no_it'][0][0]
     offset = mat['offset']
     resolution = mat['resolution'][0][0]
+    height = mat['height']/200 if normalise else mat['height']
 
     #Choose which type of data to use swing or channel_data
     #Swing is a measure for RSS
@@ -47,8 +48,7 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
 
     #Set the TX which are not used for the desired density to 0
     channel_data, lenData = setConfiguartion(channel_data, TX_config, dynamic)
-    TX_input = lenData if TX_input >= lenData else TX_input
-    shape = int(np.ceil(np.sqrt(channel_data.shape[0]))) if dynamic else 6
+    TX_input = lenData if (TX_input >= lenData and dynamic) else TX_input
     #Shuffles the received signals in such a way that the LEDs
     #are not in the correct position as they are in the testbed.
     #So the led on position 2,4 of the 6x6 grid can be replaced to position 5,1 in the 6x6 matrix
@@ -76,7 +76,8 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
                     #Sort measurement from high to low and select TX_input highest element
                     high_el = np.sort(tmp_data)[::-1][TX_input-1]
                     #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                    tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((shape,shape))
+                    #print(tmp_data.shape, shape)
+                    tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
 
                     #Calculate position of the RX for this measurement
                     y = int(file.split("_")[-1][:-4])
@@ -89,7 +90,7 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
                         pos_x = pos_x/3000
                         pos_y = pos_y/3000
 
-                    position = [pos_x, pos_y, mat['height']]
+                    position = [pos_x, pos_y, height]
                     tmp_data = [tmp_data, position]
                     data.append(tmp_data)
             else:
@@ -100,7 +101,7 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
                         #Sort measurement from high to low and select TX_input highest element
                         high_el = np.sort(tmp_data)[::-1][TX_input-1]
                         #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                        tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((6,6))
+                        tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
 
                         #Calculate position of the RX for this measurement
                         pos_x = offset[id][0] + x*resolution
@@ -112,7 +113,7 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
                             pos_x = pos_x/3000
                             pos_y = pos_y/3000
 
-                        position = [pos_x, pos_y, mat['height']]
+                        position = [pos_x, pos_y, height]
                         tmp_data = [tmp_data, position]
                         data.append(tmp_data)
 
@@ -139,10 +140,10 @@ def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynam
             #Sort measurement from high to low and select TX_input highest element
             high_el = np.sort(tmp_data)[::-1][TX_input-1]
             #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-            tmp_data = np.array([0 if el < high_el else el for el in tmp_data]).reshape((shape,shape))
+            tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
             tmp_data = (tmp_data-input_norm)/input_norm
             #Still have to implement multiple heights for simulation
-            data.append([tmp_data, [RX[0]/3000, RX[1]/3000, 1870]])
+            data.append([tmp_data, [RX[0]/3000, RX[1]/3000, 187/200]])
 
         saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=True)
     else:

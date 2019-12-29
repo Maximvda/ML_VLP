@@ -1,15 +1,46 @@
 import torch.nn as nn
 import numpy as np
 
-#No comment just print the model to see its layers
+#Just print the model to see the network layers
+class model(nn.Module):
+    def __init__(self, size, model_type, nf, extra_layers, expand, use_sigmoid=True):
+        super(model, self).__init__()
+        if 'CNN' in model_type:
+            self.main = cnn(size, nf, extra_layers, use_sigmoid=True)
+        else:
+            self.main = fc(size, nf, extra_layers, expand)
+
+    def forward(self, input):
+        return self.main(input)
+
+class fc(nn.Module):
+    def __init__(self, size, nf, extra_layers, expand):
+        super(fc, self).__init__()
+        nb_layers = extra_layers + 1
+        f_mult = 1
+        prev_f_mult = 1
+
+        submodule = fc_layer(size, nf)
+        for i in range(nb_layers):
+            prev_f_mult = f_mult
+            f_mult = 2**(int(np.log2(prev_f_mult)-1)) if (i >= nb_layers/2 and not expand) else 2**(i+1)
+            submodule = fc_layer(nf*prev_f_mult, nf*f_mult, submodule=submodule)
+
+        self.main = fc_layer(nf*f_mult, 3, final=True, submodule=submodule)
+
+    def forward(self, input):
+        return self.main(input)[:,0,:]
+
+
 class cnn(nn.Module):
-    def __init__(self, size, nc, nf, extra_layers, use_sigmoid=True):
+    def __init__(self, size, nf, extra_layers, use_sigmoid=True):
         super(cnn, self).__init__()
-        num_downs = int(size-2)
+        shape = int(np.ceil(np.sqrt(size)))
+        num_downs = int(shape-2)
         submodule = None
         for i in range(0,extra_layers):
             if i == 0:
-                submodule = DownConv(nc,nf,kernel=3)
+                submodule = DownConv(1,nf,kernel=3)
                 prev_f_mult = 1
                 f_mult = 1
             else:
@@ -18,7 +49,7 @@ class cnn(nn.Module):
                 submodule = DownConv(nf*prev_f_mult,nf*f_mult, kernel=3, submodule=submodule)
 
         if submodule is None:
-            submodule = DownConv(nc, nf)
+            submodule = DownConv(1, nf)
             prev_f_mult = 1
             f_mult = 1
 
@@ -27,40 +58,42 @@ class cnn(nn.Module):
             prev_f_mult = f_mult
             f_mult = min(2**(int(np.log2(prev_f_mult)+1)), 8)
             submodule = DownConv(nf*prev_f_mult,nf*f_mult, stride=2, submodule=submodule)
-            size = size/2
-            num_downs = int(size-2)
+            shape = shape/2
+            num_downs = int(shape-2)
 
         for i in range(1,num_downs):
             prev_f_mult = f_mult
             f_mult = min(2 ** i, 8)
             submodule = DownConv(nf*prev_f_mult,nf*f_mult, submodule=submodule)
 
-        submodule = DownConv(nf*f_mult,2, final=True, submodule=submodule)
+        submodule = DownConv(nf*f_mult,3, final=True, submodule=submodule)
 
         if use_sigmoid:
             sigmoid = nn.Sigmoid()
             model = [submodule] + [sigmoid]
 
-        #self.main = nn.Sequential(*model)
-
-        #2.55cm on validation set
-        #self.main = nn.Sequential(nn.Linear(36,512),nn.LeakyReLU(0.2, True), nn.Linear(512,2), nn.Sigmoid())
-
-        #1.1cm on validation set
-        #self.main = nn.Sequential(nn.Linear(36,512),nn.LeakyReLU(0.2, True),nn.Linear(512,1024),nn.LeakyReLU(0.2, True), nn.Linear(1024,2), nn.Sigmoid())
-
-        #0.87 cm on validation set
-        #self.main = nn.Sequential(nn.Linear(36,256),nn.LeakyReLU(0.2, True),nn.Linear(256,512),nn.LeakyReLU(0.2, True),nn.Linear(512,1024),nn.LeakyReLU(0.2, True), nn.Linear(1024,2), nn.Sigmoid())
-
-        #0.92 on validation set
-        #self.main = nn.Sequential(nn.Linear(36,256),nn.LeakyReLU(0.2, True),nn.Linear(256,512),nn.LeakyReLU(0.2, True),nn.Linear(512,256),nn.LeakyReLU(0.2, True), nn.Linear(256,2), nn.Sigmoid())
-
-        #0.78 on validation set
-        self.main = nn.Sequential(nn.Linear(36,256),nn.LeakyReLU(0.2, True), nn.Linear(256,512),nn.LeakyReLU(0.2, True),nn.Linear(512,1024),nn.LeakyReLU(0.2, True),nn.Linear(1024,512),nn.LeakyReLU(0.2, True),nn.Linear(512,256),nn.LeakyReLU(0.2, True), nn.Linear(256,3), nn.Sigmoid())
+        self.main = nn.Sequential(*model)
 
     def forward(self, input):
-        input = input.view(-1,36)
-        return self.main(input)
+        return self.main(input)[:,:,0,0]
+
+class fc_layer(nn.Module):
+    def __init__(self,input_nc, output_nc, final=False, submodule=None):
+        super(fc_layer, self).__init__()
+        lin = nn.Linear(input_nc, output_nc)
+        relu = nn.LeakyReLU(0.2, True)
+        dropout = nn.Dropout(0.5)
+        layer = [lin, relu]
+        if submodule == None:
+            model = layer
+        elif final:
+            model = [submodule] + [dropout, lin, nn.Sigmoid()]
+        else:
+            model = [submodule] + layer
+        self.main = nn.Sequential(*model)
+
+    def forward(self, x):
+        return self.main(x)
 
 class DownConv(nn.Module):
     def __init__(self,input_nc, output_nc, kernel=4, stride=1, final=False, submodule=None):

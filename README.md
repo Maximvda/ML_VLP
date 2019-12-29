@@ -56,6 +56,7 @@ ToDo
 - [ ] Experiment using transfer learning (adding a bit of real data to the simulation data)
 - [ ] Experiment investigating the influence of how much data that is used (subsets of the dataset to train)
 - [ ] Experiment looking at improvement when a less dense grid is used for the simulation and test. Because now grid is so dense that position is already well known when you know beneath which TX you are.
+- [ ] Need to normalise height and make flexible
 ###
 - [x] Simulation to generate training data base on model of the LED
 ### Possible improvements

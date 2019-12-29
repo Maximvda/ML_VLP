@@ -21,7 +21,7 @@ def setup_database(args, split="train"):
         preprocess(args.dataroot, args.TX_config, args.TX_input, args.normalise, args.dynamic)
 
     #Initialise dataset and setup a data loader
-    dataset = data(path, split)
+    dataset = data(path, split, args.model_type)
     dataLoader = DataLoader(dataset, batch_size = args.batch_size, shuffle=True, num_workers=8)
 
     return dataLoader

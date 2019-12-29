@@ -12,7 +12,7 @@ from dataset.setup_database import setup_database
 from utils.utils import calcDistance
 
 #Class to train cnn architecture and save desired results and statistics during training
-class CNN(object):
+class model_obj(object):
     def __init__(self,args):
         print("Setting up CNN model")
         #Initialise some variables
@@ -25,7 +25,7 @@ class CNN(object):
         self.step = int(len(self.data_loader)/5)
 
         #Setup CNN and optimiser
-        self.model = initModel(self.data_loader, args.nf, args.extra_layers).to(args.device)
+        self.model = initModel(self.data_loader, args.model_type, args.nf, args.extra_layers, args.expand).to(args.device)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
         #Load the previous training checkpoint
@@ -47,7 +47,6 @@ class CNN(object):
                 output = data[1].to(args.device)
 
                 #Forward through model and calculate loss
-                #prediction = self.model(input)[:,:,0,0]
                 prediction = self.model(input)
                 distance = torch.sum((output-prediction)**2,1)
                 zero = torch.full(distance.size(), 0, device=args.device)
@@ -102,7 +101,7 @@ class CNN(object):
         dist = sum(distance)/len(distance)
         #The distance is denormalised to cm's
         dist = dist*300
-        print("Distance on val set: {}cm\nPrediction for height: {}cm".format(dist,dist_z*300))
+        print("Distance on val set: {}cm\nHeight prediction error: {}cm".format(dist,dist_z*300))
 
         #If performance of new model is better then all previous ones it is saved
         if dist < self.min_distance:

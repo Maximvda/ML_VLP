@@ -1,12 +1,12 @@
 import traceback
 
 from utils.config import parse_args
-from models.CNN import CNN
+from models.model import model_obj
 from eval.eval import eval_obj
 
 def main(args):
     if args.is_train:
-        model = CNN(args)
+        model = model_obj(args)
         model.train(args)
         return model.get_distance()
     else:

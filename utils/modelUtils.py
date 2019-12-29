@@ -2,16 +2,12 @@ import torch
 import torch.nn as nn
 import os
 
-from models.architecture import cnn
+from models.architecture import model
 
 #Initialises a model from the cnn architecture for a given input size
-def initModel(data_loader, nf, extra_layers):
+def initModel(data_loader, model_type, nf, extra_layers, expand):
     input, output = next(iter(data_loader))
-    try:
-        assert input.size(2) == input.size(3)
-    except:
-        print("Input size is not square please make sure it is.")
-    return cnn(input.size(2), 1, nf, extra_layers)
+    return model(input.size(2), model_type, nf, extra_layers, expand)
 
 #Initialises the weights of the model
 def weights_init(m):
