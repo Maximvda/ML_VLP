@@ -50,7 +50,7 @@ ToDo
 - [x] Create plot of distance for increasingly number of TX being used
 - [x] Dynamic model size depending on number of inputs. **Example:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
 - [ ] Experiment difference between dynamic and fixed model, do it for good TX_config
-- [ ] Add height to the model
+- [x] Add height to the model
 - [x] Check the accuracy in specific area's (square subtracted from square)
 - [ ] Experiment training on simulation data and testing on real data
 - [ ] Experiment using transfer learning (adding a bit of real data to the simulation data)

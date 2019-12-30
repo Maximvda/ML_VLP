@@ -101,7 +101,7 @@ class model_obj(object):
         dist = sum(distance)/len(distance)
         #The distance is denormalised to cm's
         dist = dist*300
-        print("Distance on val set: {}cm\nHeight prediction error: {}cm".format(dist,dist_z*300))
+        print("Distance on val set: {}cm\nHeight prediction error: {}cm".format(dist,dist_z*200))
 
         #If performance of new model is better then all previous ones it is saved
         if dist < self.min_distance:
