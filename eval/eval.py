@@ -34,7 +34,7 @@ class eval_obj(object):
                 #forward batch of test data through the network
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)
-                prediction = self.best_model(input)[:,:,0,0]
+                prediction = self.best_model(input)
                 distance.append(calcDistance(prediction, output, area1, area2))
                 x1, y1 = calcBias(prediction, output)
                 x.append(x1); y.append(y1)
