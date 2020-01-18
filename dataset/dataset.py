@@ -29,7 +29,7 @@ class data(Dataset):
 
         #Reshape the input into a square if the cnn model is used
         if not self.shape == None:
-            input = np.pad(input,(0,self.padding))
+            input = np.pad(input,(0,self.padding), mode='constant')
             input = input.reshape((self.shape,self.shape))
 
         #Transform to torch tensor and to desired dimension and type
