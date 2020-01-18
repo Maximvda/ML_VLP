@@ -25,7 +25,7 @@ class model_obj(object):
         self.step = int(len(self.data_loader)/5)
 
         #Setup CNN and optimiser
-        self.model = initModel(self.data_loader, args.model_type, args.nf, args.extra_layers, args.expand).to(args.device)
+        self.model = initModel(self.data_loader, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
         #Load the previous training checkpoint

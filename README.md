@@ -59,8 +59,11 @@ ToDo
 - [ ] Need to normalise height and make flexible
 ###
 - [x] Simulation to generate training data base on model of the LED
+- [ ] Add noise to the simulation
+- [ ] Kalman filter to estimate position when following a path
 ### Possible improvements
 - [ ] Add more layers to network
+- [ ] Small network for each output instead of one model for all estimates
 - [x] Change loss to BCE(distance,0)
 - [ ] Position relative to TX
 - [ ] Moving average (Kalman filter or something else) when position is estimated (moving around in a room position will never jump but is continously changing)

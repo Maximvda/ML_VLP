@@ -3,12 +3,15 @@ import numpy as np
 
 #Just print the model to see the network layers
 class model(nn.Module):
-    def __init__(self, size, model_type, nf, extra_layers, expand, use_sigmoid=True):
+    def __init__(self, size, model_type, nf, extra_layers, use_sigmoid=True):
         super(model, self).__init__()
         if 'CNN' in model_type:
             self.main = cnn(size, nf, extra_layers, use_sigmoid=True)
+        elif 'FC_expand':
+            self.main = fc(size, nf, extra_layers, True)
         else:
-            self.main = fc(size, nf, extra_layers, expand)
+            self.main = fc(size, nf, extra_layers, False)
+
 
     def forward(self, input):
         return self.main(input)

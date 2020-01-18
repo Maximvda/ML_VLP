@@ -85,8 +85,57 @@ def experiment2(args):
 
     print("Distance on test set for all models: ", test_dist)
 
+def experiment3(args):
+    print("Performing experiment 3")
+    #Initialise some variables
+    args.TX_config = 1
+    args.TX_input = 36
+    args.dynamic = False
+
+    val_dist = [] #Holds all distances on the val set during training
+    test_dist = []
+    data_labels = []
+
+    #Setup dir for all results of experiment 1
+    pth = os.path.join(args.result_root, 'experiment_3')
+    if not os.path.exists(pth):
+        os.mkdir(pth)
+
+    #Loop over all possible models
+    for i in ['CNN','FC','FC_expand']:
+        for j in [32, 64, 128, 256]:
+            for k in [0,1,2,3,4,5,6]:
+                args.model_type = i
+                args.nf = j
+                args.extra_layers = k
+                label = '{}_{}_{}'.format(i,j,k)
+                #Setup result root
+                args.result_root = os.path.join(pth, label)
+                if not os.path.exists(args.result_root):
+                    os.mkdir(args.result_root)
+
+                data_labels.append(label)
+
+                #Train the model for the specific TX_config
+                args.is_train = True
+                val_dist.append(main(args))
+
+                #If model is trained check achieved distance on test set
+                args.is_train = False
+                test_dist.append(main(args))
+
+    #Create plot comparing the performance
+    filename = 'Experiment3.png'
+    title = 'Influence of different model architectures on performance.'
+    labels = ['Epoch', 'Distance (cm)']
+    makePlot(val_dist, filename, title, labels, pth, data_labels)
+
+    print("Distance on test set for all models: ", test_dist)
+
 def experiment(args):
     if args.experiment == 1:
         experiment1(args)
     elif args.experiment == 2:
         experiment2(args)
+    elif args.experiment == 3:
+        experiment3(args)

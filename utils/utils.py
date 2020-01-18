@@ -95,8 +95,28 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None):
 #Save all the relevant arguments in a textfile such that the model,
 #the kind of data and test can be identified after training
 def saveArguments(args):
-    fileText = 'Number of features: {}\nBatch size: {}\nLearning rate: {}'.format(
-                    args.nf, args.batch_size, args.learning_rate)
+    fileText = """Experiment: {}\n\nDATA PARAMETERS \n\n
+                Simulation used: {}\n
+                Transmitter configuartion: {}\n
+                Number of transmitter inputs used: {}\n
+                Dynamic data: {}\n\n\n
+                MODEL PARAMETERS \n\n
+                Model type: {}\n
+                Extra layers: {}\n
+                Number of features: {}\n\n\n
+                LEARNING PARAMETERS\n\n
+                Batch size: {}\n
+                Learning rate: {}""".format(
+                args.experiment,
+                args.simulate,
+                args.TX_config,
+                args.TX_input,
+                args.dynamic,
+                args.model_type,
+                args.extra_layers,
+                args.nf,
+                args.batch_size,
+                args.learning_rate)
     fileName = os.path.join(args.result_root,'parameters.txt')
     f = open(fileName,'w')
     f.write(fileText)
