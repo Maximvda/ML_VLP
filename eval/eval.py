@@ -28,6 +28,7 @@ class eval_obj(object):
     #If visualise is enables these distances are visualy plotted
     def demo(self, area1=None, area2=None):
         distance = []
+        dist_height = []
         x = []; y = []
         for i, data in enumerate(self.test_data_loader):
             with torch.no_grad():
@@ -35,7 +36,9 @@ class eval_obj(object):
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)
                 prediction = self.best_model(input)
-                distance.append(calcDistance(prediction, output, area1, area2))
+                dist, dist_z = calcDistance(prediction, output, area1, area2)
+                distance.append(dist)
+                dist_height.append(dist_z)
                 x1, y1 = calcBias(prediction, output)
                 x.append(x1); y.append(y1)
 
@@ -44,10 +47,12 @@ class eval_obj(object):
 
         #The average distance over the entire test set is calculated
         dist = sum(filter(None,distance))/len(distance)
+        dist_z = sum(dist_height)/len(dist_height)
         #The distance is denormalised to cm's
         dist = dist*300
+        dist_z = dist_z*200
         if area1 is not None:
-            print("Distance on test set within area1: {}\tarea2: {}\tis: {}cm".format(area1,area2,dist))
+            print("Distance on test set within area1: {}\tarea2: {}\tis: {}cm\theight: {}".format(area1,area2,dist,dist_z))
         else:
             print("Distance on test set is: {}cm".format(dist))
         print("Bias on x: {}\ton y: {}".format(sum(x)/len(x), sum(y)/len(y)))

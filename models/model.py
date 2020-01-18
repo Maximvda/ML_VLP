@@ -84,6 +84,7 @@ class model_obj(object):
     def calcPerformance(self, device):
         print("Calculating performance on validation set.")
         distance = []
+        dist_height = []
         self.model.eval()
         for i, data in enumerate(self.val_data_loader):
             with torch.no_grad():
@@ -96,12 +97,15 @@ class model_obj(object):
                 #Calculate the distance between predicted and target points
                 dist, dist_z = calcDistance(prediction, output)
                 distance.append(dist)
+                dist_height.append(dist_z)
 
         #The average distance over the entire test set is calculated
         dist = sum(distance)/len(distance)
+        dist_z = sum(dist_height)/len(dist_height)
         #The distance is denormalised to cm's
         dist = dist*300
-        print("Distance on val set: {}cm\nHeight prediction error: {}cm".format(dist,dist_z*200))
+        dist_z = dist_z*200
+        print("Distance on val set: {}cm\nHeight prediction error: {}cm".format(dist,dist_z))
 
         #If performance of new model is better then all previous ones it is saved
         if dist < self.min_distance:
