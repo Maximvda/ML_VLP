@@ -102,12 +102,13 @@ def experiment3(args):
         os.mkdir(pth)
 
     #Loop over all possible models
-    for i in ['CNN','FC','FC_expand']:
+    for i in ['FC','FC_expand']:
         for j in [128, 256]:
             for k in [0,1,2,3,4,5,6]:
                 args.model_type = i
                 args.nf = j
                 args.extra_layers = k
+
                 label = '{}_{}_{}'.format(i,j,k)
                 #Setup result root
                 args.result_root = os.path.join(pth, label)
