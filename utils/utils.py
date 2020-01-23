@@ -91,6 +91,7 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None):
     plt.ylabel(labels[1])
     resultpath = os.path.join(result_root, filename)
     plt.savefig(resultpath)
+    plt.close()
 
 #Save all the relevant arguments in a textfile such that the model,
 #the kind of data and test can be identified after training

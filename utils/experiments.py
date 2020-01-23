@@ -103,7 +103,7 @@ def experiment3(args):
 
     #Loop over all possible models
     for i in ['CNN','FC','FC_expand']:
-        for j in [32, 64, 128, 256]:
+        for j in [128, 256]:
             for k in [0,1,2,3,4,5,6]:
                 args.model_type = i
                 args.nf = j

@@ -54,6 +54,6 @@ class eval_obj(object):
         if area1 is not None:
             print("Distance on test set within area1: {}\tarea2: {}\tis: {}cm\theight: {}".format(area1,area2,dist,dist_z))
         else:
-            print("Distance on test set is: {}cm".format(dist))
+            print("Distance on test set is: {}cm\theight: {}".format(dist, dist_z))
         print("Bias on x: {}\ton y: {}".format(sum(x)/len(x), sum(y)/len(y)))
         return dist
