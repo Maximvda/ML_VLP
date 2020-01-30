@@ -104,7 +104,7 @@ def experiment3(args):
     #Loop over all possible models
     for i in ['FC','FC_expand']:
         for j in [128, 256]:
-            for k in [0,1,2,3,4,5,6]:
+            for k in [0,1,2,3,4]:
                 args.model_type = i
                 args.nf = j
                 args.extra_layers = k
