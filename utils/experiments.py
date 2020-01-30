@@ -42,6 +42,10 @@ def experiment1(args):
     title = 'Performance improvement by using more TX to predict the RX position.'
     labels = ['Epoch', 'Distance (cm)']
     makePlot(val_dist, filename, title, labels, pth, data_labels)
+    filename = 'Best_TX_input.png'
+    title = 'Distance error in function of number of TX'
+    labels = ['Number of TX', 'Distance (cm)']
+    makePlot(test_dist, filename, title, labels, pth)
 
     print("Distance on test set for all models: ", test_dist)
 
