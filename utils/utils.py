@@ -93,6 +93,16 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None):
     plt.savefig(resultpath)
     plt.close()
 
+def makeHeatMap(map, filename, title, result_root):
+    #plt.figure(figsize=(10,10))
+    plt.imshow(map, cmap='winter', interpolation='nearest')
+    plt.title(title)
+    plt.xlabel('x-axis')
+    plt.ylabel('y-axis')
+    resultpath = os.path.join(result_root, filename)
+    plt.savefig(resultpath)
+    plt.close()
+
 #Save all the relevant arguments in a textfile such that the model,
 #the kind of data and test can be identified after training
 def saveArguments(args):

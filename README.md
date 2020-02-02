@@ -57,9 +57,11 @@ ToDo
 - [ ] Experiment investigating the influence of how much data that is used (subsets of the dataset to train)
 - [ ] Experiment looking at improvement when a less dense grid is used for the simulation and test. Because now grid is so dense that position is already well known when you know beneath which TX you are.
 - [ ] Need to normalise height and make flexible
+- [ ] Plot heatmaps of error  
 ###
 - [x] Simulation to generate training data base on model of the LED
 - [ ] Add noise to the simulation
+- [ ] Model the PD
 - [ ] Kalman filter to estimate position when following a path
 ### Possible improvements
 - [ ] Add more layers to network

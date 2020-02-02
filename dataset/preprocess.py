@@ -30,7 +30,7 @@ def setConfiguartion(channel_data, TX_config, dynamic):
         return channel_data, len(list_dict[TX_config])
 
 
-def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
+def readMatFile(file, data, test_data, TX_config, TX_input, normalise, rng_state, dynamic):
     #Load matlab file
     mat = scipy.io.loadmat(file)
     #Initialising some variables
@@ -92,7 +92,10 @@ def readMatFile(file, data, TX_config, TX_input, normalise, rng_state, dynamic):
 
                     position = [pos_x, pos_y, height]
                     tmp_data = [tmp_data, position]
-                    data.append(tmp_data)
+                    if it == 0:
+                        test_data.append(tmp_data)
+                    else:
+                        data.append(tmp_data)
             else:
                 for y in range(0,channel_data.shape[4]):
                     for it in range(0,no_it):
@@ -149,13 +152,14 @@ def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynam
     else:
         print("Simulation data doesn't exist")
 
-def saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=False):
+def saveData(data, test_data, dataroot, TX_config, TX_input, dynamic, simulate=False):
     #Randomly shuffling and splitting data in train, val and test set
     #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
     random.shuffle(data)
-    dict = {'train': data[:int(0.64*len(data))],
-            'val':   data[int(0.64*len(data)):int(0.8*len(data))],
-            'test':  data[int(0.8*len(data)):]}
+    random.shuffle(test_data)
+    dict = {'train': data[:int(0.8*len(data))],
+            'val':   data[int(0.8*len(data)):],
+            'test':  test_data}
 
     #Writing db to file
     pretension = 'simulation_data_' if simulate else 'data_'
@@ -177,14 +181,14 @@ def get_offsets(data):
 
 #Preprocess the Matlab database and store necessary variables into files for training
 def preprocess(dataroot, TX_config, TX_input, normalise, dynamic):
-    data = []
+    data = []; test_data = []
     pth = os.path.join(dataroot,'mat_files')
     files = os.listdir(pth)
     rng_state = np.random.get_state()
     for file in files:
         if 'row' in file:
             print(file)
-            readMatFile(os.path.join(pth,file), data, TX_config, TX_input, normalise, rng_state, dynamic)
-    saveData(data, dataroot, TX_config, TX_input, dynamic)
+            readMatFile(os.path.join(pth,file), data, test_data, TX_config, TX_input, normalise, rng_state, dynamic)
+    saveData(data, test_data, dataroot, TX_config, TX_input, dynamic)
 
     process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynamic)
