@@ -17,6 +17,7 @@ class eval_obj(object):
         print("Setting up eval object")
         #Initialising some variables
         self.test_data_loader = setup_database(args, 'test')
+        self.heatMap_data = setup_database(args, 'heatmap_grid')
         self.device = args.device
         self.best_model = initModel(self.test_data_loader, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.visualise = args.visualise
@@ -64,7 +65,7 @@ class eval_obj(object):
     def heatMap(self):
         map = np.full((3000,3000),np.inf)
         mapz = np.full((3000,3000),np.inf)
-        for i, data in enumerate(self.test_data_loader):
+        for i, data in enumerate(self.heatMap_data):
             with torch.no_grad():
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)

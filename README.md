@@ -58,6 +58,7 @@ ToDo
 - [ ] Experiment looking at improvement when a less dense grid is used for the simulation and test. Because now grid is so dense that position is already well known when you know beneath which TX you are.
 - [ ] Need to normalise height and make flexible
 - [ ] Plot heatmaps of error  
+- [ ] Train a model on 3 TX and then test this model on again 3 TX in same configuration but different position. If this works then a model can be trained for specific LED configurations and then applied in multiple situations.
 ###
 - [x] Simulation to generate training data base on model of the LED
 - [ ] Add noise to the simulation
