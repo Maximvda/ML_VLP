@@ -17,7 +17,7 @@ class eval_obj(object):
         print("Setting up eval object")
         #Initialising some variables
         self.test_data_loader = setup_database(args, 'test')
-        if args.experiment=2:
+        if args.experiment==2:
             self.heatMap_data = setup_database(args, 'heatmap_grid')
         self.device = args.device
         self.best_model = initModel(self.test_data_loader, args.model_type, args.nf, args.extra_layers).to(args.device)

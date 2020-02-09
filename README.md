@@ -59,6 +59,7 @@ ToDo
 - [ ] Need to normalise height and make flexible
 - [ ] Plot heatmaps of error  
 - [ ] Train a model on 3 TX and then test this model on again 3 TX in same configuration but different position. If this works then a model can be trained for specific LED configurations and then applied in multiple situations.
+- [ ] Make the code flexible to either train to care about the height or not
 ###
 - [x] Simulation to generate training data base on model of the LED
 - [ ] Add noise to the simulation
