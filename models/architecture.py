@@ -12,7 +12,6 @@ class model(nn.Module):
         else:
             self.main = fc(size, nf, extra_layers, False)
 
-
     def forward(self, input):
         return self.main(input)
 
@@ -26,7 +25,7 @@ class fc(nn.Module):
         submodule = fc_layer(size, nf)
         for i in range(nb_layers):
             prev_f_mult = f_mult
-            f_mult = 2**(int(np.log2(prev_f_mult)-1)) if (i >= nb_layers/2 and not expand) else 2**(i+1)
+            f_mult = 2**(int(np.log2(prev_f_mult)-1)) if (i >= nb_layers/2 and expand) else 2**(i+1)
             submodule = fc_layer(nf*prev_f_mult, nf*f_mult, submodule=submodule)
 
         self.main = fc_layer(nf*f_mult, 3, final=True, submodule=submodule)
