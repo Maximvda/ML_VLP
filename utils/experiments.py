@@ -116,6 +116,9 @@ def experiment3(args):
                 args.model_type = i
                 args.nf = j
                 args.extra_layers = k
+                print("Model type: {}\nFeatures: {}\nExtra layers: {}".format(
+                args.model_type, args.nf, args.extra_layers
+                ))
 
                 label = '{}_{}_{}'.format(i,j,k)
                 #Setup result root

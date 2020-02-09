@@ -7,7 +7,7 @@ class model(nn.Module):
         super(model, self).__init__()
         if 'CNN' in model_type:
             self.main = cnn(size, nf, extra_layers, use_sigmoid=True)
-        elif 'FC_expand':
+        elif 'FC_expand' in model_type:
             self.main = fc(size, nf, extra_layers, True)
         else:
             self.main = fc(size, nf, extra_layers, False)
