@@ -17,7 +17,8 @@ class eval_obj(object):
         print("Setting up eval object")
         #Initialising some variables
         self.test_data_loader = setup_database(args, 'test')
-        self.heatMap_data = setup_database(args, 'heatmap_grid')
+        if args.experiment=2:
+            self.heatMap_data = setup_database(args, 'heatmap_grid')
         self.device = args.device
         self.best_model = initModel(self.test_data_loader, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.visualise = args.visualise
@@ -62,7 +63,7 @@ class eval_obj(object):
         print("Bias on x: {}\ton y: {}".format(sum(x)/len(x), sum(y)/len(y)))
         return dist
 
-    def heatMap(self):
+    def heatMap(self, title):
         map = np.full((3000,3000),np.inf)
         mapz = np.full((3000,3000),np.inf)
         for i, data in enumerate(self.heatMap_data):
@@ -79,5 +80,5 @@ class eval_obj(object):
                     map[x,y] = dist*300
                     mapz[x,y] = dist_z*200
 
-        makeHeatMap(map, 'heatmap.png', 'Prediction error: (cm)', self.result_root)
-        makeHeatMap(mapz, 'heatmap_height.png', 'Height prediction error: (cm)', self.result_root)
+        makeHeatMap(map, title+'.png', 'Prediction error: (cm)', self.result_root)
+        makeHeatMap(mapz, title+'_height.png', 'Height prediction error: (cm)', self.result_root)
