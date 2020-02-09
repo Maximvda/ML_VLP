@@ -11,6 +11,7 @@ class model(nn.Module):
             self.main = fc(size, nf, extra_layers, True)
         else:
             self.main = fc(size, nf, extra_layers, False)
+        print(self.main)
 
     def forward(self, input):
         return self.main(input)

@@ -55,7 +55,7 @@ def experiment2(args):
     #Initialise some variables
     args.TX_input = 9
     args.nf = 256
-    args.extra_layers = 2
+    args.extra_layers = 3
     args.model_type = 'FC_expand'
 
     val_dist = [] #Holds all distances on the val set during training
