@@ -92,7 +92,7 @@ def readMatFile(file, data, heatmap_data, TX_config, TX_input, normalise, rng_st
 
                     position = [pos_x, pos_y, height]
                     tmp_data = [tmp_data, position]
-                    if it == 0 and mat['height']==175:
+                    if it == 0 and mat['height']==176:
                         heatmap_data.append(tmp_data)
                         data.append(tmp_data)
                     else:
