@@ -89,6 +89,7 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None):
             plt.plot(data[i], label=data_labels[i])
     plt.xlabel(labels[0])
     plt.ylabel(labels[1])
+    plt.legend()
     resultpath = os.path.join(result_root, filename)
     plt.savefig(resultpath)
     plt.close()
