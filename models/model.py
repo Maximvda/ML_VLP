@@ -33,8 +33,8 @@ class model_obj(object):
 
     def train(self, args):
         #Initialising the loss function Binary Cross Entropy loss
-        criterion = nn.BCELoss()
-        #criterion = nn.MSELoss()
+        #criterion = nn.BCELoss()
+        criterion = nn.MSELoss()
 
         print("Starting training loop")
         while self.learning:
@@ -48,9 +48,10 @@ class model_obj(object):
 
                 #Forward through model and calculate loss
                 prediction = self.model(input)
-                distance = torch.sum((output-prediction)**2,1)
-                zero = torch.full(distance.size(), 0, device=args.device)
-                loss = criterion(distance, zero)
+                #distance = torch.sum((output-prediction)**2,1)
+                #zero = torch.full(distance.size(), 0, device=args.device)
+                #loss = criterion(distance, zero)
+                loss = criterion(prediction, output)
                 loss.backward()
                 self.optim.step()
 
