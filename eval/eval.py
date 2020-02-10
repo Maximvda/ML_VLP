@@ -79,5 +79,5 @@ class eval_obj(object):
                     map[x,y] = dist*300
                     mapz[x,y] = dist_z*200
 
-        makeHeatMap(map, title+'.png', 'Prediction error: (cm)', self.result_root)
-        makeHeatMap(mapz, title+'_height.png', 'Height prediction error: (cm)', self.result_root)
+        makeHeatMap(map, 'TX_config_'+str(title)+'.png', 'Prediction error: (cm)', self.result_root)
+        makeHeatMap(mapz, 'TX_config_'+str(title)+'_height.png', 'Height prediction error: (cm)', self.result_root)
