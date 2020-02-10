@@ -64,8 +64,8 @@ class eval_obj(object):
         return dist
 
     def heatMap(self, title):
-        map = np.full((3000,3000),np.inf)
-        mapz = np.full((3000,3000),np.inf)
+        map = np.full((300,300),np.inf)
+        mapz = np.full((300,300),np.inf)
         for i, data in enumerate(self.heatMap_data):
             with torch.no_grad():
                 input = data[0].to(self.device)
@@ -73,7 +73,7 @@ class eval_obj(object):
                 prediction = self.best_model(input)
                 for it in range(0,len(input)):
                     pos = output[it]
-                    x = int(pos[0].item()*3000); y = int(pos[1].item()*3000)
+                    x = int(pos[0].item()*300); y = int(pos[1].item()*300)
                     dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
                     dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
                     map[x,y] = dist*300
