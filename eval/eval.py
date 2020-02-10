@@ -72,11 +72,10 @@ class eval_obj(object):
                 output = data[1].to(self.device)
                 prediction = self.best_model(input)
                 for it in range(0,len(input)):
-                    sample = input[it]
-                    pos = sample[1]
-                    x = int(pos[0]*3000); y = int(pos[1]*3000)
-
-                    dist, dist_z = calcDistance(prediction[it], output[it])
+                    pos = output[it]
+                    x = int(pos[0].item()*3000); y = int(pos[1].item()*3000)
+                    dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
+                    dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
                     map[x,y] = dist*300
                     mapz[x,y] = dist_z*200
 
