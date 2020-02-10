@@ -73,7 +73,7 @@ class eval_obj(object):
                 prediction = self.best_model(input)
                 for it in range(0,len(input)):
                     pos = output[it]
-                    x = int(pos[0].item()*300); y = int(pos[1].item()*300)
+                    x = int(round(pos[0].item()*300)); y = int(round(pos[1].item()*300))
                     dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
                     dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
                     map[x,y] = dist*300
