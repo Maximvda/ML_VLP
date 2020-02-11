@@ -96,7 +96,7 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None):
 
 def makeHeatMap(map, filename, title, result_root):
     #plt.figure(figsize=(10,10))
-    plt.imshow(map, cmap='winter', vmin=0, vmax=45, interpolation='nearest')
+    plt.imshow(map, cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
     plt.colorbar()
     plt.title(title)
     plt.xlabel('x-axis')
