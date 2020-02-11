@@ -57,13 +57,14 @@ def experiment2(args):
     args.nf = 256
     args.extra_layers = 3
     args.model_type = 'FC_expand'
+    args.dynamic = True
 
     val_dist = [] #Holds all distances on the val set during training
     test_dist = []
     data_labels = []
 
     #Setup dir for all results of experiment 1
-    pth = os.path.join(args.result_root, 'experiment_2')
+    pth = os.path.join(args.result_root, 'experiment_4')
     if not os.path.exists(pth):
         os.mkdir(pth)
 
