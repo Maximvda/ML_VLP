@@ -96,11 +96,12 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None):
 
 def makeHeatMap(map, filename, title, result_root):
     #plt.figure(figsize=(10,10))
-    plt.imshow(map, cmap='winter', interpolation='nearest')
+    plt.imshow(map, cmap='winter', vmin=0, vmax=45, interpolation='nearest')
     plt.colorbar()
     plt.title(title)
     plt.xlabel('x-axis')
     plt.ylabel('y-axis')
+    plt.gca().invert_yaxis()
     resultpath = os.path.join(result_root, filename)
     plt.savefig(resultpath)
     plt.close()
