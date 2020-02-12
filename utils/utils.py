@@ -86,7 +86,7 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
         plt.plot(data)
         ind = data.index(min(data))
         plt.axvline(x=ind, color='red')
-        plt.text(ind+0.1,0,'Min = {} for TX = {}'.format(min(data),ind))
+        plt.text(ind+0.1,0,'Min = {} for TX = {}'.format(min(round(data,2)),ind), va='center')
     else:
         for i in range(0,len(data)):
             if colors == None:
