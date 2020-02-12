@@ -53,25 +53,25 @@ def plotExp2(args):
     plt.savefig(resultpath, bbox_inches='tight')
     plt.close()
 
-        fig, axs = plt.subplots(nrows=1, ncols=2)
-        #fig, axs = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True)
-        for i in [0, 3]:
-            ax = axs.flat[i]
-            img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=6.5, interpolation='nearest')
-            ax.set_xlabel('x-axis: (cm)')
-            if i == 0:
-                ax.set_ylabel('y-axis: (cm)')
-            ax.invert_yaxis()
-            ax.set_title('Conf {}'.format(i+1))
+    fig, axs = plt.subplots(nrows=1, ncols=2)
+    #fig, axs = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True)
+    for i in [0, 3]:
+        ax = axs.flat[i]
+        img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=6.5, interpolation='nearest')
+        ax.set_xlabel('x-axis: (cm)')
+        if i == 0:
+            ax.set_ylabel('y-axis: (cm)')
+        ax.invert_yaxis()
+        ax.set_title('Conf {}'.format(i+1))
 
-        fig.suptitle('Prediction error: (cm)',y=1.05)
-        resultpath = os.path.join(pth, 'heatmap_comparison_high.pdf')
-        plt.tight_layout()
-        #fig.text(0.5, -0.05, "X-axis: (cm)", ha='center')
-        #fig.text(-0.05, 0.5, "Y-axis: (cm)", va='center', rotation='vertical')
-        fig.colorbar(img, ax=list(axs))
-        plt.savefig(resultpath, bbox_inches='tight')
-        plt.close()
+    fig.suptitle('Prediction error: (cm)',y=1.05)
+    resultpath = os.path.join(pth, 'heatmap_comparison_high.pdf')
+    plt.tight_layout()
+    #fig.text(0.5, -0.05, "X-axis: (cm)", ha='center')
+    #fig.text(-0.05, 0.5, "Y-axis: (cm)", va='center', rotation='vertical')
+    fig.colorbar(img, ax=list(axs))
+    plt.savefig(resultpath, bbox_inches='tight')
+    plt.close()
 
 def plotscript(args):
     #Plots for experiment 1
