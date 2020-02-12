@@ -1,5 +1,6 @@
 import os
 import torch
+import numpy as np
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
 
@@ -55,7 +56,7 @@ def plotExp2(args):
 def plotscript(args):
     #Plots for experiment 1
     pth = os.path.join(args.result_root, 'experiment_1')
-    list = []
+    list = [np.inf]
     for i in range(36):
         list.append('TX_input_'+str(i+1))
     dist = getDist(pth, list)
