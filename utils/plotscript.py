@@ -51,14 +51,14 @@ def plotExp2(args):
     fig.colorbar(img, ax=list(axs))
     plt.savefig(resultpath, bbox_inches='tight')
     plt.close()
-    
+
 def plotscript(args):
     #Plots for experiment 1
 
     #plotExp2(args)
 
     #Plots for experiment 3
-    pth = os.pth.join(args.result_root,'experiment_3')
+    pth = os.path.join(args.result_root,'experiment_3')
 
     list = ['FC_32_0', 'FC_32_1', 'FC_32_2', 'FC_32_3', 'FC_32_4']
     dist_FC_32 = getDist(pth, list)
