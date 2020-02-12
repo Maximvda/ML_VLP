@@ -75,6 +75,7 @@ def plotExp2(args):
     plt.close()
 
 def plotscript(args):
+    root = args.result_root
     #Plots for experiment 1
     pth = os.path.join(args.result_root, 'experiment_1')
     list = []
@@ -87,7 +88,7 @@ def plotscript(args):
     plotExp2(args)
 
     #Plots for experiment 3
-    pth = os.path.join(args.result_root,'experiment_3')
+    pth = os.path.join(root,'experiment_3')
 
     list = ['FC_32_0', 'FC_32_1', 'FC_32_2', 'FC_32_3', 'FC_32_4']
     dist_FC_32 = getDist(pth, list)
