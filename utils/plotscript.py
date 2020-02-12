@@ -60,7 +60,7 @@ def plotscript(args):
     for i in range(36):
         list.append('TX_input_'+str(i+1))
     dist = getDist(pth, list)
-    makePlot(dist, 'Best_TX_input.png', 'Error on validation set', ['Number of TX', 'Distance (cm)'], pth)
+    makePlot(dist, 'Best_TX_input.pdf', 'Error on validation set', ['Number of TX', 'Distance (cm)'], pth)
     #plotExp2(args)
 
     #Plots for experiment 3
