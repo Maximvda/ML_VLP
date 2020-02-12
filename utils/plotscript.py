@@ -38,13 +38,13 @@ def plotExp2(args):
         ax = axs.flat[i]
         img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
         if i ==3 or i == 4 or i == 5:
-            ax.set_xlabel('x-axis: (cm)')
+            ax.set_xlabel('x-axis (cm)')
         if i == 0 or i == 3:
-            ax.set_ylabel('y-axis: (cm)')
+            ax.set_ylabel('y-axis (cm)')
         ax.invert_yaxis()
         ax.set_title('Conf {}'.format(i+1))
 
-    fig.suptitle('Prediction error: (cm)',y=1.05)
+    fig.suptitle('Prediction error (cm)')
     resultpath = os.path.join(pth, 'heatmap_comparison.pdf')
     plt.tight_layout()
     #fig.text(0.5, -0.05, "X-axis: (cm)", ha='center')
@@ -59,13 +59,13 @@ def plotExp2(args):
     for i in [0, 3]:
         ax = axs.flat[conv[i]]
         img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=6.5, interpolation='nearest')
-        ax.set_xlabel('x-axis: (cm)')
+        ax.set_xlabel('x-axis (cm)')
         if i == 0:
-            ax.set_ylabel('y-axis: (cm)')
+            ax.set_ylabel('y-axis (cm)')
         ax.invert_yaxis()
         ax.set_title('Conf {}'.format(i+1))
 
-    fig.suptitle('Prediction error: (cm)',y=1.05)
+    fig.suptitle('Prediction error (cm)')
     resultpath = os.path.join(pth, 'heatmap_comparison_high.pdf')
     plt.tight_layout()
     #fig.text(0.5, -0.05, "X-axis: (cm)", ha='center')
@@ -99,7 +99,7 @@ def plotscript(args):
     list = ['FC_256_0', 'FC_256_1', 'FC_256_2', 'FC_256_3', 'FC_256_4']
     dist_FC_256 = getDist(pth, list)
     dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
-    data_labels = ['nf = 32', 'nf = 64', 'nf = 128', 'nf=256']
+    data_labels = ['nf = 32', 'nf = 64', 'nf = 128', 'nf = 256']
 
     makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)
 
@@ -114,6 +114,6 @@ def plotscript(args):
     list = ['FC_expand_256_0', 'FC_expand_256_1', 'FC_expand_256_2', 'FC_expand_256_3', 'FC_expand_256_4']
     dist_FC_256 = getDist(pth, list)
     dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
-    data_labels = ['Type 1: nf = 128', 'Type 1: nf = 256', 'Type 2: nf = 128', 'Type 2: nf=256']
+    data_labels = ['Type 1: nf = 128', 'Type 1: nf = 256', 'Type 2: nf = 128', 'Type 2: nf = 256']
 
     makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)

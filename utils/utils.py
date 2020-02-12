@@ -86,6 +86,7 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
         plt.plot(data)
         ind = data.index(min(data))
         plt.axvline(x=ind, color='red')
+        plt.text(ind+0.1,0,'Min = {} for TX = {}'.format(min(data),ind))
     else:
         for i in range(0,len(data)):
             if colors == None:
@@ -104,8 +105,8 @@ def makeHeatMap(map, filename, title, result_root):
     plt.imshow(map, cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
     plt.colorbar()
     plt.title(title)
-    plt.xlabel('x-axis: (cm)')
-    plt.ylabel('y-axis: (cm)')
+    plt.xlabel('x-axis (cm)')
+    plt.ylabel('y-axis (cm)')
     plt.gca().invert_yaxis()
     resultpath = os.path.join(result_root, filename)
     plt.savefig(resultpath, bbox_inches='tight')
