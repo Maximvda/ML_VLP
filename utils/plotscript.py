@@ -1,9 +1,20 @@
-from eval.eval import eval_obj
 import os
+import torch
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
 
-def plotscript(args):
+from eval.eval import eval_obj
+from utils.utils import makePlot
+
+def getDist(root, list):
+    dist = []
+    for it in list:
+        pth = os.path.join(root, it)
+        cp = torch.load(os.path.join(pth,'checkpoint.pth'))
+        dist.append(max(cp['distance']))
+    return dist
+
+def plotExp2(args):
     #Plots for experiment 2
     args.TX_input = 9
     args.nf = 256
@@ -40,3 +51,24 @@ def plotscript(args):
     fig.colorbar(img, ax=list(axs))
     plt.savefig(resultpath, bbox_inches='tight')
     plt.close()
+    
+def plotscript(args):
+    #Plots for experiment 1
+
+    #plotExp2(args)
+
+    #Plots for experiment 3
+    pth = os.pth.join(args.result_root,'experiment_3')
+
+    list = ['FC_32_0', 'FC_32_1', 'FC_32_2', 'FC_32_3', 'FC_32_4']
+    dist_FC_32 = getDist(pth, list)
+    list = ['FC_64_0', 'FC_64_1', 'FC_64_2', 'FC_64_3', 'FC_64_4']
+    dist_FC_64 = getDist(pth, list)
+    list = ['FC_128_0', 'FC_128_1', 'FC_128_2', 'FC_128_3', 'FC_128_4']
+    dist_FC_128 = getDist(pth, list)
+    list = ['FC_256_0', 'FC_256_1', 'FC_256_2', 'FC_256_3', 'FC_256_4']
+    dist_FC_256 = getDist(pth, list)
+    dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
+    data_labels = ['nf = 32', 'nf = 64', 'nf = 128', 'nf=256']
+
+    makePlot(dist, 'NF_infl.pdf', 'Error of model type 1', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)

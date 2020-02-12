@@ -118,10 +118,10 @@ class model_obj(object):
         self.model.train()
 
     def createPlots(self):
-        makePlot(self.loss, 'plot_training.png', 'Training loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
+        makePlot(self.loss, 'plot_training.pdf', 'Training loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
         #makePlot(loss, 'plot_eval.png', 'Evaluation loss in function of number of iterations.', ['Iteration', 'Loss'], self.result_root)
         print("Min on validation set: ", min(self.distance))
-        makePlot(self.distance, 'plot_distance.png', 'Average distance of predicted point to actual position in function of epochs on validation set.', ['Epoch', 'Distance (cm)'], self.result_root)
+        makePlot(self.distance, 'plot_distance.pdf', 'Average distance of predicted point to actual position in function of epochs on validation set.', ['Epoch', 'Distance (cm)'], self.result_root)
 
     def getModel(self):
         return self.model

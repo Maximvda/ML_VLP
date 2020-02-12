@@ -106,7 +106,7 @@ def makeHeatMap(map, filename, title, result_root):
     plt.ylabel('y-axis: (cm)')
     plt.gca().invert_yaxis()
     resultpath = os.path.join(result_root, filename)
-    plt.savefig(resultpath)
+    plt.savefig(resultpath, bbox_inches='tight')
     plt.close()
 
 #Save all the relevant arguments in a textfile such that the model,

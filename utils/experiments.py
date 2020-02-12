@@ -38,11 +38,11 @@ def experiment1(args):
         test_dist.append(main(args))
 
     #Create plot comparing the performance
-    filename = 'TX_input_distance.png'
+    filename = 'TX_input_distance.pdf'
     title = 'Performance improvement by using more TX to predict the RX position.'
     labels = ['Epoch', 'Distance (cm)']
     makePlot(val_dist, filename, title, labels, pth, data_labels)
-    filename = 'Best_TX_input.png'
+    filename = 'Best_TX_input.pdf'
     title = 'Distance error in function of number of TX'
     labels = ['Number of TX', 'Distance (cm)']
     makePlot(test_dist, filename, title, labels, pth)
@@ -87,10 +87,10 @@ def experiment2(args):
         test_dist.append(main(args))
 
     #Create plot comparing the performance
-    filename = 'TX_config_distance.png'
+    filename = 'TX_config_distance.pdf'
     title = 'Influence of different TX configuartions on position estimation.'
     labels = ['Epoch', 'Distance (cm)']
-    colors = ['lightsteelblue', 'mediumseagreen', 'red', 'gold', 'orange', 'black']
+    colors = ['blue', 'mediumseagreen', 'red', 'gold', 'orange', 'black']
     makePlot(val_dist, filename, title, labels, pth, data_labels, colors)
 
     print("Distance on test set for all models: ", test_dist)
@@ -139,7 +139,7 @@ def experiment3(args):
                 test_dist.append(main(args))
 
     #Create plot comparing the performance
-    filename = 'Experiment3.png'
+    filename = 'Experiment3.pdf'
     title = 'Influence of different model architectures on performance.'
     labels = ['Epoch', 'Distance (cm)']
     makePlot(val_dist, filename, title, labels, pth, data_labels)
