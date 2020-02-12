@@ -23,7 +23,7 @@ if __name__ == '__main__':
     try:
         args = parse_args()
         print("Arguments parsed")
-        if args.experiment == None:
+        if args.experiment == None and args.plot == False:
             main(args)
         elif args.plot == True:
             plotscript(args)
