@@ -1,4 +1,5 @@
 from eval.eval import eval_obj
+import os
 
 def plotscript(args):
     #Plots for experiment 2
