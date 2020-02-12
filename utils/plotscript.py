@@ -28,7 +28,7 @@ def plotscript(args):
         plt.gca().invert_yaxis()
 
     plt.colorbar()
-    plt.title(title)
+    plt.title('Prediction error: (cm)')
     resultpath = os.path.join(pth, 'heatmap_comparison.png')
     plt.savefig(resultpath)
     plt.close()
