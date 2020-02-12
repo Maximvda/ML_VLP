@@ -55,8 +55,9 @@ def plotExp2(args):
 
     fig, axs = plt.subplots(nrows=1, ncols=2)
     #fig, axs = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True)
+    conv = [0,1,1,1]
     for i in [0, 3]:
-        ax = axs.flat[i]
+        ax = axs.flat[conv[i]]
         img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=6.5, interpolation='nearest')
         ax.set_xlabel('x-axis: (cm)')
         if i == 0:
