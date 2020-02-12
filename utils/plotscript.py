@@ -1,4 +1,3 @@
-from utils import makeHeatMap
 from eval.eval import eval_obj
 
 def plotscript(args):
