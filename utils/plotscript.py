@@ -1,5 +1,7 @@
 from eval.eval import eval_obj
 import os
+import matplotlib.pyplot as plt
+plt.switch_backend('Agg')
 
 def plotscript(args):
     #Plots for experiment 2
