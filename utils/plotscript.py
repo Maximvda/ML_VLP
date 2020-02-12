@@ -72,3 +72,18 @@ def plotscript(args):
     data_labels = ['nf = 32', 'nf = 64', 'nf = 128', 'nf=256']
 
     makePlot(dist, 'NF_infl.pdf', 'Error of model type 1', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)
+
+
+
+    list = ['FC_128_0', 'FC_128_1', 'FC_128_2', 'FC_128_3', 'FC_128_4']
+    dist_FC_32 = getDist(pth, list)
+    list = ['FC_256_0', 'FC_256_1', 'FC_256_2', 'FC_256_3', 'FC_256_4']
+    dist_FC_64 = getDist(pth, list)
+    list = ['FC_expand_128_0', 'FC_expand_128_1', 'FC_expand_128_2', 'FC_expand_128_3', 'FC_expand_128_4']
+    dist_FC_128 = getDist(pth, list)
+    list = ['FC_expand_256_0', 'FC_expand_256_1', 'FC_expand_256_2', 'FC_expand_256_3', 'FC_expand_256_4']
+    dist_FC_256 = getDist(pth, list)
+    dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
+    data_labels = ['Type 1: nf = 128', 'Type 1: nf = 256', 'Type 2: nf = 128', 'Type 2: nf=256']
+
+    makePlot(dist, 'type_infl.pdf', 'Error comparison of model types', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)
