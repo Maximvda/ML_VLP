@@ -56,10 +56,11 @@ def plotExp2(args):
 def plotscript(args):
     #Plots for experiment 1
     pth = os.path.join(args.result_root, 'experiment_1')
-    list = [np.inf]
+    list = []
     for i in range(36):
         list.append('TX_input_'+str(i+1))
     dist = getDist(pth, list)
+    dist.insert(0,np.inf)
     makePlot(dist, 'Best_TX_input.pdf', 'Error on validation set', ['Number of TX', 'Distance (cm)'], pth)
     #plotExp2(args)
 
