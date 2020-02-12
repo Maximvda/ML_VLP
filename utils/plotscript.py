@@ -11,7 +11,7 @@ def getDist(root, list):
     for it in list:
         pth = os.path.join(root, it)
         cp = torch.load(os.path.join(pth,'checkpoint.pth'))
-        dist.append(max(cp['distance']))
+        dist.append(min(cp['distance']))
     return dist
 
 def plotExp2(args):
@@ -54,7 +54,12 @@ def plotExp2(args):
 
 def plotscript(args):
     #Plots for experiment 1
-
+    pth = os.path.join(args.result_root, 'experiment_1')
+    list = []
+    for i in range(36):
+        list.append('TX_input_'+str(i+1))
+    dist = getDist(pth, list)
+    makePlot(dist, 'Best_TX_input.png', 'Error on validation set', ['Number of TX', 'Distance (cm)'], pth)
     #plotExp2(args)
 
     #Plots for experiment 3
@@ -71,7 +76,7 @@ def plotscript(args):
     dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
     data_labels = ['nf = 32', 'nf = 64', 'nf = 128', 'nf=256']
 
-    makePlot(dist, 'NF_infl.pdf', 'Error of model type 1', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)
+    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)
 
 
 
@@ -86,4 +91,4 @@ def plotscript(args):
     dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
     data_labels = ['Type 1: nf = 128', 'Type 1: nf = 256', 'Type 2: nf = 128', 'Type 2: nf=256']
 
-    makePlot(dist, 'type_infl.pdf', 'Error comparison of model types', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)
+    makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)

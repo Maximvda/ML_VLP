@@ -84,6 +84,8 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
     plt.title(title)
     if data_labels == None:
         plt.plot(data)
+        ind = data.index(min(data))
+        plt.axvline(x=ind, color='red')
     else:
         for i in range(0,len(data)):
             if colors == None:
