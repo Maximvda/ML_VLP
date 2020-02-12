@@ -8,6 +8,7 @@ def plotscript(args):
     args.extra_layers = 3
     args.model_type = 'FC_expand'
     args.dynamic = True
+    args.experiment=2
     pth = os.path.join(args.result_root, 'experiment_4')
 
     maps = []
