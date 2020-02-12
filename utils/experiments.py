@@ -90,7 +90,8 @@ def experiment2(args):
     filename = 'TX_config_distance.png'
     title = 'Influence of different TX configuartions on position estimation.'
     labels = ['Epoch', 'Distance (cm)']
-    makePlot(val_dist, filename, title, labels, pth, data_labels)
+    colors = ['lightsteelblue', 'mediumseagreen', 'red', 'gold', 'orange', 'black']
+    makePlot(val_dist, filename, title, labels, pth, data_labels, colors)
 
     print("Distance on test set for all models: ", test_dist)
 

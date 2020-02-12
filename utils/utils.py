@@ -79,14 +79,17 @@ def calcBias(x,y):
 #Makes a plot data and saves it to the result directory with given filename
 #The title and labels of the plot are also taken as arguments
 #If there are data_labels that means data is a list of lists each list gets plotted
-def makePlot(data, filename, title, labels, result_root, data_labels=None):
+def makePlot(data, filename, title, labels, result_root, data_labels=None, colors=None):
     plt.figure(figsize=(10,5))
     plt.title(title)
     if data_labels == None:
         plt.plot(data)
     else:
         for i in range(0,len(data)):
-            plt.plot(data[i], label=data_labels[i])
+            if colors == None:
+                plt.plot(data[i], label=data_labels[i])
+            else:
+                plt.plot(data[i], label=data_labels[i], color=colors[i])
     plt.xlabel(labels[0])
     plt.ylabel(labels[1])
     plt.legend()

@@ -20,15 +20,23 @@ def plotscript(args):
         evalObj = eval_obj(args)
         maps.append(evalObj.heatMap(args.TX_config))
 
-    for i in range(1,7):
-        plt.subplot(230+i)
-        plt.imshow(maps[i-1], cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
-        plt.xlabel('x-axis: (cm)')
-        plt.ylabel('y-axis: (cm)')
-        plt.gca().invert_yaxis()
+    fig, axs = plt.subplots(nrows=2, ncols=3)
+    #fig, axs = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True)
+    for i in range(0,6):
+        ax = axs.flat[i]
+        img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
+        if i ==3 or i == 4 or i == 5:
+            ax.set_xlabel('x-axis: (cm)')
+        if i == 0 or i == 3:
+            ax.set_ylabel('y-axis: (cm)')
+        ax.invert_yaxis()
+        ax.set_title('Conf {}'.format(i+1))
 
-    plt.colorbar()
-    plt.title('Prediction error: (cm)')
-    resultpath = os.path.join(pth, 'heatmap_comparison.png')
-    plt.savefig(resultpath)
+    fig.suptitle('Prediction error: (cm)',y=1.05)
+    resultpath = os.path.join(pth, 'heatmap_comparison.pdf')
+    plt.tight_layout()
+    #fig.text(0.5, -0.05, "X-axis: (cm)", ha='center')
+    #fig.text(-0.05, 0.5, "Y-axis: (cm)", va='center', rotation='vertical')
+    fig.colorbar(img, ax=list(axs))
+    plt.savefig(resultpath, bbox_inches='tight')
     plt.close()
