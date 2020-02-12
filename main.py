@@ -3,6 +3,7 @@ import traceback
 from utils.config import parse_args
 from models.model import model_obj
 from eval.eval import eval_obj
+from utils.plotscript import plotscript
 
 def main(args):
     if args.is_train:
@@ -24,6 +25,8 @@ if __name__ == '__main__':
         print("Arguments parsed")
         if args.experiment == None:
             main(args)
+        elif args.plot == True:
+            plotscript(args)
         else:
             from utils.experiments import experiment
             experiment(args)

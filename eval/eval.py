@@ -81,3 +81,4 @@ class eval_obj(object):
 
         makeHeatMap(map, 'TX_config_'+str(title)+'.png', 'Prediction error: (cm)', self.result_root)
         makeHeatMap(mapz, 'TX_config_'+str(title)+'_height.png', 'Height prediction error: (cm)', self.result_root)
+        return map
