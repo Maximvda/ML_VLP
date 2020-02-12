@@ -21,7 +21,7 @@ def plotscript(args):
         maps.append(evalObj.heatMap(args.TX_config))
 
     for i in range(1,7):
-        plt.subplot(23+i)
+        plt.subplot(230+i)
         plt.imshow(maps[i-1], cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
         plt.xlabel('x-axis: (cm)')
         plt.ylabel('y-axis: (cm)')
