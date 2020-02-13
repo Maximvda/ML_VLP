@@ -105,7 +105,7 @@ def plotscript(args):
     dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
     data_labels = ['nf = 32', 'nf = 64', 'nf = 128', 'nf = 256']
 
-    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers, 'Distance (cm)'], pth, data_labels)
+    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], pth, data_labels)
 
 
 
