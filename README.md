@@ -71,6 +71,7 @@ ToDo
 - [x] Change loss to BCE(distance,0)
 - [ ] Position relative to TX
 - [ ] Moving average (Kalman filter or something else) when position is estimated (moving around in a room position will never jump but is continously changing)
+- [ ] Only 1 non-linear function tested right now (LeakyReLU)
 
 ## Authors
 

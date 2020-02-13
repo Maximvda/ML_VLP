@@ -92,28 +92,36 @@ def plotscript(args):
 
     list = ['FC_32_0', 'FC_32_1', 'FC_32_2', 'FC_32_3', 'FC_32_4']
     dist_FC_32 = getDist(pth, list)
+    dist_FC_32.insert(0.np.inf)
     list = ['FC_64_0', 'FC_64_1', 'FC_64_2', 'FC_64_3', 'FC_64_4']
     dist_FC_64 = getDist(pth, list)
+    dist_FC_64.insert(0.np.inf)
     list = ['FC_128_0', 'FC_128_1', 'FC_128_2', 'FC_128_3', 'FC_128_4']
     dist_FC_128 = getDist(pth, list)
+    dist_FC_128.insert(0.np.inf)
     list = ['FC_256_0', 'FC_256_1', 'FC_256_2', 'FC_256_3', 'FC_256_4']
     dist_FC_256 = getDist(pth, list)
+    dist_FC_256.insert(0.np.inf)
     dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
     data_labels = ['nf = 32', 'nf = 64', 'nf = 128', 'nf = 256']
 
-    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)
+    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers, 'Distance (cm)'], pth, data_labels)
 
 
 
     list = ['FC_128_0', 'FC_128_1', 'FC_128_2', 'FC_128_3', 'FC_128_4']
     dist_FC_32 = getDist(pth, list)
+    dist_FC_32.insert(0.np.inf)
     list = ['FC_256_0', 'FC_256_1', 'FC_256_2', 'FC_256_3', 'FC_256_4']
     dist_FC_64 = getDist(pth, list)
+    dist_FC_64.insert(0.np.inf)
     list = ['FC_expand_128_0', 'FC_expand_128_1', 'FC_expand_128_2', 'FC_expand_128_3', 'FC_expand_128_4']
     dist_FC_128 = getDist(pth, list)
+    dist_FC_128.insert(0.np.inf)
     list = ['FC_expand_256_0', 'FC_expand_256_1', 'FC_expand_256_2', 'FC_expand_256_3', 'FC_expand_256_4']
     dist_FC_256 = getDist(pth, list)
+    dist_FC_256.insert(0.np.inf)
     dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
     data_labels = ['Type 1: nf = 128', 'Type 1: nf = 256', 'Type 2: nf = 128', 'Type 2: nf = 256']
 
-    makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of extra layers', 'Distance (cm)'], pth, data_labels)
+    makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], pth, data_labels)
