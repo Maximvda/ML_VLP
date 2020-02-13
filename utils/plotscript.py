@@ -103,7 +103,7 @@ def plotscript(args):
     dist_FC_256 = getDist(pth, list)
     dist_FC_256.insert(0,np.inf)
     dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
-    data_labels = ['nf = 32', 'nf = 64', 'nf = 128', 'nf = 256']
+    data_labels = ['number of features = 32', 'number of features = 64', 'number of features = 128', 'number of features = 256']
 
     makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], pth, data_labels)
 
@@ -122,6 +122,6 @@ def plotscript(args):
     dist_FC_256 = getDist(pth, list)
     dist_FC_256.insert(0,np.inf)
     dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
-    data_labels = ['Type 1: nf = 128', 'Type 1: nf = 256', 'Type 2: nf = 128', 'Type 2: nf = 256']
+    data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
 
     makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], pth, data_labels)
