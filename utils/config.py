@@ -40,7 +40,7 @@ def parse_args():
     #Model options
     parser.add_argument('--model_type', type=str, default='FC', choices=['CNN', 'FC, FC_expand'])
     parser.add_argument('--nf', type=int, default=64, help="The numer of features for the model layers")
-    parser.add_argument('--extra_layers', type=int, default=0, help="The number of extra layers in the model such that it has more parameters.")
+    parser.add_argument('--extra_layers', type=int, default=4, help="The number of extra layers in the model such that it has more parameters.")
 
     #Training options
     parser.add_argument('--batch_size', type=int, default=32, help="The size of the batch for training")
