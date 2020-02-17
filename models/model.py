@@ -25,7 +25,7 @@ class model_obj(object):
         self.step = int(len(self.data_loader)/5)
 
         #Setup CNN and optimiser
-        self.model = initModel(self.data_loader, args.model_type, args.nf, args.extra_layers).to(args.device)
+        self.model = initModel(args.cell_size, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
         #Load the previous training checkpoint
@@ -44,8 +44,16 @@ class model_obj(object):
 
                 #Get a data sample
                 input = data[0].type(torch.FloatTensor).to(args.device)
+                print(input[0])
+                val, ind = torch.sort(input, descending=True)
+                print(val[0])
+                print(ind[0][0][:4])
+                print(ct)
+                for id in ind:
+                    print(id[0][:4])
+                    ct = torch.cat(ct,id[0][:4])
                 output = data[1].to(args.device)
-
+                err
                 #Forward through model and calculate loss
                 prediction = self.model(input)
                 #distance = torch.sum((output-prediction)**2,1)

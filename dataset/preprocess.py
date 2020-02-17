@@ -4,33 +4,37 @@ import random
 import os
 import pickle
 
-from simulation.simulation import testbed_simulation
+def LED_to_cell(LED):
+    return {0: [0], 1: [0, 1],  2: [1,2],   3: [2,3],   4: [3,4],   5: [4],
+            6: [0,6],  7: [0,6,7,1],    8: [1,2,7,8],   9: [2,3,8,9],   10: [3,4,9,10], 11: [4,10],
+            12: [6,12], 13: [6,7,12,13], 14:[7,8,13,14], 15:[8,9,14,15], 16:[9,10,15,16], 17:[10,16],
+            18: [12,18], 19:[12,13,18,19], 20:[13,14,19,20],21:[14,15,20,21],22:[15,16,21,22],23:[16,22],
+            24:[18,24],25:[18,19,24,25],26:[19,20,25,26],27:[20,21,26,27],28:[21,22,27,28],29:[22,28],
+            30:[24],31:[24,25],32:[25,26],33:[26,27],34:[27,28],35:[28]}[LED]
 
-#Sets all RX signals from TX that are not in the chosen configuartion to 0
-#The different TX configuartions can be found on Github page
-def setConfiguartion(channel_data, TX_config, dynamic):
-    all_TX = [i for i in range(0,36)]
-    #list TXs needed for specific configuartion
-    list_dict = {
-    1: all_TX,
-    2: [0,2,4,12,14,16,24,26,28],
-    3: [7,10,25,28],
-    4: [0,2,3,5,12,14,15,17,18,20,21,23,30,32,33,35],
-    5: [0,5,14,15,20,21,30,35],
-    6: [14,15,20,21]}
-    #Remove needed TX from all TX to get all TX which need to be set to 0
-    #Select appropriate configuartion acoording to TX_config and iterate over TX
-    #Set all these TX to 0
-    list = [] if TX_config == 1 else [id for id in all_TX if id not in list_dict[TX_config]]
-    if dynamic:
-        return np.delete(channel_data, list, 0), len(list_dict[TX_config])
-    else:
-        for it in list:
-            channel_data[it] = 0
-        return channel_data, len(list_dict[TX_config])
+def likelyCell(max_LEDs):
+    cells = []
+    for LED in max_LEDs:
+        cells.extend(LED_to_cell(LED))
+    return max(set(cells), key = cells.count)
 
+def getRealUnitCell(pos):
+    distances = []
+    pos_LEDs = [[230, 170], [730, 175], [1240, 170], [1740, 170], [2240, 170], [2740, 170],
+            [230, 670], [720, 725], [1230, 670], [1735, 670], [2225, 725], [2725, 670],
+            [230, 1170], [730, 1170], [1240, 1170], [1745, 1170], [2245, 1170], [2735, 1170],
+            [230, 1670], [730, 1670], [1240, 1670], [1745, 1670], [2245, 1670], [2735, 1670],
+            [230, 2170], [720, 2225], [1235, 2170], [1720, 2170], [2220, 2225], [2710, 2170],
+            [215, 2670], [715, 2670], [1245, 2670], [1730, 2670], [2245, 2670], [2730, 2670]]
+    for i in range(0,len(pos_LEDs)):
+        LED = pos_LEDs[i]
+        dist = np.sqrt((LED[0]-pos[0])**2+(LED[1]-pos[1])**2)
+        distances.append(dist)
+    distances = np.asarray(distances)
+    cell = min(distances.argsort()[:4])
+    return cell
 
-def readMatFile(file, data, heatmap_data, TX_config, TX_input, normalise, rng_state, dynamic):
+def readMatFile(file, data, heatmap_data, normalise, dynamic):
     #Load matlab file
     mat = scipy.io.loadmat(file)
     #Initialising some variables
@@ -45,113 +49,43 @@ def readMatFile(file, data, heatmap_data, TX_config, TX_input, normalise, rng_st
     swing = 1
     channel_data = mat['swing'] if swing else np.mean(mat['channel_data'],axis=1)
     input_norm = np.max(channel_data)/2
-
-    #Set the TX which are not used for the desired density to 0
-    channel_data, lenData = setConfiguartion(channel_data, TX_config, dynamic)
-    TX_input = lenData if (TX_input >= lenData and dynamic) else TX_input
-    #Shuffles the received signals in such a way that the LEDs
-    #are not in the correct position as they are in the testbed.
-    #So the led on position 2,4 of the 6x6 grid can be replaced to position 5,1 in the 6x6 matrix
-    #This decouples the LEDs measurement from its spatial position in the testbed
-    np.random.set_state(rng_state)
-    np.random.shuffle(channel_data)
-
-    #pos_x_mm = mat['pos_x_mm'][0]
-    #pos_y_mm = mat['pos_y_mm'][0]
-    #arr = []
-    #for id in rx_id:
-    #    x = (offset[id][0] + pos_x_mm)/3000
-    #    y = (offset[id][1] + pos_y_mm)/3000
-    #    tmp = (channel_data-input_norm)/input_norm
-    #    arr.append([[tmp[:,id,it,i,j], [x[i], y[j]]] for i in range(0,len(x)-2) for j in range(0,len(y)) for it in range(0,no_it)][0])
+    counter = 0
 
     #New data variable, list of all data points
     #Iterate over each measurement (each RX, each x and y position and each iteration)
     for id in rx_id:
         for x in range(0,channel_data.shape[3]):
-            if len(channel_data.shape) == 4:
-                for it in range(0,no_it):
-                    #Select 1 measurement
-                    tmp_data = channel_data[:,id,it,x]
-                    #Sort measurement from high to low and select TX_input highest element
-                    high_el = np.sort(tmp_data)[::-1][TX_input-1]
-                    #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                    #print(tmp_data.shape, shape)
-                    tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
+            for it in range(0,no_it):
+                #Select 1 measurement
+                tmp_data = channel_data[:,id,it,x]
 
-                    #Calculate position of the RX for this measurement
-                    y = int(file.split("_")[-1][:-4])
-                    pos_x = offset[id][0] + y*resolution
-                    pos_y = offset[id][1] + x*resolution
+                #Calculate position of the RX for this measurement
+                y = int(file.split("_")[-1][:-4])
+                pos_x = offset[id][0] + y*resolution
+                pos_y = offset[id][1] + x*resolution
 
-                    #Normalisation for input and output
-                    if normalise:
-                        tmp_data = (tmp_data-input_norm)/input_norm
-                        pos_x = pos_x/3000
-                        pos_y = pos_y/3000
+                cell = getRealUnitCell([pos_x, pos_y])
 
-                    position = [pos_x, pos_y, height]
-                    tmp_data = [tmp_data, position]
-                    if it == 0 and mat['height']==176:
-                        heatmap_data.append(tmp_data)
-                        data.append(tmp_data)
-                    else:
-                        data.append(tmp_data)
-            else:
-                for y in range(0,channel_data.shape[4]):
-                    for it in range(0,no_it):
-                        #Select 1 measurement
-                        tmp_data = channel_data[:,id,it,x,y]
-                        #Sort measurement from high to low and select TX_input highest element
-                        high_el = np.sort(tmp_data)[::-1][TX_input-1]
-                        #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                        tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
+                #Normalisation for input and output
+                if normalise:
+                    tmp_data = (tmp_data-input_norm)/input_norm
+                    pos_x = pos_x/3000
+                    pos_y = pos_y/3000
 
-                        #Calculate position of the RX for this measurement
-                        pos_x = offset[id][0] + x*resolution
-                        pos_y = offset[id][1] + y*resolution
+                #unit_cell = min(tmp_data.argsort()[::-1][:4])
+                unit_cell = likelyCell(tmp_data.argsort()[::-1][:4])
 
-                        #Normalisation for input and output
-                        if normalise:
-                            tmp_data = (tmp_data-input_norm)/input_norm
-                            pos_x = pos_x/3000
-                            pos_y = pos_y/3000
+                if unit_cell != cell:
+                    counter += 1
+                position = [pos_x, pos_y, height]
+                tmp_data = [tmp_data, position]
+                if it == 0 and mat['height']==176:
+                    heatmap_data.append(tmp_data)
+                    data.append(tmp_data)
+                else:
+                    data.append(tmp_data)
 
-                        position = [pos_x, pos_y, height]
-                        tmp_data = [tmp_data, position]
-                        data.append(tmp_data)
-
-def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynamic):
-    file = os.path.join(dataroot,'simulationdata.data')
-    if os.path.exists(file):
-        print("Preprocessing simulation data")
-        #Open the file with data
-        with open(file, 'rb') as f:
-            dict = pickle.load(f)
-        channel_data = dict['channel_data']
-        pos_RX = dict['pos_RX']
-        pos_TX = dict['pos_TX']
-
-        input_norm = np.max(channel_data)/2
-        channel_data, lenData = setConfiguartion(channel_data, TX_config, dynamic)
-        TX_input = lenData if TX_input >= lenData else TX_input
-        shape = int(np.ceil(np.sqrt(channel_data.shape[0]))) if dynamic else 6
-        np.random.set_state(rng_state)
-        np.random.shuffle(channel_data)
-        data = []
-        for RX in pos_RX:
-            tmp_data = channel_data[:, int(RX[0]/10), int(RX[1]/10)]
-            #Sort measurement from high to low and select TX_input highest element
-            high_el = np.sort(tmp_data)[::-1][TX_input-1]
-            #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-            tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
-            tmp_data = (tmp_data-input_norm)/input_norm
-            #Still have to implement multiple heights for simulation
-            data.append([tmp_data, [RX[0]/3000, RX[1]/3000, 187/200]])
-
-        saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=True)
-    else:
-        print("Simulation data doesn't exist")
+    print(counter)
 
 def saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=False, heatmap_grid=None):
     #Randomly shuffling and splitting data in train, val and test set
@@ -185,11 +119,10 @@ def preprocess(dataroot, TX_config, TX_input, normalise, dynamic):
     data = []; heatmap_data = []
     pth = os.path.join(dataroot,'mat_files')
     files = os.listdir(pth)
-    rng_state = np.random.get_state()
     for file in files:
         if 'row' in file:
             print(file)
-            readMatFile(os.path.join(pth,file), data, heatmap_data, TX_config, TX_input, normalise, rng_state, dynamic)
+            readMatFile(os.path.join(pth,file), data, heatmap_data, normalise, dynamic)
     saveData(data, dataroot, TX_config, TX_input, dynamic, heatmap_grid=heatmap_data)
 
     process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynamic)
