@@ -63,7 +63,7 @@ def testbed_simulation(dataroot):
     file = os.path.join(dataroot,'simulationdata.data')
     if not os.path.exists(file):
         print("Running simulation and storing data")
-        channel_data = np.zeros((36,300,300))
+        channel_data = np.zeros((36,3,300,300))
         #pos_TX = [[x, y, 1870] for y in np.arange(250,3000,500) for x in np.arange(250,3000,500)]
         pos_TX = getPositionTX()
         pos_RX = [[x, y, 0] for x in np.arange(0,3000,1) for y in np.arange(0,3000,1)]
