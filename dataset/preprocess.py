@@ -162,6 +162,8 @@ def saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=False, heatm
             'val':   data[int(0.64*len(data)):int(0.8*len(data))],
             'test':  data[int(0.8*len(data)):],
             'heatmap_grid': heatmap_grid}
+    if simulate:
+        dict = {'train': data}
 
     #Writing db to file
     pretension = 'simulation_data_' if simulate else 'data_'
