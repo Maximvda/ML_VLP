@@ -86,8 +86,8 @@ class fc_layer(nn.Module):
         lin = nn.Linear(input_nc, output_nc)
         relu = nn.LeakyReLU(0.2, True)
         #dropout = nn.Dropout(0.5)
-        norm = nn.BatchNorm2d(output_nc)
-        layer = [lin, norm, relu]
+        #norm = nn.BatchNorm1d(output_nc)
+        layer = [lin, relu]
         if submodule == None:
             model = layer
         elif final:

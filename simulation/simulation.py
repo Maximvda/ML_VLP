@@ -27,7 +27,9 @@ def calculateRSS(d, psi):
         H = ((m+1)*1.1)/(2*np.pi*d**2)*np.cos(np.radians(phi))**m*g_psi*np.cos(np.radians(psi))
     else:
         H = 0
-    return H
+    #Adding white gaussian noise of 2%
+    noise = np.random.normal(0,H*0.05,1)
+    return H+noise
 
 
 #Calculates the distance and incidence angle between RX and TX
@@ -70,13 +72,17 @@ def testbed_simulation(dataroot):
         for RX in pos_RX:
             counter += 1
             printProgBar(counter, len(pos_RX))
-            RSS = []
+            RSS = []; RSS1 = []; RSS2 = []
             for TX in pos_TX:
                 d, psi = getDistAndAngle(RX, TX)
                 RSS.append(calculateRSS(d,psi))
+                RSS1.append(calculateRSS(d,psi))
+                RSS2.append(calculateRSS(d,psi))
 
 
-            channel_data[:, int(RX[0]/10), int(RX[1]/10)] = RSS
+            channel_data[:,0, int(RX[0]/10), int(RX[1]/10)] = RSS
+            channel_data[:,1, int(RX[0]/10), int(RX[1]/10)] = RSS1
+            channel_data[:,2, int(RX[0]/10), int(RX[1]/10)] = RSS2
 
         dict = {'channel_data': channel_data,
                 'pos_TX': pos_TX,

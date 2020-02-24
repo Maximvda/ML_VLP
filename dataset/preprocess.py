@@ -135,19 +135,20 @@ def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynam
         input_norm = np.max(channel_data)/2
         channel_data, lenData = setConfiguartion(channel_data, TX_config, dynamic)
         TX_input = lenData if TX_input >= lenData else TX_input
-        shape = int(np.ceil(np.sqrt(channel_data.shape[0]))) if dynamic else 6
+        #shape = int(np.ceil(np.sqrt(channel_data.shape[0]))) if dynamic else 6
         np.random.set_state(rng_state)
         np.random.shuffle(channel_data)
         data = []
-        for RX in pos_RX:
-            tmp_data = channel_data[:, int(RX[0]/10), int(RX[1]/10)]
-            #Sort measurement from high to low and select TX_input highest element
-            high_el = np.sort(tmp_data)[::-1][TX_input-1]
-            #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-            tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
-            tmp_data = (tmp_data-input_norm)/input_norm
-            #Still have to implement multiple heights for simulation
-            data.append([tmp_data, [RX[0]/3000, RX[1]/3000, 187/200]])
+        for it in range(0,3):
+            for RX in pos_RX:
+                tmp_data = channel_data[:,it, int(RX[0]/10), int(RX[1]/10)]
+                #Sort measurement from high to low and select TX_input highest element
+                high_el = np.sort(tmp_data)[::-1][TX_input-1]
+                #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
+                tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
+                tmp_data = (tmp_data-input_norm)/input_norm
+                #Still have to implement multiple heights for simulation
+                data.append([tmp_data, [RX[0]/3000, RX[1]/3000, 187/200]])
 
         saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=True)
     else:

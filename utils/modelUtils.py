@@ -7,7 +7,7 @@ from models.architecture import model
 #Initialises a model from the cnn architecture for a given input size
 def initModel(data_loader, model_type, nf, extra_layers):
     input, output = next(iter(data_loader))
-    return model(input.size(2), model_type, nf, extra_layers)
+    return model(input.size(1), model_type, nf, extra_layers)
 
 #Initialises the weights of the model
 def weights_init(m):
