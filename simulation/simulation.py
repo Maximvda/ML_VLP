@@ -66,7 +66,7 @@ def testbed_simulation(dataroot):
         channel_data = np.zeros((36,3,300,300))
         #pos_TX = [[x, y, 1870] for y in np.arange(250,3000,500) for x in np.arange(250,3000,500)]
         pos_TX = getPositionTX()
-        pos_RX = [[x, y, 0] for x in np.arange(0,3000,1) for y in np.arange(0,3000,1)]
+        pos_RX = [[x, y, 0] for x in np.arange(0,3000,10) for y in np.arange(0,3000,10)]
 
         counter = 0
         for RX in pos_RX:
