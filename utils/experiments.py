@@ -4,6 +4,7 @@ from main import main
 from utils.utils import makePlot
 
 import _thread
+import torch
 from threading import Thread
 
 class train(Thread):
