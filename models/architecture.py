@@ -31,7 +31,7 @@ class fc(nn.Module):
         self.main = fc_layer(nf*f_mult, 3, final=True, submodule=submodule)
 
     def forward(self, input):
-        return self.main(input)[:,0,:]
+        return self.main(input)
 
 
 class cnn(nn.Module):
@@ -84,12 +84,12 @@ class fc_layer(nn.Module):
         super(fc_layer, self).__init__()
         lin = nn.Linear(input_nc, output_nc)
         relu = nn.LeakyReLU(0.2, True)
-        dropout = nn.Dropout(0.5)
+        #dropout = nn.Dropout(0.5)
         layer = [lin, relu]
         if submodule == None:
             model = layer
         elif final:
-            model = [submodule] + [dropout, lin, nn.Sigmoid()]
+            model = [submodule] + [lin, nn.Tanh()]
         else:
             model = [submodule] + layer
         self.main = nn.Sequential(*model)

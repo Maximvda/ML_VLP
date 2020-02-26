@@ -9,16 +9,13 @@ from simulation.simulation import testbed_simulation
 def setup_database(args, split="train"):
     #Choose correct file depending on desired split
     file = 'simulation_data' if args.simulate and split == 'train' else 'data'
-    file = '_'.join((file, str(args.TX_config),str(args.TX_input), str(args.dynamic))) + '.data'
+    file = '_'.join((file, str(args.normalise))) + '.data'
     path = os.path.join(args.dataroot, file)
-
-    if args.simulate:
-        testbed_simulation(args.dataroot)
 
     #If file not present it may still need to be preprocessed
     if not os.path.isfile(path):
         print("Pre-processing dataset")
-        preprocess(args.dataroot, args.TX_config, args.TX_input, args.normalise, args.dynamic)
+        preprocess(args.dataroot,args.normalise)
 
     #Initialise dataset and setup a data loader
     dataset = data(path, split, args.model_type)

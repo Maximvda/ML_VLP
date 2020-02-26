@@ -4,19 +4,31 @@ import random
 import os
 import pickle
 
-def LED_to_cell(LED):
-    return {0: [0], 1: [0, 1],  2: [1,2],   3: [2,3],   4: [3,4],   5: [4],
-            6: [0,6],  7: [0,6,7,1],    8: [1,2,7,8],   9: [2,3,8,9],   10: [3,4,9,10], 11: [4,10],
-            12: [6,12], 13: [6,7,12,13], 14:[7,8,13,14], 15:[8,9,14,15], 16:[9,10,15,16], 17:[10,16],
-            18: [12,18], 19:[12,13,18,19], 20:[13,14,19,20],21:[14,15,20,21],22:[15,16,21,22],23:[16,22],
-            24:[18,24],25:[18,19,24,25],26:[19,20,25,26],27:[20,21,26,27],28:[21,22,27,28],29:[22,28],
-            30:[24],31:[24,25],32:[25,26],33:[26,27],34:[27,28],35:[28]}[LED]
+from utils.utils import convolution2d
 
-def likelyCell(max_LEDs):
-    cells = []
-    for LED in max_LEDs:
-        cells.extend(LED_to_cell(LED))
-    return max(set(cells), key = cells.count)
+def getCelPosition(cel):
+    return {7:[720, 725], 8:[1230, 670], 9:[1735, 670], 10:[2225, 725],
+            13:[730, 1170], 14:[1240, 1170], 15:[1745, 1170], 16:[2245, 1170],
+            19:[730, 1670], 20:[1240, 1670], 21:[1745, 1670], 22:[2245, 1670],
+            25:[720, 2225], 26:[1235, 2170], 27:[1720, 2170], 28:[2220, 2225]}[cel]
+
+def celToData(data, cel):
+    return [data[cel-7], data[cel-6], data[cel-5],
+            data[cel-1], data[cel], data[cel+1],
+            data[cel+5], data[cel+6], data[cel+7]]
+
+def getCelData(measurement, position, train, test):
+    for i in [7,8,9,10, 13, 14, 15, 16, 19, 20, 21, 22, 25, 26, 27, 28]:
+        pos = getCelPosition(i)
+        dist = np.sqrt((pos[0]-position[0])**2+(pos[1]-position[1])**2)
+        if dist <=750:
+            cell_measurement = celToData(measurement,i)
+            rel_pos = [(position[0]-pos[0])/750, (position[1]-pos[1])/750]
+            if i in [19,13,25,26,27]:
+                test.append([cell_measurement, rel_pos])
+            else:
+                train.append([cell_measurement, rel_pos])
+
 
 def getRealUnitCell(pos):
     distances = []
@@ -31,10 +43,10 @@ def getRealUnitCell(pos):
         dist = np.sqrt((LED[0]-pos[0])**2+(LED[1]-pos[1])**2)
         distances.append(dist)
     distances = np.asarray(distances)
-    cell = min(distances.argsort()[:4])
+    cell = convolution2d(distances, max=False)
     return cell
 
-def readMatFile(file, data, heatmap_data, normalise, dynamic):
+def readMatFile(file, train, test, heatmap_data, normalise):
     #Load matlab file
     mat = scipy.io.loadmat(file)
     #Initialising some variables
@@ -64,41 +76,28 @@ def readMatFile(file, data, heatmap_data, normalise, dynamic):
                 pos_x = offset[id][0] + y*resolution
                 pos_y = offset[id][1] + x*resolution
 
-                cell = getRealUnitCell([pos_x, pos_y])
-
                 #Normalisation for input and output
                 if normalise:
                     tmp_data = (tmp_data-input_norm)/input_norm
-                    pos_x = pos_x/3000
-                    pos_y = pos_y/3000
 
-                #unit_cell = min(tmp_data.argsort()[::-1][:4])
-                unit_cell = likelyCell(tmp_data.argsort()[::-1][:4])
+                getCelData(tmp_data, [pos_x, pos_y], train, test)
 
-                if unit_cell != cell:
-                    counter += 1
-                position = [pos_x, pos_y, height]
-                tmp_data = [tmp_data, position]
                 if it == 0 and mat['height']==176:
                     heatmap_data.append(tmp_data)
-                    data.append(tmp_data)
-                else:
-                    data.append(tmp_data)
 
-    print(counter)
 
-def saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=False, heatmap_grid=None):
+def saveData(train, test, dataroot, normalise, simulate=False, heatmap_grid=None):
     #Randomly shuffling and splitting data in train, val and test set
     #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
-    random.shuffle(data)
-    dict = {'train': data[:int(0.64*len(data))],
-            'val':   data[int(0.64*len(data)):int(0.8*len(data))],
-            'test':  data[int(0.8*len(data)):],
+    random.shuffle(train)
+    dict = {'train': train[:int(0.8*len(train))],
+            'val':   train[int(0.8*len(train)):],
+            'test':  test,
             'heatmap_grid': heatmap_grid}
 
     #Writing db to file
     pretension = 'simulation_data_' if simulate else 'data_'
-    extension = '_'.join((str(TX_config), str(TX_input), str(dynamic))) + '.data'
+    extension = str(normalise) + '.data'
     with open(os.path.join(dataroot,pretension + extension), 'wb') as f:
         pickle.dump(dict, f)
 
@@ -115,14 +114,12 @@ def get_offsets(data):
     print(best)
 
 #Preprocess the Matlab database and store necessary variables into files for training
-def preprocess(dataroot, TX_config, TX_input, normalise, dynamic):
-    data = []; heatmap_data = []
+def preprocess(dataroot, normalise):
+    train = []; test = []; heatmap_data = []
     pth = os.path.join(dataroot,'mat_files')
     files = os.listdir(pth)
     for file in files:
         if 'row' in file:
             print(file)
-            readMatFile(os.path.join(pth,file), data, heatmap_data, normalise, dynamic)
-    saveData(data, dataroot, TX_config, TX_input, dynamic, heatmap_grid=heatmap_data)
-
-    process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynamic)
+            readMatFile(os.path.join(pth,file), train, test, heatmap_data, normalise)
+    saveData(train, test, dataroot, normalise, heatmap_grid=heatmap_data)

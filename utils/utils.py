@@ -4,13 +4,27 @@ import os
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
 
+def convolution2d(meas_array, max=True):
+    likelyCell = []
+    for i in range(0,4):
+        for j in range(0,4):
+            likelyCell.append(meas_array[0+j+6*i]+meas_array[1+j+6*i]+meas_array[2+j+6*i]+
+                meas_array[0+j+6*(i+1)]+meas_array[1+j+6*(i+1)]+meas_array[2+j+6*(i+1)]+
+                meas_array[0+j+6*(i+2)]+meas_array[1+j+6*(i+2)]+meas_array[0+j+6*(i+2)])
+    if max:
+        ind = np.argmax(likelyCell)
+    else:
+        ind = np.argmin(likelyCell)
+    return int(ind+7+6*np.floor(ind/4))
+
 #Shows a grid of the possible positions of the measurement device
 #The predicted positions for a batch are plotted in red
 #The real position is plotted in green while a line shows the distance between predicted and real position
 def visualise(target, prediction, pause=0.0001):
+    plt.switch_backend('TkAgg')
     plt.ion()
     plt.clf()
-    plt.axis([0,1, 0, 1])
+    plt.axis([-1,1, -1, 1])
     target = target.cpu()
     prediction = prediction.cpu().detach()
     for i in range(0,len(target)):
@@ -24,52 +38,10 @@ def visualise(target, prediction, pause=0.0001):
 #Calculates the distance between two points a and b
 #Euclidian distance = sqrt((ax-bx))^2+(ay-by)^2)
 #The mean distance is calculated when x and y are lists of same length
-def calcDistance(x,y, area1=None, area2=None):
-    z_dist = torch.mean(torch.sqrt((x[:,2]-y[:,2])**2)).item()
-    if area1 is None:
-        dist = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)
-        return torch.mean(dist).item(), z_dist
-    else:
-        iList = checkArea(y, area1, area2)
-        dist = []
-        for i in iList:
-            dist.append(torch.sqrt((x[i][0]-y[i][0])**2+(x[i][1]-y[i][1])**2).unsqueeze(0))
-        if dist == []:
-            return None
-        else:
-            dist = torch.cat(dist)
-            return torch.mean(dist).item(), z_dist
+def calcDistance(x,y):
+    dist = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)
+    return torch.mean(dist).item()
 
-
-#Calculates the distance between predicted and real position within a certain area
-#The area is given through two points p1 and p2 defining a rectangle between them
-def checkArea(positionList, area1, area2):
-    iList = []
-
-    p1 = [area1[0][0]/3000, area1[0][1]/3000]; p2 = [area1[1][0]/3000, area1[1][1]/3000]
-    min_x1 = min((p1[0],p2[0])); max_x1 = max((p1[0],p2[0]))
-    min_y1 = min((p1[1],p2[1])); max_y1 = max((p1[1],p2[1]))
-
-    if area2 is not None:
-        p1 = [area2[0][0]/3000, area2[0][1]/3000]; p2 = [area2[1][0]/3000, area2[1][1]/3000]
-        min_x2 = min((p1[0],p2[0])); max_x2 = max((p1[0],p2[0]))
-        min_y2 = min((p1[1],p2[1])); max_y2 = max((p1[1],p2[1]))
-
-        for i in range(0,len(positionList)):
-            y = positionList[i]
-            if not (max_x1 < y[0].item() or y[0].item() < min_x1) or not (max_y1 < y[1].item() or y[1].item() < min_y1):
-                continue
-            if (max_x2 < y[0].item() < min_x2) or (max_y2 < y[1].item() < min_y2):
-                continue
-            iList.append(i)
-    else:
-        for i in range(0,len(positionList)):
-            y = positionList[i]
-            if (max_x1 < y[0].item() < min_x1) or (max_y1 < y[1].item() < min_y1):
-                continue
-            iList.append(i)
-
-    return iList
 
 def calcBias(x,y):
     bias = [x[:,0]-y[:,0], x[:,1]-y[:,1]]

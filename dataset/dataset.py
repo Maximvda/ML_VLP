@@ -33,8 +33,8 @@ class data(Dataset):
             input = input.reshape((self.shape,self.shape))
 
         #Transform to torch tensor and to desired dimension and type
-        input = torch.from_numpy(input)
-        input = torch.unsqueeze(input,0).type(torch.FloatTensor)
+        input = torch.FloatTensor(input)
+        #input = input.type(torch.FloatTensor)
         output = torch.FloatTensor(output)
 
         return input, output
