@@ -10,6 +10,7 @@ class train(Thread):
     def __init__ (self, args):
         Thread.__init__(self)
         self.args = args
+        self.args.device = torch.device('cuda', self.args.gpu_number)
     def run(self):
         self.args.is_train = True
         dist = main(self.args)
@@ -38,7 +39,7 @@ def experiment2(args):
     pth = os.path.join(args.result_root, 'experiment_2_unit_cell')
     if not os.path.exists(pth):
         os.mkdir(pth)
-    count = 0
+    count = args.gpu_number
     for rot in [False, True]:
         args.gpu_number = count
         count += 1
