@@ -24,11 +24,6 @@ class train(Thread):
         test_dict[self.args.rotations] = dist
         mutex.release()
 
-
-#def experiment1(args):
-#    print("Starting experiment 1")
-    #for blockage in [0,0.1,0.2,0.3,0.4,0.5,0.6]:
-
 def experiment2(args):
     val_dict = {}
     test_dict = {}
@@ -67,25 +62,24 @@ def experiment2(args):
 def experiment1(args):
     print("Performing experiment 1")
     #Initialise some variables
-    args.TX_config = 1
     val_dist = [] #Holds all distances on the val set during training
     test_dist = []
     data_labels = []
 
     #Setup dir for all results of experiment 1
-    pth = os.path.join(args.result_root, 'experiment_1')
+    pth = os.path.join(args.result_root, 'experiment_1_unit_cell')
     if not os.path.exists(pth):
         os.mkdir(pth)
 
     #Loop over all possible TX_inputs
-    for i in range(1,37):
+    for blockage in [0,0.1,0.2,0.3,0.4,0.5,0.6]::
         #Setup result root
-        args.result_root = os.path.join(pth, 'TX_input_' + str(i))
+        args.result_root = os.path.join(pth, 'blockage_' + str(blockage))
         if not os.path.exists(args.result_root):
             os.mkdir(args.result_root)
 
-        args.TX_input = i
-        data_labels.append('Number of TX: {}'.format(i))
+        args.blockage = blockage
+        data_labels.append('Blockage percentage: {}'.format(blockage))
 
         #Train the model for the specific TX_input
         args.is_train = True
