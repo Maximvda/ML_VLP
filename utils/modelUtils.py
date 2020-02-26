@@ -2,12 +2,6 @@ import torch
 import torch.nn as nn
 import os
 
-from models.architecture import model
-
-#Initialises a model from the cnn architecture for a given input size
-def initModel(cell_size, model_type, nf, extra_layers):
-    return model(cell_size, model_type, nf, extra_layers)
-
 #Initialises the weights of the model
 def weights_init(m):
     classname = m.__class__.__name__

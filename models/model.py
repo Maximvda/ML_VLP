@@ -10,6 +10,7 @@ from utils.utils import visualise
 from utils.utils import makePlot
 from dataset.setup_database import setup_database
 from utils.utils import calcDistance
+from models.architecture import model
 
 #Class to train cnn architecture and save desired results and statistics during training
 class model_obj(object):
@@ -25,7 +26,7 @@ class model_obj(object):
         self.step = int(len(self.data_loader)/5)
 
         #Setup CNN and optimiser
-        self.model = initModel(9, args.model_type, args.nf, args.extra_layers).to(args.device)
+        self.model = model(9, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
         #Load the previous training checkpoint

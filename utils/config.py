@@ -27,21 +27,18 @@ def parse_args():
     parser.add_argument('--cuda', type=str2bool, default='True', help="Availability of cuda gpu")
     parser.add_argument('--gpu_number', type=int, default=None, help="Number of gpu that will be used")
     parser.add_argument('--experiment', type=int, default=None, help='Select a certain experiment to run or leave default None to train a single model.')
-    parser.add_argument('--simulate', type=str2bool, default="False")
 
     #Dataset options
     parser.add_argument('--dataroot', default=None, required=False, help="Path to the dataset")
     parser.add_argument('--result_root', default=None, required=False, help="Path to the result directory")
     parser.add_argument('--normalise', type=str2bool, default="True", help="If set to true dataset input and output are normalised")
-    parser.add_argument('--TX_config', type=int, default=1, help='Select the TX configuartion with a certain density. Configurations can be found at https://github.com/Maximvda/ML_VLP')
-    parser.add_argument('--TX_input', type=int, default=36, help="Limit the amount of inputs of the network to only the best received signals")
-    parser.add_argument('--dynamic', type=str2bool, default="False", help="Sizes the input data according to the number of TX if set to true")
+    parser.add_argument('--rotations', type=str2bool, default="False", help='Adds rotations to the data as a form of data augmentation')
+    parser.add_argument('--blockage', type=double, default=0, help="Adds blockage to the data to simulate real environment")
 
     #Model options
-    parser.add_argument('--model_type', type=str, default='FC', choices=['CNN', 'FC, FC_expand'])
+    parser.add_argument('--model_type', type=str, default='FC', choices=['FC, FC_expand'])
     parser.add_argument('--nf', type=int, default=64, help="The numer of features for the model layers")
     parser.add_argument('--extra_layers', type=int, default=4, help="The number of extra layers in the model such that it has more parameters.")
-    parser.add_argument('--cell_size', type=int, default=4)
 
     #Training options
     parser.add_argument('--batch_size', type=int, default=32, help="The size of the batch for training")
@@ -69,16 +66,6 @@ def check_args(args):
                 raise
         else:
             args.device = torch.device("cuda:0" if (torch.cuda.is_available() and args.cuda) else "cpu")
-
-    try:
-        assert 1 <= args.TX_config <= 6
-    except:
-        print("TX_config must be one of the 6 configuartions so a value between 1 and 6")
-
-    try:
-        assert args.TX_input > 0 and args.TX_input <= 36
-    except:
-        print("TX_input must have a value between one and 36")
 
     try:
         assert args.batch_size >= 1
