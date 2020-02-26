@@ -3,23 +3,23 @@ import os
 from main import main
 from utils.utils import makePlot
 
-import thread
+import _thread
 from threading import Thread
 
 class train(Thread):
     def __init__ (self, args):
-        Thread.__ini__(self)
+        Thread.__init__(self)
         self.args = args
     def run(self):
         self.args.is_train = True
-        dist = main(args)
+        dist = main(self.args)
         mutex.acquire()
-        val_dict[args.rotations] = dist
+        val_dict[self.args.rotations] = dist
         mutex.release()
         self.args.is_train = False
-        dist = main(args)
+        dist = main(self.args)
         mutex.acquire()
-        test_dict[args.rotations] = dist
+        test_dict[self.args.rotations] = dist
         mutex.release()
 
 
@@ -32,7 +32,7 @@ def experiment2(args):
     test_dict = {}
     data_labels = []
     threads = []
-    mutex = thread.allocate_lock()
+    mutex = _thread.allocate_lock()
 
     #Setup dir for all results of experiment 1
     pth = os.path.join(args.result_root, 'experiment_2_unit_cell')

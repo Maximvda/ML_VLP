@@ -33,7 +33,7 @@ def parse_args():
     parser.add_argument('--result_root', default=None, required=False, help="Path to the result directory")
     parser.add_argument('--normalise', type=str2bool, default="True", help="If set to true dataset input and output are normalised")
     parser.add_argument('--rotations', type=str2bool, default="False", help='Adds rotations to the data as a form of data augmentation')
-    parser.add_argument('--blockage', type=double, default=0, help="Adds blockage to the data to simulate real environment")
+    parser.add_argument('--blockage', type=float, default=0, help="Adds blockage to the data to simulate real environment")
 
     #Model options
     parser.add_argument('--model_type', type=str, default='FC', choices=['FC, FC_expand'])

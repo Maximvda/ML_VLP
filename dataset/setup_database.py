@@ -8,8 +8,7 @@ from simulation.simulation import testbed_simulation
 #Sets up a data loader for the requested split
 def setup_database(args, split="train"):
     #Choose correct file depending on desired split
-    file = 'simulation_data' if args.simulate and split == 'train' else 'data'
-    file = '_'.join((file, str(args.normalise))) + '.data'
+    file = '_'.join(('data', str(args.normalise))) + '.data'
     path = os.path.join(args.dataroot, file)
 
     #If file not present it may still need to be preprocessed

@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from utils.modelUtils import initModel
 from utils.modelUtils import loadCheckpoint
 from utils.modelUtils import saveCheckpoint
 from utils.modelUtils import saveBestModel

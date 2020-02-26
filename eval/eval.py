@@ -4,13 +4,13 @@ import os
 import numpy as np
 
 from dataset.setup_database import setup_database
-from utils.modelUtils import initModel
 from utils.modelUtils import loadBestModel
 from utils.utils import calcDistance
 from utils.utils import visualise
 from utils.utils import calcBias
 from utils.utils import makeHeatMap
 from utils.utils import printProgBar
+from models.architecture import model
 
 #Object to evaluate the performance of the model on the test set
 class eval_obj(object):
@@ -21,7 +21,7 @@ class eval_obj(object):
         if args.experiment==2:
             self.heatMap_data = setup_database(args, 'heatmap_grid')
         self.device = args.device
-        self.best_model = initModel(9, args.model_type, args.nf, args.extra_layers).to(args.device)
+        self.best_model = model(9, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.visualise = args.visualise
 
         loadBestModel(args.result_root, self.best_model, args.device)

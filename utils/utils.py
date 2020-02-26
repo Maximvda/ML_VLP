@@ -88,10 +88,6 @@ def makeHeatMap(map, filename, title, result_root):
 #the kind of data and test can be identified after training
 def saveArguments(args):
     fileText = """Experiment: {}\n\nDATA PARAMETERS \n\n
-                Simulation used: {}\n
-                Transmitter configuartion: {}\n
-                Number of transmitter inputs used: {}\n
-                Dynamic data: {}\n\n\n
                 MODEL PARAMETERS \n\n
                 Model type: {}\n
                 Extra layers: {}\n
@@ -100,10 +96,6 @@ def saveArguments(args):
                 Batch size: {}\n
                 Learning rate: {}""".format(
                 args.experiment,
-                args.simulate,
-                args.TX_config,
-                args.TX_input,
-                args.dynamic,
                 args.model_type,
                 args.extra_layers,
                 args.nf,
