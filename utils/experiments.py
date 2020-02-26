@@ -35,7 +35,7 @@ def experiment2(args):
     mutex = thread.allocate_lock()
 
     #Setup dir for all results of experiment 1
-    pth = os.path.join(args.result_root, 'experiment_2')
+    pth = os.path.join(args.result_root, 'experiment_2_unit_cell')
     if not os.path.exists(pth):
         os.mkdir(pth)
     count = 0
