@@ -15,21 +15,21 @@ class train(Thread):
     def run(self):
         self.args.is_train = True
         dist = main(self.args)
-        mutex.acquire()
+        #mutex.acquire()
         val_dict[self.args.rotations] = dist
-        mutex.release()
+        #mutex.release()
         self.args.is_train = False
         dist = main(self.args)
-        mutex.acquire()
+        #mutex.acquire()
         test_dict[self.args.rotations] = dist
-        mutex.release()
+        #mutex.release()
 
 def experiment2(args):
     val_dict = {}
     test_dict = {}
     data_labels = []
     threads = []
-    mutex = _thread.allocate_lock()
+    #mutex = _thread.allocate_lock()
 
     #Setup dir for all results of experiment 1
     pth = os.path.join(args.result_root, 'experiment_2_unit_cell')
