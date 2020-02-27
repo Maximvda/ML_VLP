@@ -31,13 +31,13 @@ def getCelData(measurement, position, train, test, map_grid, map_7, map_25):
                 if i == 25:
                     map_25.append(len(test)-1)
                 if i == cel:
-                    map_grid['test'].append(len(test)-1)
+                    map_grid['test'].append([len(test)-1, i])
             else:
                 train.append([cell_measurement, rel_pos])
                 if i == map_7:
                     map_7.append(len(train)-1)
                 if i == cel:
-                    map_grid['train'].append(len(train)-1)
+                    map_grid['train'].append([len(train)-1, i])
 
 
 def getRealUnitCell(pos):
