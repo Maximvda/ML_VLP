@@ -99,7 +99,7 @@ class model_obj(object):
                 #prediction = self.model(input)[:,:,0,0]
                 prediction = self.model(input)
                 if self.estimate_error:
-                    predicted_dist.append(torch.mean(prediction[:,3].detach()).item())
+                    predicted_dist.append(torch.mean(prediction[:,2].detach()).item())
 
                 #Calculate the distance between predicted and target points
                 dist = calcDistance(prediction, output)
