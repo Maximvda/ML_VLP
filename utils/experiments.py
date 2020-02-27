@@ -7,51 +7,38 @@ import _thread
 import torch
 from threading import Thread
 
-class train(Thread):
-    def __init__ (self, args):
-        Thread.__init__(self)
-        self.args = args
-        self.args.device = torch.device('cuda', self.args.gpu_number)
-    def run(self):
-        self.args.is_train = True
-        dist = main(self.args)
-        #mutex.acquire()
-        val_dict[self.args.rotations] = dist
-        #mutex.release()
-        self.args.is_train = False
-        dist = main(self.args)
-        #mutex.acquire()
-        test_dict[self.args.rotations] = dist
-        #mutex.release()
-
 def experiment2(args):
-    val_dict = {}
-    test_dict = {}
+    val_dist = []
+    test_dist = []
     data_labels = []
-    threads = []
-    #mutex = _thread.allocate_lock()
 
     #Setup dir for all results of experiment 1
     pth = os.path.join(args.result_root, 'experiment_2_unit_cell')
     if not os.path.exists(pth):
         os.mkdir(pth)
-    count = args.gpu_number
     for rot in [False, True]:
-        args.gpu_number = count
-        count += 1
         args.result_root = os.path.join(pth, 'rotation_'+str(rot))
         if not os.path.exists(args.result_root):
             os.mkdir(args.result_root)
         args.rotations = rot
         data_labels.append('Rotations: {}'.format(rot))
-        current = train(args)
-        threads.append(current)
-        current.start()
 
-    for t in threads:
-        t.join()
+        self.args.is_train = True
+        val_dist.append(main(self.args))
+        self.args.is_train = False
+        test_dist.append(main(self.args))
 
-    print(val_dict)
+    #Create plot comparing the performance
+    filename = 'data_augmentation.pdf'
+    title = 'Performance improvement by adding rotation data augmentation.'
+    labels = ['Epoch', 'Distance (cm)']
+    makePlot(val_dist, filename, title, labels, pth, data_labels)
+    filename = 'Best_TX_input.pdf'
+    title = 'Distance error in function of number of TX'
+    labels = ['Number of TX', 'Distance (cm)']
+    makePlot(test_dist, filename, title, labels, pth)
+
+    print("Distance on test set for all models: ", test_dist)
 
 
 
