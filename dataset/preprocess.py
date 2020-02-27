@@ -17,17 +17,27 @@ def celToData(data, cel):
             data[cel-1], data[cel], data[cel+1],
             data[cel+5], data[cel+6], data[cel+7]]
 
-def getCelData(measurement, position, train, test):
+def getCelData(measurement, position, train, test, map_grid, map_7, map_25):
     for i in [7,8,9,10, 13, 14, 15, 16, 19, 20, 21, 22, 25, 26, 27, 28]:
         pos = getCelPosition(i)
+        cel = getRealUnitCell(position)
         dist = np.sqrt((pos[0]-position[0])**2+(pos[1]-position[1])**2)
         if dist <=750:
             cell_measurement = celToData(measurement,i)
             rel_pos = [(position[0]-pos[0])/750, (position[1]-pos[1])/750]
-            if i in [19,13,25,26,27]:
-                test.append([cell_measurement, rel_pos])
+            data = [cell_measurement, rel_pos]
+            if i in [19,13,25,26,27,20,14,24]:
+                test.append(data)
+                if i == 25:
+                    map_25.append(len(test)-1)
+                if i == cel:
+                    map_grid['test'].append(len(test)-1)
             else:
                 train.append([cell_measurement, rel_pos])
+                if i == map_7:
+                    map_7.append(len(train)-1)
+                if i == cel:
+                    map_grid['train'].append(len(train)-1)
 
 
 def getRealUnitCell(pos):
@@ -46,7 +56,7 @@ def getRealUnitCell(pos):
     cell = convolution2d(distances, max=False)
     return cell
 
-def readMatFile(file, train, test, heatmap_data, normalise):
+def readMatFile(file, train, test, map_grid, map_7, map_25, normalise):
     #Load matlab file
     mat = scipy.io.loadmat(file)
     #Initialising some variables
@@ -80,25 +90,23 @@ def readMatFile(file, train, test, heatmap_data, normalise):
                 if normalise:
                     tmp_data = (tmp_data-input_norm)/input_norm
 
-                getCelData(tmp_data, [pos_x, pos_y], train, test)
-
-                if it == 0 and mat['height']==176:
-                    heatmap_data.append(tmp_data)
+                getCelData(tmp_data, [pos_x, pos_y], train, test, map_grid, map_7, map_25)
 
 
-def saveData(train, test, dataroot, normalise, simulate=False, heatmap_grid=None):
+def saveData(train, test, map_grid, map_7, map_25, dataroot, normalise):
     #Randomly shuffling and splitting data in train, val and test set
     #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
     random.shuffle(train)
     dict = {'train': train[:int(0.8*len(train))],
             'val':   train[int(0.8*len(train)):],
             'test':  test,
-            'heatmap_grid': heatmap_grid}
+            'map_grid': map_grid,
+            'map_7': map_7,
+            'map_25': map_25}
 
     #Writing db to file
-    pretension = 'simulation_data_' if simulate else 'data_'
     extension = str(normalise) + '.data'
-    with open(os.path.join(dataroot,pretension + extension), 'wb') as f:
+    with open(os.path.join(dataroot,'data_' + extension), 'wb') as f:
         pickle.dump(dict, f)
 
 #Get offset of the first LED (X = 230mm and y =170mm)
@@ -115,11 +123,12 @@ def get_offsets(data):
 
 #Preprocess the Matlab database and store necessary variables into files for training
 def preprocess(dataroot, normalise):
-    train = []; test = []; heatmap_data = []
+    train = []; test = []; map_grid = {}; map_7 = []; map_25 = []
+    map_grid['train'] = []; map_grid['test'] = []
     pth = os.path.join(dataroot,'mat_files')
     files = os.listdir(pth)
     for file in files:
         if 'row' in file:
             print(file)
-            readMatFile(os.path.join(pth,file), train, test, heatmap_data, normalise)
-    saveData(train, test, dataroot, normalise, heatmap_grid=heatmap_data)
+            readMatFile(os.path.join(pth,file), train, test, map_grid,map_7,map_25, normalise)
+    saveData(train, test, map_grid, map_7, map_25, dataroot, normalise)

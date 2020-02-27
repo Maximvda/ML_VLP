@@ -3,18 +3,18 @@ import numpy as np
 
 #Just print the model to see the network layers
 class model(nn.Module):
-    def __init__(self, size, model_type, nf, extra_layers, use_sigmoid=True):
+    def __init__(self, size, output_nc, model_type, nf, extra_layers, use_sigmoid=True):
         super(model, self).__init__()
         if 'FC_expand' in model_type:
-            self.main = fc(size, nf, extra_layers, True)
+            self.main = fc(size,output_nc, nf, extra_layers, True)
         else:
-            self.main = fc(size, nf, extra_layers, False)
+            self.main = fc(size,output_nc, nf, extra_layers, False)
 
     def forward(self, input):
         return self.main(input)
 
 class fc(nn.Module):
-    def __init__(self, size, nf, extra_layers, expand):
+    def __init__(self, size,output_nc, nf, extra_layers, expand):
         super(fc, self).__init__()
         nb_layers = extra_layers + 1
         f_mult = 1
@@ -26,7 +26,7 @@ class fc(nn.Module):
             f_mult = 2**(int(np.log2(prev_f_mult)-1)) if (i >= nb_layers/2 and expand) else 2**(i+1)
             submodule = fc_layer(nf*prev_f_mult, nf*f_mult, submodule=submodule)
 
-        self.main = fc_layer(nf*f_mult, 3, final=True, submodule=submodule)
+        self.main = fc_layer(nf*f_mult, output_nc, final=True, submodule=submodule)
 
     def forward(self, input):
         return self.main(input)

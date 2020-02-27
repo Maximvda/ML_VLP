@@ -21,11 +21,14 @@ class model_obj(object):
         self.data_loader = setup_database(args); self.val_data_loader = setup_database(args, 'val')
         self.loss = [];     self.distance = []
         self.result_root = args.result_root
+        self.estimate_error = args.estimate_error
         self.min_distance = 3000
         self.step = int(len(self.data_loader)/5)
+        self.crit = nn.MSELoss(reduction='none')
 
         #Setup CNN and optimiser
-        self.model = model(9, args.model_type, args.nf, args.extra_layers).to(args.device)
+        output_nc = 3 if args.estimate_error else 2
+        self.model = model(9, output_nc, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
         #Load the previous training checkpoint
@@ -35,7 +38,6 @@ class model_obj(object):
         #Initialising the loss function Binary Cross Entropy loss
         #criterion = nn.BCELoss()
         criterion = nn.MSELoss()
-        crit = nn.MSELoss(reduction='none')
 
         print("Starting training loop")
         while self.learning:
@@ -48,8 +50,9 @@ class model_obj(object):
                 output = data[1].to(args.device)
                 #Forward through model and calculate loss
                 prediction = self.model(input)
-                loss = torch.sqrt(torch.sum(crit(prediction[:,0:2].detach(),output),dim=1)).view(-1,1)
-                output = torch.cat((output,loss),dim=1)
+                if args.estimate_error:
+                    loss = torch.sqrt(torch.sum(self.crit(prediction[:,0:2].detach(),output),dim=1)).view(-1,1)
+                    output = torch.cat((output,loss),dim=1)
                 #zero = torch.full(distance.size(), 0, device=args.device)
                 #loss = criterion(distance, zero)
                 loss = criterion(prediction, output)
@@ -86,6 +89,7 @@ class model_obj(object):
     def calcPerformance(self, device):
         print("Calculating performance on validation set.")
         distance = []
+        predicted_dist = []
         self.model.eval()
         for i, data in enumerate(self.val_data_loader):
             with torch.no_grad():
@@ -94,6 +98,8 @@ class model_obj(object):
 
                 #prediction = self.model(input)[:,:,0,0]
                 prediction = self.model(input)
+                if self.estimate_error:
+                    predicted_dist.append(torch.mean(torch.sqrt(torch.sum(self.crit(prediction[:,0:2].detach(),output),dim=1))).item())
 
                 #Calculate the distance between predicted and target points
                 dist = calcDistance(prediction, output)
@@ -101,9 +107,10 @@ class model_obj(object):
 
         #The average distance over the entire test set is calculated
         dist = sum(distance)/len(distance)
+        pred_dist = (sum(predicted_dist)/len(predicted_dist))*75
         #The distance is denormalised to cm's
         dist = dist*75
-        print("Distance on val set: {}cm".format(dist))
+        print("Distance on val set: {}cm\nPredicted distance by network: {}".format(dist,pred_dist))
 
         #If performance of new model is better then all previous ones it is saved
         if dist < self.min_distance:
