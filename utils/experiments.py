@@ -3,10 +3,6 @@ import os
 from main import main
 from utils.utils import makePlot
 
-import _thread
-import torch
-from threading import Thread
-
 def experiment2(args):
     val_dist = []
     test_dist = []
