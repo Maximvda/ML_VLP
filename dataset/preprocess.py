@@ -5,12 +5,10 @@ import os
 import pickle
 
 from utils.utils import convolution2d
+from utils.utils import getCelPosition
+from utils.utils import printProgBar
 
-def getCelPosition(cel):
-    return {7:[720, 725], 8:[1230, 670], 9:[1735, 670], 10:[2225, 725],
-            13:[730, 1170], 14:[1240, 1170], 15:[1745, 1170], 16:[2245, 1170],
-            19:[730, 1670], 20:[1240, 1670], 21:[1745, 1670], 22:[2245, 1670],
-            25:[720, 2225], 26:[1235, 2170], 27:[1720, 2170], 28:[2220, 2225]}[cel]
+
 
 def celToData(data, cel):
     return [data[cel-7], data[cel-6], data[cel-5],
@@ -20,7 +18,7 @@ def celToData(data, cel):
 def getCelData(measurement, position, train, test, map_grid, map_7, map_25):
     for i in [7,8,9,10, 13, 14, 15, 16, 19, 20, 21, 22, 25, 26, 27, 28]:
         pos = getCelPosition(i)
-        cel = getRealUnitCell(position)
+        cel = convolution2d(measurement)
         dist = np.sqrt((pos[0]-position[0])**2+(pos[1]-position[1])**2)
         if dist <=750:
             cell_measurement = celToData(measurement,i)
@@ -127,8 +125,10 @@ def preprocess(dataroot, normalise):
     map_grid['train'] = []; map_grid['test'] = []
     pth = os.path.join(dataroot,'mat_files')
     files = os.listdir(pth)
+    counter = 0
     for file in files:
+        counter += 1
+        printProgBar(counter,len(files))
         if 'row' in file:
-            print(file)
             readMatFile(os.path.join(pth,file), train, test, map_grid,map_7,map_25, normalise)
     saveData(train, test, map_grid, map_7, map_25, dataroot, normalise)

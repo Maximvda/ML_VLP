@@ -37,12 +37,33 @@ def augmentation(input, output, rotations, blockage):
 
 #Expansion of the Dataset class to fit our dataset
 class data(Dataset):
-    def __init__(self, path, split, model_type, rotations=False, blockage=False):
-        #Open the file with data
-        with open(path, 'rb') as f:
-            self.data = pickle.load(f)[split]
+    def __init__(self, path, split, rotations=False, blockage=False):
+        self.cel = None
+        if 'map' in split:
+            self.rotations = False
+            #Open the file with data
+            with open(path, 'rb') as f:
+                indices = pickle.load(f)[split]
+                if 'map_grid' in split:
+                    train = pickle.load(f)['train']
+                    test = pickle.load(f)['test']
+                    train = train[indices['train'][:][0]]
+                    test = test[indices['test'][:][0]]
+                    self.data = np.concatenate((train,test))
+                    self.cel = np.concatenate((indices['train'][:][1],indices['test'][:][1]))
+                elif 'map_7' in split:
+                    train = pickle.load(f)['train']
+                    self.data = train[indices]
+                else:
+                    test = pickle.load(f)['test']
+                    self.data = test[indices]
 
-        self.rotations = rotations
+        else:
+            #Open the file with data
+            with open(path, 'rb') as f:
+                self.data = pickle.load(f)[split]
+
+                self.rotations = rotations
         self.blockage = blockage
 
     def __len__(self):
@@ -51,7 +72,11 @@ class data(Dataset):
     def __getitem__(self, idx):
         #Load a specific data item
         input = self.data[idx][0]
-        output = self.data[idx][1]
+        if self.cel == None:
+            output = self.data[idx][1]
+        else:
+            output = [self.data[idx][1], self.cel[idx]]
+
         input, output = augmentation(input, output, self.rotations, self.blockage)
 
         #Transform to torch tensor and to desired dimension and type

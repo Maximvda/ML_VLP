@@ -12,14 +12,49 @@ from utils.utils import makeHeatMap
 from utils.utils import printProgBar
 from models.architecture import model
 
+from utils.utils import getCelPosition
+
+def calcMap(args,map):
+    crit = nn.MSELoss(reduction='none')
+    data = setup_database(args.args, map)
+    if 'map_grid' in map:
+        map = np.full((300,300),np.inf)
+        mapz = np.full((300,300),np.inf)
+    else:
+        map = np.full((-75,75),np.inf)
+        mapz = np.full((-75,75),np.inf)
+
+    for i, data in enumerate(data):
+        with torch.no_grad():
+            input = data[0].to(args.device)
+            if 'map_grid' in map:
+                output = data[1][0].to(args.device)
+                pos = getCelPosition(data[1][1])
+            else:
+                data[1].to(args.device)
+            prediction = args.best_model(input)
+            for it in range(0,len(input)):
+                pos = output[it]
+                if 'map_grid' in map:
+                    x = int(round(pos[0].item()*75)+pos[0]/10); y = int(round(pos[1].item()*75)+pos[1]/10)
+                else:
+                    x = int(round(pos[0].item()*75)); y = int(round(pos[1].item()*75))
+
+                dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
+                dist_z = torch.sqrt(torch.sum(crit(prediction[it][0:2],output),dim=1)).item()
+                map[x,y] = dist*75
+                mapz[x,y] = dist_z*75
+
+    makeHeatMap(map, 'TX_config_'+str(title)+'.pdf', 'Prediction error (cm)', self.result_root)
+    makeHeatMap(mapz, 'TX_config_'+str(title)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
+
 #Object to evaluate the performance of the model on the test set
 class eval_obj(object):
     def __init__(self, args):
         print("Setting up eval object")
         #Initialising some variables
         self.test_data_loader = setup_database(args, 'test')
-        if args.experiment==2:
-            self.heatMap_data = setup_database(args, 'heatmap_grid')
+        self.args = args
         self.device = args.device
         self.best_model = model(9, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.visualise = args.visualise
@@ -60,21 +95,6 @@ class eval_obj(object):
         return dist
 
     def heatMap(self, title):
-        map = np.full((300,300),np.inf)
-        mapz = np.full((300,300),np.inf)
-        for i, data in enumerate(self.heatMap_data):
-            with torch.no_grad():
-                input = data[0].to(self.device)
-                output = data[1].to(self.device)
-                prediction = self.best_model(input)
-                for it in range(0,len(input)):
-                    pos = output[it]
-                    x = int(round(pos[0].item()*300)); y = int(round(pos[1].item()*300))
-                    dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
-                    dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
-                    map[x,y] = dist*300
-                    mapz[x,y] = dist_z*200
-
-        makeHeatMap(map, 'TX_config_'+str(title)+'.pdf', 'Prediction error (cm)', self.result_root)
-        makeHeatMap(mapz, 'TX_config_'+str(title)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
-        return map
+        calcMap(self,'map_grid')
+        calcMap(self,'map_7')
+        calcMap(self,'map_25')

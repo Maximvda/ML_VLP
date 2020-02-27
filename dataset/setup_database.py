@@ -3,7 +3,6 @@ import os
 from torch.utils.data import DataLoader
 from dataset.dataset import data
 from dataset.preprocess import preprocess
-from simulation.simulation import testbed_simulation
 
 #Sets up a data loader for the requested split
 def setup_database(args, split="train"):
@@ -17,7 +16,7 @@ def setup_database(args, split="train"):
         preprocess(args.dataroot,args.normalise)
 
     #Initialise dataset and setup a data loader
-    dataset = data(path, split, args.model_type, args.rotations, args.blockage)
+    dataset = data(path, split, args.rotations, args.blockage)
     dataLoader = DataLoader(dataset, batch_size = args.batch_size, shuffle=True, num_workers=8)
 
     return dataLoader

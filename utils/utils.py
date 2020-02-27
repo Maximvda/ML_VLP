@@ -5,6 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
 
+def getCelPosition(cel):
+    return {7:[720, 725], 8:[1230, 670], 9:[1735, 670], 10:[2225, 725],
+            13:[730, 1170], 14:[1240, 1170], 15:[1745, 1170], 16:[2245, 1170],
+            19:[730, 1670], 20:[1240, 1670], 21:[1745, 1670], 22:[2245, 1670],
+            25:[720, 2225], 26:[1235, 2170], 27:[1720, 2170], 28:[2220, 2225]}[cel]
+
 def convolution2d(meas_array, max=True):
     likelyCell = []
     for i in range(0,4):
