@@ -20,9 +20,9 @@ def experiment2(args):
         data_labels.append('Rotations: {}'.format(rot))
 
         args.is_train = True
-        val_dist.append(main(self.args))
+        val_dist.append(main(args))
         args.is_train = False
-        test_dist.append(main(self.args))
+        test_dist.append(main(args))
 
     #Create plot comparing the performance
     filename = 'data_augmentation.pdf'
