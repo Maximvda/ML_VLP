@@ -20,6 +20,7 @@ offset(4,:) = [35+1630 10+1550];
 if(~exist('acro','var'))
     disp('running startup script');
     [acro,mx] = startup(no_tx,max_no_rx,offset);
+    sockets = init_conn(rx_id);
 end
 
 resolution = 10; % in mm
@@ -81,5 +82,6 @@ end
 disp('Close sockets');
 if(~isempty(mx))
     fclose(mx);
+    fclose(sockets);
     delete(mx);
 end
