@@ -19,9 +19,9 @@ def experiment2(args):
         args.rotations = rot
         data_labels.append('Rotations: {}'.format(rot))
 
-        self.args.is_train = True
+        args.is_train = True
         val_dist.append(main(self.args))
-        self.args.is_train = False
+        args.is_train = False
         test_dist.append(main(self.args))
 
     #Create plot comparing the performance
