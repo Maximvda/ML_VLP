@@ -43,19 +43,20 @@ class data(Dataset):
             self.rotations = False
             #Open the file with data
             with open(path, 'rb') as f:
-                indices = pickle.load(f)[split]
+                data = pickle.load(f)
+                indices = data[split]
                 if 'map_grid' in split:
-                    train = pickle.load(f)['train']
-                    test = pickle.load(f)['test']
+                    train = data['train']
+                    test = data['test']
                     train = train[indices['train'][:][0]]
                     test = test[indices['test'][:][0]]
                     self.data = np.concatenate((train,test))
                     self.cel = np.concatenate((indices['train'][:][1],indices['test'][:][1]))
                 elif 'map_7' in split:
-                    train = pickle.load(f)['train']
+                    train = data['train']
                     self.data = train[indices]
                 else:
-                    test = pickle.load(f)['test']
+                    test = data['test']
                     self.data = test[indices]
 
         else:
