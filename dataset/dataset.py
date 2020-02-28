@@ -38,34 +38,24 @@ def augmentation(input, output, rotations, blockage):
 #Expansion of the Dataset class to fit our dataset
 class data(Dataset):
     def __init__(self, path, split, rotations=False, blockage=False):
+        self.blockage = blockage
+
+        with open(path, 'rb') as f:
+            dict = pickle.load(f)
+        data = np.array(dict['data'])
+
         self.cel = None
+
         if 'map' in split:
             self.rotations = False
-            #Open the file with data
-            with open(path, 'rb') as f:
-                data = pickle.load(f)
-                indices = data[split]
-                if 'map_grid' in split:
-                    train = data['train']
-                    test = data['test']
-                    train = train[indices['train'][:][0]]
-                    test = test[indices['test'][:][0]]
-                    self.data = np.concatenate((train,test))
-                    self.cel = np.concatenate((indices['train'][:][1],indices['test'][:][1]))
-                elif 'map_7' in split:
-                    train = data['train']
-                    self.data = train[indices]
-                else:
-                    test = data['test']
-                    self.data = test[indices]
-
+            if 'map_grid' == split:
+                self.data = data[dict[split]['index']]
+                self.cel = dict[split]['cel']
+            else:
+                self.data = data[dict[split]]
         else:
-            #Open the file with data
-            with open(path, 'rb') as f:
-                self.data = pickle.load(f)[split]
-
-                self.rotations = rotations
-        self.blockage = blockage
+            self.data = data[dict[split]]
+            self.rotations = rotations
 
     def __len__(self):
         return len(self.data)
@@ -73,16 +63,15 @@ class data(Dataset):
     def __getitem__(self, idx):
         #Load a specific data item
         input = self.data[idx][0]
-        if self.cel == None:
-            output = self.data[idx][1]
-        else:
-            output = [self.data[idx][1], self.cel[idx]]
+        output = torch.FloatTensor(self.data[idx][1])
+        if self.cel != None:
+            output = [output, self.cel[idx]]
 
         input, output = augmentation(input, output, self.rotations, self.blockage)
 
         #Transform to torch tensor and to desired dimension and type
         input = torch.FloatTensor(input)
         #input = input.type(torch.FloatTensor)
-        output = torch.FloatTensor(output)
+        #output = torch.FloatTensor(output)
 
         return input, output

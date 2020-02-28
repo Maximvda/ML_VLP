@@ -57,7 +57,7 @@ def experiment2(args):
     pth = os.path.join(args.result_root, 'experiment_2_unit_cell')
     if not os.path.exists(pth):
         os.mkdir(pth)
-    for rot in [False, True]:
+    for rot in [False]:
         args.result_root = os.path.join(pth, 'rotation_'+str(rot))
         if not os.path.exists(args.result_root):
             os.mkdir(args.result_root)

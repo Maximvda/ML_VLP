@@ -14,10 +14,10 @@ from models.architecture import model
 
 from utils.utils import getCelPosition
 
-def calcMap(args,map):
-    crit = nn.MSELoss(reduction='none')
-    data = setup_database(args.args, map)
-    if 'map_grid' in map:
+def calcMap(args,map_split):
+    remember = []
+    data = setup_database(args.args, map_split)
+    if 'map_grid' == map_split:
         map = np.full((300,300),np.inf)
         mapz = np.full((300,300),np.inf)
     else:
@@ -27,26 +27,33 @@ def calcMap(args,map):
     for i, data in enumerate(data):
         with torch.no_grad():
             input = data[0].to(args.device)
-            if 'map_grid' in map:
+            if 'map_grid' == map_split:
                 output = data[1][0].to(args.device)
-                pos = getCelPosition(data[1][1])
+                cels = data[1][1]
             else:
-                data[1].to(args.device)
+                output = data[1].to(args.device)
             prediction = args.best_model(input)
             for it in range(0,len(input)):
                 pos = output[it]
-                if 'map_grid' in map:
-                    x = int(round(pos[0].item()*75)+pos[0]/10); y = int(round(pos[1].item()*75)+pos[1]/10)
+                if 'map_grid' == map_split:
+                    pos_cel = getCelPosition(cels[it].item())
+                    x = int(round(pos[0].item()*75+pos_cel[0]/10)); y = int(round(pos[1].item()*75+pos_cel[1]/10))
+                    #if [x,y] in remember:
+                        #print('duplicate', remember)
+                        #print('\nPosition', pos_cel, pos)
+                        #print('\nFinal',x,y)
+                    remember.append([x,y])
                 else:
                     x = int(round(pos[0].item()*75)); y = int(round(pos[1].item()*75))
 
                 dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
-                dist_z = torch.sqrt(torch.sum(crit(prediction[it][0:2],output),dim=1)).item()
+                dist_z = prediction[it][2].item()
                 map[x,y] = dist*75
                 mapz[x,y] = dist_z*75
 
-    makeHeatMap(map, 'TX_config_'+str(map)+'.pdf', 'Prediction error (cm)', self.result_root)
-    makeHeatMap(mapz, 'TX_config_'+str(map)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
+    print(len(remember))
+    makeHeatMap(map, 'TX_config_'+str(map_split)+'.pdf', 'Prediction error (cm)', args.result_root)
+    makeHeatMap(mapz, 'TX_config_'+str(map_split)+'_height.pdf', 'Height prediction error (cm)', args.result_root)
 
 #Object to evaluate the performance of the model on the test set
 class eval_obj(object):

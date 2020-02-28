@@ -18,11 +18,14 @@ def convolution2d(meas_array, max=True):
             likelyCell.append(meas_array[0+j+6*i]+meas_array[1+j+6*i]+meas_array[2+j+6*i]+
                 meas_array[0+j+6*(i+1)]+meas_array[1+j+6*(i+1)]+meas_array[2+j+6*(i+1)]+
                 meas_array[0+j+6*(i+2)]+meas_array[1+j+6*(i+2)]+meas_array[0+j+6*(i+2)])
+    #print(likelyCell)
     if max:
         ind = np.argmax(likelyCell)
     else:
         ind = np.argmin(likelyCell)
-    return int(ind+7+6*np.floor(ind/4))
+    #print(ind)
+    #print(int(ind+7+6*np.floor(ind/4)))
+    return int(ind+7+2*np.floor(ind/4))
 
 #Shows a grid of the possible positions of the measurement device
 #The predicted positions for a batch are plotted in red
