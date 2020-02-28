@@ -14,7 +14,7 @@ def main(args):
         #Best performing model is loaded and evaluated on the test set
         evalObj = eval_obj(args)
         if args.experiment==2:
-            evalObj.heatMap(args.TX_config)
+            evalObj.heatMap()
         #evalObj.demo([[500,750],[1000,1750]], [[100,250],[4000,2750]])
         return evalObj.demo()
 

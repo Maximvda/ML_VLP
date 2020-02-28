@@ -45,8 +45,8 @@ def calcMap(args,map):
                 map[x,y] = dist*75
                 mapz[x,y] = dist_z*75
 
-    makeHeatMap(map, 'TX_config_'+str(title)+'.pdf', 'Prediction error (cm)', self.result_root)
-    makeHeatMap(mapz, 'TX_config_'+str(title)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
+    makeHeatMap(map, 'TX_config_'+str(map)+'.pdf', 'Prediction error (cm)', self.result_root)
+    makeHeatMap(mapz, 'TX_config_'+str(map)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
 
 #Object to evaluate the performance of the model on the test set
 class eval_obj(object):
@@ -95,7 +95,7 @@ class eval_obj(object):
         print("Bias on x: {}\ton y: {}".format(sum(x)/len(x), sum(y)/len(y)))
         return dist
 
-    def heatMap(self, title):
+    def heatMap(self):
         calcMap(self,'map_grid')
         calcMap(self,'map_7')
         calcMap(self,'map_25')
