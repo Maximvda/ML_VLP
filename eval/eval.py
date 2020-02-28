@@ -56,7 +56,8 @@ class eval_obj(object):
         self.test_data_loader = setup_database(args, 'test')
         self.args = args
         self.device = args.device
-        self.best_model = model(9, args.model_type, args.nf, args.extra_layers).to(args.device)
+        output_nc = 3 if args.estimate_error else 2
+        self.best_model = model(9,output_nc, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.visualise = args.visualise
 
         loadBestModel(args.result_root, self.best_model, args.device)
