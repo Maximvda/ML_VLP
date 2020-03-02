@@ -17,6 +17,7 @@ class model_obj(object):
         print("Setting up CNN model")
 
         self.result_root = args.result_root
+        output_nc = 3 if args.estimate_error else 2
         self.model = model(9, output_nc, args.model_type, args.nf, args.extra_layers).to(args.device)
 
         #Load the previous training checkpoint
@@ -34,7 +35,6 @@ class model_obj(object):
         self.crit = nn.MSELoss(reduction='none')
 
         #Setup CNN and optimiser
-        output_nc = 3 if args.estimate_error else 2
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
 
