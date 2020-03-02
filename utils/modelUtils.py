@@ -48,6 +48,7 @@ def loadCheckpoint(self, device):
     else:
         self.model.apply(weights_init)
         self.model.to(device)
+        self.learning = True
 
 
 
