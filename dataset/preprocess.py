@@ -25,7 +25,7 @@ def getCelData(measurement, position, data, train, test, map_grid, map_7, map_25
 
         if dist <=1250:
             cell_measurement = celToData(measurement,i)
-            rel_pos = [(position[0]-pos[0])/750, (position[1]-pos[1])/750]
+            rel_pos = [(position[0]-pos[0])/1250, (position[1]-pos[1])/1250]
             data.append([cell_measurement, rel_pos])
             if i in [19,13,25,26,27,20,14,24]:
                 test.append(len(data)-1)
@@ -35,9 +35,9 @@ def getCelData(measurement, position, data, train, test, map_grid, map_7, map_25
             if bool:
                 if i == 25:
                     map_25.append(len(data)-1)
-                elif i == 7:
+                if i == 7:
                     map_7.append(len(data)-1)
-                elif i == cel:
+                if i == cel:
                     map_grid['index'].append(len(data)-1)
                     map_grid['cel'].append(cel)
 
@@ -99,6 +99,7 @@ def readMatFile(file, data, train, test, map_grid, map_7, map_25, normalise):
 def saveData(data, train, test, map_grid, map_7, map_25, dataroot, normalise):
     #Randomly shuffling and splitting data in train, val and test set
     #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
+    print("Saving data...")
     random.shuffle(train)
     dict = {'data': data,
             'train': train[:int(0.8*len(train))],

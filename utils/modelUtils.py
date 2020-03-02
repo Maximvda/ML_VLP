@@ -30,22 +30,26 @@ def loadCheckpoint(self, device):
     if os.path.isfile(resultpath):
         print("Restoring checkpoint")
         checkpoint = torch.load(resultpath, map_location=device)
-        self.model.load_state_dict(checkpoint['model'])
-        self.optim.load_state_dict(checkpoint['optim'])
+        self.learning = checkpoint['learning']
         self.epoch = checkpoint['epoch']
         self.loss = checkpoint['loss']
-        self.learning = checkpoint['learning']
         self.min_distance = checkpoint['min_distance']
         self.distance = checkpoint['distance']
         self.best_epoch = checkpoint['best_epoch']
-        for state in self.optim.state.values():
-            for k, v in state.items():
-                if torch.is_tensor(v):
-                    state[k] = v.to(device)
+        if self.learning:
+            self.model.load_state_dict(checkpoint['model'])
+            self.optim.load_state_dict(checkpoint['optim'])
+            for state in self.optim.state.values():
+                for k, v in state.items():
+                    if torch.is_tensor(v):
+                        state[k] = v.to(device)
+
+            self.model.to(device)
     else:
         self.model.apply(weights_init)
+        self.model.to(device)
 
-    self.model.to(device)
+
 
 #Saves the entire state of the training process to continue afterwards
 def saveCheckpoint(self):

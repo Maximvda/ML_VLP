@@ -39,7 +39,7 @@ def augmentation(input, output, rotations, blockage):
 class data(Dataset):
     def __init__(self, path, split, rotations=False, blockage=False):
         self.blockage = blockage
-
+        print("Loading {} data...".format(split))
         with open(path, 'rb') as f:
             dict = pickle.load(f)
         data = np.array(dict['data'])

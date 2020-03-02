@@ -18,23 +18,26 @@ def experiment1(args):
     if not os.path.exists(pth):
         os.mkdir(pth)
 
-    #Loop over all possible TX_inputs
-    for blockage in [0,0.1,0.2,0.3,0.4,0.5,0.6]:
-        #Setup result root
-        args.result_root = os.path.join(pth, 'blockage_' + str(blockage))
-        if not os.path.exists(args.result_root):
-            os.mkdir(args.result_root)
 
-        args.blockage = blockage
-        data_labels.append('Blockage percentage: {}'.format(blockage))
+    for rot in [False, True]:
+        args.rotations = rot
+        #Loop over all possible TX_inputs
+        for blockage in [0,0.1,0.2,0.3,0.4,0.5,0.6]:
+            #Setup result root
+            args.result_root = os.path.join(pth, 'blockage_{}_rot_{}'.format(blockage,rot))
+            if not os.path.exists(args.result_root):
+                os.mkdir(args.result_root)
 
-        #Train the model for the specific TX_input
-        args.is_train = True
-        val_dist.append(main(args))
+            args.blockage = blockage
+            data_labels.append('Blockage percentage: {}'.format(blockage))
 
-        #If model is trained check achieved distance on test set
-        args.is_train = False
-        test_dist.append(main(args))
+            #Train the model for the specific TX_input
+            args.is_train = True
+            val_dist.append(main(args))
+
+            #If model is trained check achieved distance on test set
+            args.is_train = False
+            test_dist.append(main(args))
 
     #Create plot comparing the performance
     filename = 'TX_input_distance.pdf'

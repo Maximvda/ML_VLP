@@ -15,14 +15,15 @@ from models.architecture import model
 from utils.utils import getCelPosition
 
 def calcMap(args,map_split):
-    remember = []
+    error = []
+    pred_error = []
     data = setup_database(args.args, map_split)
     if 'map_grid' == map_split:
         map = np.full((300,300),np.inf)
         mapz = np.full((300,300),np.inf)
     else:
-        map = np.full((-75,75),np.inf)
-        mapz = np.full((-75,75),np.inf)
+        map = np.full((250,250),np.inf)
+        mapz = np.full((250,250),np.inf)
 
     for i, data in enumerate(data):
         with torch.no_grad():
@@ -42,18 +43,21 @@ def calcMap(args,map_split):
                         #print('duplicate', remember)
                         #print('\nPosition', pos_cel, pos)
                         #print('\nFinal',x,y)
-                    remember.append([x,y])
                 else:
-                    x = int(round(pos[0].item()*75)); y = int(round(pos[1].item()*75))
+                    x = int(round(pos[0].item()*125))+125; y = int(round(pos[1].item()*125))+125
 
-                dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
+                dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2).item()
+                error.append(dist)
                 dist_z = prediction[it][2].item()
-                map[x,y] = dist*75
-                mapz[x,y] = dist_z*75
+                pred_error.append(dist_z)
+                map[x,y] = dist*125
+                mapz[x,y] = dist_z*125
 
-    print(len(remember))
-    makeHeatMap(map, 'TX_config_'+str(map_split)+'.pdf', 'Prediction error (cm)', args.result_root)
-    makeHeatMap(mapz, 'TX_config_'+str(map_split)+'_height.pdf', 'Height prediction error (cm)', args.result_root)
+    error = (sum(error)/len(error))*125
+    pred_error = (sum(pred_error)/len(pred_error))*125
+
+    makeHeatMap(map, 'TX_config_'+str(map_split)+'.pdf', 'Prediction error (cm)', error, args.result_root)
+    makeHeatMap(mapz, 'TX_config_'+str(map_split)+'_height.pdf', 'Height prediction error (cm)',pred_error, args.result_root)
 
 #Object to evaluate the performance of the model on the test set
 class eval_obj(object):
@@ -97,7 +101,7 @@ class eval_obj(object):
         #The average distance over the entire test set is calculated
         dist = sum(filter(None,distance))/len(distance)
         #The distance is denormalised to cm's
-        dist = dist*75
+        dist = dist*125
         print("\nDistance on test set\tis: {}cm".format(dist))
         print("Bias on x: {}\ton y: {}".format(sum(x)/len(x), sum(y)/len(y)))
         return dist

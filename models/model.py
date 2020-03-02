@@ -15,12 +15,18 @@ from models.architecture import model
 class model_obj(object):
     def __init__(self,args):
         print("Setting up CNN model")
+
+        self.result_root = args.result_root
+
+        #Load the previous training checkpoint
+        loadCheckpoint(self, args.device)
+        if not self.learning:
+            return
         #Initialise some variables
         self.epoch = 0;     self.best_epoch = 0;
         self.learning = True
         self.data_loader = setup_database(args); self.val_data_loader = setup_database(args, 'val')
         self.loss = [];     self.distance = []
-        self.result_root = args.result_root
         self.estimate_error = args.estimate_error
         self.min_distance = 3000
         self.step = int(len(self.data_loader)/5)
@@ -31,10 +37,11 @@ class model_obj(object):
         self.model = model(9, output_nc, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
 
-        #Load the previous training checkpoint
-        loadCheckpoint(self, args.device)
+
 
     def train(self, args):
+        if not self.learning:
+            return
         #Initialising the loss function Binary Cross Entropy loss
         #criterion = nn.BCELoss()
         criterion = nn.MSELoss()
@@ -107,9 +114,9 @@ class model_obj(object):
 
         #The average distance over the entire test set is calculated
         dist = sum(distance)/len(distance)
-        pred_dist = (sum(predicted_dist)/len(predicted_dist))*75
+        pred_dist = (sum(predicted_dist)/len(predicted_dist))*125
         #The distance is denormalised to cm's
-        dist = dist*75
+        dist = dist*125
         print("Distance on val set: {}cm\nPredicted distance by network: {}".format(dist,pred_dist))
 
         #If performance of new model is better then all previous ones it is saved

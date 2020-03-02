@@ -82,11 +82,12 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
     plt.savefig(resultpath)
     plt.close()
 
-def makeHeatMap(map, filename, title, result_root):
+def makeHeatMap(map, filename, title, error, result_root):
     #plt.figure(figsize=(10,10))
-    plt.imshow(map, cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
+    plt.imshow(map.T, cmap='viridis', vmin=0, vmax=5, interpolation='nearest')
     plt.colorbar()
-    plt.title(title)
+    plt.suptitle(title,fontsize=14, fontweight='bold')
+    plt.title('Average error: {} cm'.format(round(error,2)))
     plt.xlabel('x-axis (cm)')
     plt.ylabel('y-axis (cm)')
     plt.gca().invert_yaxis()
