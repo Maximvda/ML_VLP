@@ -16,18 +16,18 @@ def augmentation(input, output, rotations, blockage):
         prob = random.random()
         #rotate data 25deg
         if 0.25 < prob <= 0.5:
-            output = [output[1], -output[0]]
+            output = torch.FloatTensor([output[1], -output[0]])
             input = [input[2], input[5], input[8],
                     input[1], input[4], input[7],
                     input[0], input[3], input[6]]
         #rotate data 50 deg
         elif prob <= 0.75:
-            output = [-output[0], -output[1]]
+            output = torch.FloatTensor([-output[0], -output[1]])
             input = [input[8], input[7], input[6],
                     input[5], input[4], input[3],
                     input[2], input[1], input[0]]
         elif prob <= 1:
-            output = [-output[1], output[0]]
+            output = torch.FloatTensor([-output[1], output[0]])
             input = [input[6], input[3], input[0],
                     input[7], input[4], input[1],
                     input[8], input[5], input[2]]
