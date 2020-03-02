@@ -85,7 +85,7 @@ class model_obj(object):
                 saveCheckpoint(self)
 
             #Stop training if there has been no improvement over the last 50 epochs
-            if self.epoch - self.best_epoch >= 1:
+            if self.epoch - self.best_epoch >= 25:
                 self.learning = False
 
 

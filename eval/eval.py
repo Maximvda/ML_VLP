@@ -38,7 +38,7 @@ def calcMap(args,map_split):
                 pos = output[it]
                 if 'map_grid' == map_split:
                     pos_cel = getCelPosition(cels[it].item())
-                    x = int(round(pos[0].item()*75+pos_cel[0]/10)); y = int(round(pos[1].item()*75+pos_cel[1]/10))
+                    x = int(round(pos[0].item()*125+pos_cel[0]/10)); y = int(round(pos[1].item()*125+pos_cel[1]/10))
                     #if [x,y] in remember:
                         #print('duplicate', remember)
                         #print('\nPosition', pos_cel, pos)
