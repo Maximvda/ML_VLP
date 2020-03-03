@@ -15,10 +15,13 @@ from models.architecture import model
 class model_obj(object):
     def __init__(self,args):
         print("Setting up CNN model")
-
         self.result_root = args.result_root
         output_nc = 3 if args.estimate_error else 2
         self.model = model(9, output_nc, args.model_type, args.nf, args.extra_layers).to(args.device)
+        self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
+        if torch.cuda.device_count() > 1:
+            print("Using ", torch.cuda.deivce_count(), "GPUs.")
+            self.model = nn.DataParallel(self.model)
 
         #Load the previous training checkpoint
         loadCheckpoint(self, args.device)
@@ -35,8 +38,6 @@ class model_obj(object):
         self.crit = nn.MSELoss(reduction='none')
 
         #Setup CNN and optimiser
-        self.optim = optim.Adam(self.model.parameters(), args.learning_rate, betas=(0.5, 0.999))
-
 
 
     def train(self, args):
