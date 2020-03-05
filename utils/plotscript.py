@@ -15,13 +15,26 @@ def getDist(root, list):
         dist.append(min(cp['distance']))
     return dist
 
+def checktest(args):
+    pth = os.path.join(args.result_root, 'experiment_1_unit_cell')
+    dist = {}
+    for j in [False, True]:
+        dist[j] = []
+        for i in [0,0.1,0.2,0.3,0.4,0.5,0.6]:
+            args.result_root = os.path.join(pth, 'blockage_' + str(i) + '_rot_' + str(j))
+            args.blockage = i
+            args.rotations = j
+            evalObj = eval_obj(args)
+            dist[j].append(evalObj.demo())
+            eval_obj.heatmap()
+
+    distance = [dist['False'], dist['True']]
+    data_labels = ['Data augmentation: False', 'Data augmentation: True']
+    makePlot(distance, 'exp_test.pdf', 'Error on test set', ['Blockage probability', 'Distance (cm)'], pth, data_labels)
+
+
 def plotExp2(args):
     #Plots for experiment 2
-    args.TX_input = 9
-    args.nf = 256
-    args.extra_layers = 3
-    args.model_type = 'FC_expand'
-    args.dynamic = True
     args.experiment=2
     pth = os.path.join(args.result_root, 'experiment_4')
 
@@ -77,51 +90,22 @@ def plotExp2(args):
 def plotscript(args):
     root = args.result_root
     #Plots for experiment 1
-    pth = os.path.join(args.result_root, 'experiment_1')
+    pth = os.path.join(args.result_root, 'experiment_1_unit_cell')
     list = []
-    for i in range(36):
-        list.append('TX_input_'+str(i+1))
-    dist = getDist(pth, list)
-    dist.insert(0,np.inf)
-    makePlot(dist, 'Best_TX_input.pdf', 'Error on validation set', ['Number of TX', 'Distance (cm)'], pth)
-
-    plotExp2(args)
+    #plotExp2(args)
 
     #Plots for experiment 3
     pth = os.path.join(root,'experiment_3')
 
-    list = ['FC_32_0', 'FC_32_1', 'FC_32_2', 'FC_32_3', 'FC_32_4']
-    dist_FC_32 = getDist(pth, list)
-    dist_FC_32.insert(0,np.inf)
-    list = ['FC_64_0', 'FC_64_1', 'FC_64_2', 'FC_64_3', 'FC_64_4']
-    dist_FC_64 = getDist(pth, list)
-    dist_FC_64.insert(0,np.inf)
-    list = ['FC_128_0', 'FC_128_1', 'FC_128_2', 'FC_128_3', 'FC_128_4']
-    dist_FC_128 = getDist(pth, list)
-    dist_FC_128.insert(0,np.inf)
-    list = ['FC_256_0', 'FC_256_1', 'FC_256_2', 'FC_256_3', 'FC_256_4']
-    dist_FC_256 = getDist(pth, list)
-    dist_FC_256.insert(0,np.inf)
-    dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
-    data_labels = ['number of features = 32', 'number of features = 64', 'number of features = 128', 'number of features = 256']
+    list = ['blockage_0_rot_False', 'blockage_0.1_rot_False', 'blockage_0.2_rot_False','blockage_0.3_rot_False',
+            'blockage_0.4_rot_False', 'blockage_0.5_rot_False', 'blockage_0.6_rot_False']
+    dist_rot_false = getDist(pth, list)
+    list = ['blockage_0_rot_True', 'blockage_0.1_rot_True', 'blockage_0.2_rot_True','blockage_0.3_rot_True',
+            'blockage_0.4_rot_True', 'blockage_0.5_rot_True', 'blockage_0.6_rot_True']
+    dist_rot_true = getDist(pth, list)
+    dist = [dist_rot_false, dist_rot_true]
+    data_labels = ['Data augmentation: False', 'Data augmentation: True']
 
-    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], pth, data_labels)
+    makePlot(dist, 'exp.pdf', 'Error on validation set', ['Blockage probability', 'Distance (cm)'], pth, data_labels)
 
-
-
-    list = ['FC_128_0', 'FC_128_1', 'FC_128_2', 'FC_128_3', 'FC_128_4']
-    dist_FC_32 = getDist(pth, list)
-    dist_FC_32.insert(0,np.inf)
-    list = ['FC_256_0', 'FC_256_1', 'FC_256_2', 'FC_256_3', 'FC_256_4']
-    dist_FC_64 = getDist(pth, list)
-    dist_FC_64.insert(0,np.inf)
-    list = ['FC_expand_128_0', 'FC_expand_128_1', 'FC_expand_128_2', 'FC_expand_128_3', 'FC_expand_128_4']
-    dist_FC_128 = getDist(pth, list)
-    dist_FC_128.insert(0,np.inf)
-    list = ['FC_expand_256_0', 'FC_expand_256_1', 'FC_expand_256_2', 'FC_expand_256_3', 'FC_expand_256_4']
-    dist_FC_256 = getDist(pth, list)
-    dist_FC_256.insert(0,np.inf)
-    dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
-    data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
-
-    makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], pth, data_labels)
+    checktest(args)
