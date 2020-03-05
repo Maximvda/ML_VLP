@@ -44,7 +44,7 @@ def calcMap(args,map_split):
                         #print('\nPosition', pos_cel, pos)
                         #print('\nFinal',x,y)
                 else:
-                    x = int(round(pos[0].item()*125))+125; y = int(round(pos[1].item()*125))+125
+                    x = int(round(pos[0].item()*125+125)); y = int(round(pos[1].item()*125+125))
 
                 dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2).item()
                 error.append(dist)
@@ -56,8 +56,8 @@ def calcMap(args,map_split):
     error = (sum(error)/len(error))*125
     pred_error = (sum(pred_error)/len(pred_error))*125
 
-    makeHeatMap(map, 'TX_config_'+str(map_split)+'.pdf', 'Prediction error (cm)', error, args.result_root)
-    makeHeatMap(mapz, 'TX_config_'+str(map_split)+'_height.pdf', 'Height prediction error (cm)',pred_error, args.result_root)
+    makeHeatMap(map, str(map_split)+'.pdf', 'Prediction error (cm)', error, args.result_root)
+    makeHeatMap(mapz, str(map_split)+'_height.pdf', 'Height prediction error (cm)',pred_error, args.result_root)
 
 #Object to evaluate the performance of the model on the test set
 class eval_obj(object):

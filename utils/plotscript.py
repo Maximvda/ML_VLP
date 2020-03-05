@@ -28,7 +28,7 @@ def checktest(args):
             dist[j].append(evalObj.demo())
             evalObj.heatMap()
 
-    distance = [dist['False'], dist['True']]
+    distance = [dist[False], dist[True]]
     data_labels = ['Data augmentation: False', 'Data augmentation: True']
     makePlot(distance, 'exp_test.pdf', 'Error on test set', ['Blockage probability', 'Distance (cm)'], pth, data_labels)
 
