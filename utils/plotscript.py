@@ -91,11 +91,6 @@ def plotscript(args):
     root = args.result_root
     #Plots for experiment 1
     pth = os.path.join(args.result_root, 'experiment_1_unit_cell')
-    list = []
-    #plotExp2(args)
-
-    #Plots for experiment 3
-    pth = os.path.join(root,'experiment_3')
 
     list = ['blockage_0_rot_False', 'blockage_0.1_rot_False', 'blockage_0.2_rot_False','blockage_0.3_rot_False',
             'blockage_0.4_rot_False', 'blockage_0.5_rot_False', 'blockage_0.6_rot_False']
