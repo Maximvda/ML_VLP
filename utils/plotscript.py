@@ -26,7 +26,7 @@ def checktest(args):
             args.rotations = j
             evalObj = eval_obj(args)
             dist[j].append(evalObj.demo())
-            eval_obj.heatMap()
+            evalObj.heatMap()
 
     distance = [dist['False'], dist['True']]
     data_labels = ['Data augmentation: False', 'Data augmentation: True']

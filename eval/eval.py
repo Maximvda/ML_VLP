@@ -110,4 +110,3 @@ class eval_obj(object):
         calcMap(self,'map_grid')
         calcMap(self,'map_7')
         calcMap(self,'map_25')
-        return None
