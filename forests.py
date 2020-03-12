@@ -11,19 +11,24 @@ with open(dataroot, 'rb') as f:
 
 data = np.array(dict['data'])
 
+print("Creating train data")
 train_data = data[dict['train']]
 input_train = np.array(train_data[:,0][:].tolist())
 output_train = np.array(train_data[:,1][:].tolist())
 
+print("Creating val data")
 val_data = data[dict['val']]
 input_val = np.array(val_data[:,0][:].tolist())
 output_val = np.array(val_data[:,1][:].tolist())
 
+print("Creating test data")
 test_data = data[dict['test']]
 input_test = np.array(test_data[:,0][:].tolist())
 output_test = np.array(test_data[:,1][:].tolist())
 
-rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
+print("Start fitting")
+
+rf = RandomForestRegressor(n_estimators = 1000, random_state = 42, n_jobs=32)
 rf.fit(input_train, output_train)
 
 prediction = rf.predict(input_val)
