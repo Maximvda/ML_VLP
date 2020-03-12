@@ -7,11 +7,14 @@ import random
 from torch.utils.data import Dataset
 
 def augmentation(input, output, rotations, blockage):
-    prob = random.random()
-    if 0.12 < prob < blockage:
-        indices = np.random.choice(np.arange(9), replace=False, size=int(9*prob))
-        for ind in indices:
-            input[ind] = -1
+    #prob = random.random()
+    #if 0.12 < prob < blockage:
+    #    indices = np.random.choice(np.arange(9), replace=False, size=int(9*prob))
+    #    for ind in indices:
+    #        input[ind] = -1
+    indices = np.random.choice(np.arange(9), replace=False, size=int(blockage*10))
+    for ind in indices:
+        input[ind] = -1
     if rotations:
         prob = random.random()
         #rotate data 25deg

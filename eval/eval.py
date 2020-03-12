@@ -39,12 +39,8 @@ def calcMap(args,map_split):
                 if 'map_grid' == map_split:
                     pos_cel = getCelPosition(cels[it].item())
                     x = int(round(pos[0].item()*125+pos_cel[0]/10)); y = int(round(pos[1].item()*125+pos_cel[1]/10))
-                    #if [x,y] in remember:
-                        #print('duplicate', remember)
-                        #print('\nPosition', pos_cel, pos)
-                        #print('\nFinal',x,y)
                 else:
-                    x = int(round(pos[0].item()*125+125)); y = int(round(pos[1].item()*125+125))
+                    x = int(round(pos[0].item()*125+125+1e-04)); y = int(round(pos[1].item()*125+125+1e-04))
 
                 dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2).item()
                 error.append(dist)

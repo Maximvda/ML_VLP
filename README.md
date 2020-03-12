@@ -45,20 +45,11 @@ The second experiment investigates the performance difference between different 
 ToDo
 
 ## Required features (ToDo)
-- [x] Model with only couple of LEDs as input and their ID
-- [x] Model with a less dense LED grid and different configurations
-- [x] Create plot of distance for increasingly number of TX being used
-- [x] Dynamic model size depending on number of inputs. **Example:** for TX between 26 and 36 -> 6x6 network for TX between 17 and 25 -> 5x5 network
-- [ ] Experiment difference between dynamic and fixed model, do it for good TX_config
-- [x] Add height to the model
-- [x] Check the accuracy in specific area's (square subtracted from square)
 - [ ] Experiment training on simulation data and testing on real data
 - [ ] Experiment using transfer learning (adding a bit of real data to the simulation data)
 - [ ] Experiment investigating the influence of how much data that is used (subsets of the dataset to train)
 - [ ] Experiment looking at improvement when a less dense grid is used for the simulation and test. Because now grid is so dense that position is already well known when you know beneath which TX you are.
 - [ ] Need to normalise height and make flexible
-- [x] Plot heatmaps of error  
-- [ ] Train a model on 3 TX and then test this model on again 3 TX in same configuration but different position. If this works then a model can be trained for specific LED configurations and then applied in multiple situations.
 - [ ] Make the code flexible to either train to care about the height or not
 ###
 - [x] Simulation to generate training data base on model of the LED
@@ -66,9 +57,7 @@ ToDo
 - [ ] Model the PD
 - [ ] Kalman filter to estimate position when following a path
 ### Possible improvements
-- [x] Add more layers to network
 - [ ] Small network for each output instead of one model for all estimates
-- [x] Change loss to BCE(distance,0)
 - [ ] Position relative to TX
 - [ ] Moving average (Kalman filter or something else) when position is estimated (moving around in a room position will never jump but is continously changing)
 - [ ] Only 1 non-linear function tested right now (LeakyReLU)
