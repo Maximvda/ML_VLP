@@ -19,8 +19,8 @@ def getCelData(measurement, position, data, train, val, test, map_grid, map_7, m
     cel = convolution2d(measurement)
     if bool:
         scarymory.append(position)
-    #for i in [7,8,9,10, 13, 14, 15, 16, 19, 20, 21, 22, 25, 26, 27, 28]:
-    for i in [7,8,9,10, 25,28]:
+    for i in [7,8,9,10, 13, 14, 15, 16, 19, 20, 21, 22, 25, 26, 27, 28]:
+    #for i in [7,8,9,10, 25,28]:
         pos = getCelPosition(i)
         dist = np.sqrt((pos[0]-position[0])**2+(pos[1]-position[1])**2)
 
@@ -29,9 +29,11 @@ def getCelData(measurement, position, data, train, val, test, map_grid, map_7, m
             rel_pos = [(position[0]-pos[0])/1250, (position[1]-pos[1])/1250]
             data.append([cell_measurement, rel_pos])
             #if i in [19,13,25,26,27,20,14,24]:
-            if i in [28]:
+            #if i in [28]:
+            if i in [21,20,9]:
                 test.append(len(data)-1)
-            elif i in [25]:
+            #elif i in [25]:
+            elif i in [19,27]:
                 val.append(len(data)-1)
             else:
                 train.append(len(data)-1)
