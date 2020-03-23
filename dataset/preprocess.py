@@ -15,11 +15,12 @@ def celToData(data, cel):
             data[cel-1], data[cel], data[cel+1],
             data[cel+5], data[cel+6], data[cel+7]]
 scarymory = []
-def getCelData(measurement, position, data, train, test, map_grid, map_7, map_25, bool):
+def getCelData(measurement, position, data, train, val, test, map_grid, map_7, map_25, bool):
     cel = convolution2d(measurement)
     if bool:
         scarymory.append(position)
-    for i in [7,8,9,10, 13, 14, 15, 16, 19, 20, 21, 22, 25, 26, 27, 28]:
+    #for i in [7,8,9,10, 13, 14, 15, 16, 19, 20, 21, 22, 25, 26, 27, 28]:
+    for i in [7,8,9,10, 25,28]:
         pos = getCelPosition(i)
         dist = np.sqrt((pos[0]-position[0])**2+(pos[1]-position[1])**2)
 
@@ -27,8 +28,11 @@ def getCelData(measurement, position, data, train, test, map_grid, map_7, map_25
             cell_measurement = celToData(measurement,i)
             rel_pos = [(position[0]-pos[0])/1250, (position[1]-pos[1])/1250]
             data.append([cell_measurement, rel_pos])
-            if i in [19,13,25,26,27,20,14,24]:
+            #if i in [19,13,25,26,27,20,14,24]:
+            if i in [28]:
                 test.append(len(data)-1)
+            elif i in [25]:
+                val.append(len(data)-1)
             else:
                 train.append(len(data)-1)
 
@@ -58,7 +62,7 @@ def getRealUnitCell(pos):
     cell = convolution2d(distances, max=False)
     return cell
 
-def readMatFile(file, data, train, test, map_grid, map_7, map_25, normalise):
+def readMatFile(file, data, train, val, test, map_grid, map_7, map_25, normalise):
     #Load matlab file
     mat = scipy.io.loadmat(file)
     #Initialising some variables
@@ -93,17 +97,19 @@ def readMatFile(file, data, train, test, map_grid, map_7, map_25, normalise):
                     tmp_data = (tmp_data-input_norm)/input_norm
 
                 bool = (it == 0 and mat['height']==176)
-                getCelData(tmp_data, [pos_x, pos_y], data, train, test, map_grid, map_7, map_25, bool)
+                getCelData(tmp_data, [pos_x, pos_y], data, train, val, test, map_grid, map_7, map_25, bool)
 
 
-def saveData(data, train, test, map_grid, map_7, map_25, dataroot, normalise):
+def saveData(data, train, val, test, map_grid, map_7, map_25, dataroot, normalise):
     #Randomly shuffling and splitting data in train, val and test set
     #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
     print("Saving data...")
     random.shuffle(train)
     dict = {'data': data,
-            'train': train[:int(0.8*len(train))],
-            'val':   train[int(0.8*len(train)):],
+            #'train': train[:int(0.8*len(train))],
+            #'val':   train[int(0.8*len(train)):],
+            'train': train,
+            'val': val,
             'test':  test,
             'map_grid': map_grid,
             'map_7': map_7,
@@ -128,7 +134,7 @@ def get_offsets(data):
 
 #Preprocess the Matlab database and store necessary variables into files for training
 def preprocess(dataroot, normalise):
-    data = []; train = []; test = []; map_grid = {}; map_7 = []; map_25 = []
+    data = []; train = []; val=[]; test = []; map_grid = {}; map_7 = []; map_25 = []
     map_grid['index'] = []; map_grid['cel'] = []
     pth = os.path.join(dataroot,'mat_files')
     files = os.listdir(pth)
@@ -137,7 +143,7 @@ def preprocess(dataroot, normalise):
         counter += 1
         printProgBar(counter,len(files))
         if 'row' in file:
-            readMatFile(os.path.join(pth,file), data, train, test, map_grid,map_7,map_25, normalise)
+            readMatFile(os.path.join(pth,file), data, train, val, test, map_grid,map_7,map_25, normalise)
     print(len(scarymory))
     print(len(map_grid['index']))
-    saveData(data, train, test, map_grid, map_7, map_25, dataroot, normalise)
+    saveData(data, train, val, test, map_grid, map_7, map_25, dataroot, normalise)
