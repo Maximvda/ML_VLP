@@ -39,3 +39,10 @@ print("Distance on validation set first tree: ", distance)
 prediction = rf.predict(input_test)
 distance = np.mean(np.sqrt((output_test-prediction)**2))
 print("Distance on test set first tree: ", distance)
+
+
+clf = svm.SVR()
+>>> clf.fit(X, y)
+SVR()
+>>> clf.predict([[1, 1]])
+array([1.5])
