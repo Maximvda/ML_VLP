@@ -129,7 +129,7 @@ def set_GPU(args):
             try:
                 assert args.gpu_number is not None
                 print("GPU number set to: {}".format(args.gpu_number))
-                args.device = torch.device('cuda', args.gpu_number)
+                args.device = torch.device('cuda', args.gpu_number[0]) if type(args.gpu_number) == list else torch.device('cuda', args.gpu_number)
             except:
                 print("Check which GPU is not in use and set the gpu_number argument accordingly.")
                 raise
