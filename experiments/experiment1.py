@@ -20,10 +20,11 @@ def experiment1(args):
     #First model type
     for i in ['Type_1','Type_2']:
         #Number of features used
-        for j in [64, 128, 256]:
+        for j in [32, 64, 128, 256]:
             #Number of hidden layers
-            for k in [1,2,3,4]:
-                hyper_par.append({  'model_type': i,
+            for k in [1,2,3,4,5]:
+                if not ((j == 32 or j == 64) and i == 'Type_2'):
+                    hyper_par.append({  'model_type': i,
                                     'nf': j,
                                     'hidden_layers': k})
 
