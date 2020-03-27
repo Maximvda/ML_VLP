@@ -41,7 +41,7 @@ def setup_model(self, file, reload_model=False):
             self.nf = checkpoint['nf']
             self.hidden_layers = checkpoint['hidden_layers']
             self.model = Model(self.size, self.output_nf, self.model_type,
-                            self.nf, self.hidden_layers).to(self.device)
+                            self.nf, self.hidden_layers)
             for param_group in checkpoint['optim']['param_groups']:
                 lr = param_group['lr']
                 betas = param_group['betas']
@@ -66,6 +66,7 @@ def setup_model(self, file, reload_model=False):
             for k, v in state.items():
                 if torch.is_tensor(v):
                     state[k] = v.to(self.device)
+        del checkpoint
     #Init model if no checkpoint
     else:
         init_model(self, file, reload_model)
@@ -82,7 +83,7 @@ def init_model(self, file, reload_model):
         self.model_type = np.random.choice(choices['model_type'])
         self.nf = np.random.choice(choices['nf'])
         self.hidden_layers = np.random.choice(choices['hidden_layers'])
-        self.model = Model(self.size, self.output_nf, self.model_type, self.nf, self.hidden_layers).to(self.device)
+        self.model = Model(self.size, self.output_nf, self.model_type, self.nf, self.hidden_layers)
 
         #Init optimiser
         lr = np.random.choice(choices['lr'])
@@ -90,7 +91,7 @@ def init_model(self, file, reload_model):
         self.optim = optim.Adam(self.model.parameters(), lr=lr, betas=(momentum,0.999))
     else:
         #Init model when PBT is not used
-        self.model = Model(self.size, self.output_nf, self.model_type, self.nf, self.hidden_layers).to(self.device)
+        self.model = Model(self.size, self.output_nf, self.model_type, self.nf, self.hidden_layers)
         self.optim = optim.Adam(self.model.parameters(), self.learning_rate, betas=(0.5, 0.999))
 
 
