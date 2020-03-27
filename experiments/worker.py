@@ -21,7 +21,7 @@ class Worker(mp.Process):
         task = self.tasks.get()
         par_dict = self.par_list[task['id']]
         for key in par_dict:
-            setattr(self, key, par_dict[key])
+            self.trainer.set_attribute(key, par_dict[key])
 
         self.trainer.set_id(task['id'])
         #Train the model till no performance improvement

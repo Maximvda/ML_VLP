@@ -22,7 +22,7 @@ def preprocess(dataroot, normalise, verbose):
     for file in files:
         counter += 1
         if verbose:
-            printProgBar(counter,len(files))
+            print(printProgBar(counter,len(files)), end='\r')
         tmp_data, tmp_heatmap_data = read_mat_file(os.path.join(pth,file), normalise, rng_state)
         heatmap_data = np.append(heatmap_data,tmp_heatmap_data, axis=0)
         data = np.append(data,tmp_data, axis=0)
@@ -104,7 +104,7 @@ def process_simulation(dataroot,rng_state, normalise, verbose):
             for RX in pos_RX:
                 counter += 1
                 if verbose:
-                    printProgBar(counter,3*len(pos_RX))
+                    print(printProgBar(counter,3*len(pos_RX)), end='\r')
                 for i in range(len(pos_TX)):
                     tmp_data = channel_data[:,it, int(RX[0]/10), int(RX[1]/10), i]
                     if normalise:
@@ -117,7 +117,7 @@ def process_simulation(dataroot,rng_state, normalise, verbose):
 
         save_data(data, dataroot,normalise, simulate=True)
     else:
-        print("Simulation data doesn't exist")
+        print("Simulation data not generated yet")
 
 #Save pre-processed data to files
 def save_data(data, dataroot, normalise, simulate=False, heatmap_grid=None):

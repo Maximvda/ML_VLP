@@ -75,7 +75,8 @@ class Trainer(object):
     #Train model till there is no performance improvement anymore
     def train(self, experiment=False):
         #Initialising the loss function Binary Cross Entropy loss
-        print("Starting training loop")
+        if self.verbose:
+            printMultiLine(self.worker_id, "Starting training loop")
         while self.learning:
             self.train_iter(epoch=True)
 
@@ -151,6 +152,9 @@ class Trainer(object):
             save_state(self, 'checkpoints/best_model.pth')
         else:
             save_state(self, self.file)
+
+    def set_attribute(self, key, value):
+        setattr(self, key, value)
 
     def get_best_iter(self):
         return self.best_iter
