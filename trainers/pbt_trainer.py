@@ -79,8 +79,8 @@ def exploit_and_explore(result_root, iter, top_checkpoint_path, bot_checkpoint_p
     for hyperparam_name in choices['optimiser']:
         perturb = np.random.choice(choices['perturb_factors'])
         for param_group in optimizer_state_dict['param_groups']:
-            param_dict[hyperparam_name] = (min(param_group[hyperparam_name][0]*perturb,0.9999),param_group[hyperparam_name][1])
-            param_dict[hyperparam_name] = perturb*param_group[hyperparam_name]
+            param_dict['betas'] = (min(param_group['betas'][0]*perturb,0.9999),param_group['betas'][1])
+            param_dict['lr'] = perturb*param_group['lr']
 
     #Perform perturbation on parameters
     for parameter in choices['parameters']:
@@ -108,7 +108,6 @@ def exploit_and_explore(result_root, iter, top_checkpoint_path, bot_checkpoint_p
     #Update optimiser parameters with perturbed values
     for hyperparam_name in choices['optimiser']:
         for param_group in optimizer_state_dict['param_groups']:
-            param_group[hyperparam_name] = param_dict[hyperparam_name]
             param_group[hyperparam_name] = param_dict[hyperparam_name]
 
     checkpoint['optim'] = optimizer_state_dict

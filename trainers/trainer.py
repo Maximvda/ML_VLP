@@ -36,7 +36,7 @@ class Trainer(object):
         self.val_dataset = Data(args.dataset_path['val'], args.TX_config, args.TX_input, args.blockage, args.output_nf)
 
         #If population based training is not used
-        if not args.pbt_training:
+        if not args.pbt_training and args.experiment == None:
             self.batch_size = args.batch_size
             #Setup dataloaders
             self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
