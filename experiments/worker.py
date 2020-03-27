@@ -17,12 +17,15 @@ class Worker(mp.Process):
         self.par_list = par_list
 
     def run(self):
-        # Train model
-        task = self.tasks.get()
-        par_dict = self.par_list[task['id']]
-        for key in par_dict:
-            self.trainer.set_attribute(key, par_dict[key])
+        while True:
+            if self.tasks.empty():
+                break
+            # Train model
+            task = self.tasks.get()
+            par_dict = self.par_list[task['id']]
+            for key in par_dict:
+                self.trainer.set_attribute(key, par_dict[key])
 
-        self.trainer.set_id(task['id'])
-        #Train the model till no performance improvement
-        self.trainer.train(experiment=True)
+            self.trainer.set_id(task['id'])
+            #Train the model till no performance improvement
+            self.trainer.train(experiment=True)
