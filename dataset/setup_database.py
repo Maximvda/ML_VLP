@@ -1,27 +1,28 @@
 import os
 
-from torch.utils.data import DataLoader
-from dataset.dataset import data
 from dataset.preprocess import preprocess
-from simulation.simulation import testbed_simulation
+from dataset.simulation import testbed_simulation
 
-#Sets up a data loader for the requested split
+#Checks if dataset is already pre-processed and returns its path
 def setup_database(args, split="train"):
-    #Choose correct file depending on desired split
-    file = 'simulation_data' if args.simulate and split == 'train' else 'data'
-    file = '_'.join((file, str(args.TX_config),str(args.TX_input), str(args.dynamic))) + '.data'
-    path = os.path.join(args.dataroot, file)
+    #Init path dictionary
+    path_dict = {}
 
+    #Generates the simulation data if it's not yet generated
+    #Add paths to dictionary if simulation is generated
     if args.simulate:
-        testbed_simulation(args.dataroot)
+        testbed_simulation(args.dataroot, args.verbose)
+        path_dict['sim_train'] = 'simulation_data_{}_train.data'.format(args.normalise)
+        path_dict['sim_val'] = 'simulation_data_{}_val.data'.format(args.normalise)
 
-    #If file not present it may still need to be preprocessed
-    if not os.path.isfile(path):
-        print("Pre-processing dataset")
-        preprocess(args.dataroot, args.TX_config, args.TX_input, args.normalise, args.dynamic)
+    #Add the paths of the experimental data to dictionary
+    for split in ['train', 'val', 'test']:
+        path_dict[split] = os.path.join(args.dataroot, 'data_{}_{}.data'.format(args.normalise,split))
 
-    #Initialise dataset and setup a data loader
-    dataset = data(path, split, args.model_type)
-    dataLoader = DataLoader(dataset, batch_size = args.batch_size, shuffle=True, num_workers=8)
+    #Check if all data files are preprocessed if not rerun preprocessing
+    for key in path_dict:
+        if not os.path.isfile(path_dict[key]):
+            print("Pre-processing dataset")
+            preprocess(args.dataroot, args.normalise, args.verbose)
 
-    return dataLoader
+    return path_dict

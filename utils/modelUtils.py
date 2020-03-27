@@ -1,28 +1,12 @@
 import torch
 import torch.nn as nn
 import os
+import numpy as np
+from trainers.model import Model
+import torch.optim as optim
 
-from models.architecture import model
-
-#Initialises a model from the cnn architecture for a given input size
-def initModel(data_loader, model_type, nf, extra_layers):
-    input, output = next(iter(data_loader))
-    return model(input.size(1), model_type, nf, extra_layers)
-
-#Initialises the weights of the model
-def weights_init(m):
-    classname = m.__class__.__name__
-    if classname.find('conv') != -1:
-        nn.init.normal_(m.weight.data, 0.0, 0.02)
-    elif classname.find('BatchNorm') != -1:
-        nn.init.normal_(m.weight.data, 1.0, 0.02)
-        nn.init.constant_(m.bias.data, 0)
-
-#Saves the best performing model to model.pth file
-def saveBestModel(result_root, model):
-    path = os.path.join(result_root,'model.pth')
-    torch.save({'model': model.state_dict()}, path)
-
+from utils.config import get_PBT_choices
+'''
 #Loads the best model from the saved path and loads onto device
 def loadBestModel(result_root, model, device):
     path = os.path.join(result_root,'model.pth')
@@ -30,40 +14,99 @@ def loadBestModel(result_root, model, device):
         print("Restoring best model")
         save = torch.load(path, map_location=device)
         model.load_state_dict(save['model'])
+    path = os.path.join(result_root,'checkpoints/best_model.pth')
+    if os.path.isfile(path):
+        print("Restoring best model")
+        save = torch.load(path, map_location=device)
+        size = save['size']
+        model_type = save['model_type']
+        nf = save['nf']
+        hidden_layers = save['hidden_layers']
+        model = Model(size, model_type,
+                            nf, hidden_layers).to(device)
+        model.load_state_dict(save['model'])
 
-#Loads the entire state of the training process to continue afterwards
-def loadCheckpoint(self, device):
-    resultpath = os.path.join(self.result_root,'checkpoint.pth')
+ '''
+#Loads the entire state of the training process if any
+#Else it initialises everything to start training
+def setup_model(self, file, reload_model=False):
+    resultpath = os.path.join(self.result_root,file)
+    #check if there exists a checkpoint if so load it
     if os.path.isfile(resultpath):
-        print("Restoring checkpoint")
-        checkpoint = torch.load(resultpath, map_location=device)
-        self.model.load_state_dict(checkpoint['model'])
-        self.optim.load_state_dict(checkpoint['optim'])
-        self.epoch = checkpoint['epoch']
-        self.loss = checkpoint['loss']
+        checkpoint = torch.load(resultpath, map_location=self.device)
+        #Reloads model parameters from the checkpoint
+        if reload_model:
+            self.size = checkpoint['size']
+            self.model_type = checkpoint['model_type']
+            self.nf = checkpoint['nf']
+            self.hidden_layers = checkpoint['hidden_layers']
+            self.model = Model(self.size, self.output_nf, self.model_type,
+                            self.nf, self.hidden_layers).to(self.device)
+            for param_group in checkpoint['optim']['param_groups']:
+                lr = param_group['lr']
+                betas = param_group['betas']
+            self.optim = optim.Adam(self.model.parameters(), lr=lr, betas=betas)
+        #Model is setup with defined parameters
+        #When model parameters are not loaded from checkpoint
+        else:
+            self.model = Model(self.size, self.output_nf, self.model_type, self.nf, self.hidden_layers)
+            self.optim = optim.Adam(self.model.parameters(), self.learning_rate, betas=(0.5, 0.999))
+
+        #Load state variables from checkpoint
+        if not checkpoint['model'] == None:
+            self.model.load_state_dict(checkpoint['model'])
+            self.optim.load_state_dict(checkpoint['optim'])
+        self.iter = checkpoint['iter']
         self.learning = checkpoint['learning']
         self.min_distance = checkpoint['min_distance']
-        self.distance = checkpoint['distance']
-        self.best_epoch = checkpoint['best_epoch']
+        self.best_iter = checkpoint['best_iter']
+        self.batch_size = checkpoint['batch_size']
+        #Correctly push all values from optimiser to device
         for state in self.optim.state.values():
             for k, v in state.items():
                 if torch.is_tensor(v):
-                    state[k] = v.to(device)
+                    state[k] = v.to(self.device)
+    #Init model if no checkpoint
     else:
-        self.model.apply(weights_init)
+        init_model(self, file, reload_model)
+    #Push model to device
+    self.model.to(self.device)
 
-    self.model.to(device)
+def init_model(self, file, reload_model):
+    self.iter = 0; self.best_iter = 0; self.min_distance = 3000
+    if reload_model:
+        #Get the random choices for PBT algorithm
+        choices = get_PBT_choices()
+        #Randomly init model
+        self.batch_size = int(np.random.choice(choices['batch_size']))
+        self.model_type = np.random.choice(choices['model_type'])
+        self.nf = np.random.choice(choices['nf'])
+        self.hidden_layers = np.random.choice(choices['hidden_layers'])
+        self.model = Model(self.size, self.output_nf, self.model_type, self.nf, self.hidden_layers).to(self.device)
 
-#Saves the entire state of the training process to continue afterwards
-def saveCheckpoint(self):
-    path = os.path.join(self.result_root,'checkpoint.pth')
+        #Init optimiser
+        lr = np.random.choice(choices['lr'])
+        momentum = np.random.choice(choices['momentum'])
+        self.optim = optim.Adam(self.model.parameters(), lr=lr, betas=(momentum,0.999))
+    else:
+        #Init model when PBT is not used
+        self.model = Model(self.size, self.output_nf, self.model_type, self.nf, self.hidden_layers).to(self.device)
+        self.optim = optim.Adam(self.model.parameters(), self.learning_rate, betas=(0.5, 0.999))
+
+
+#Saves the entire state of the training process to continue afterwards or load best model
+def save_state(self, file):
+    path = os.path.join(self.result_root,file)
     torch.save({
-            'epoch': self.epoch,
+            'iter': self.iter,
+            'size': self.size,
+            'model_type': self.model_type,
+            'nf': self.nf,
+            'hidden_layers': self.hidden_layers,
             'learning': self.learning,
-            'distance': self.distance,
+            'batch_size': self.batch_size,
             'min_distance': self.min_distance,
-            'best_epoch': self.best_epoch,
+            'best_iter': self.best_iter,
             'model': self.model.state_dict(),
             'optim': self.optim.state_dict(),
-            'loss': self.loss,
             }, path)

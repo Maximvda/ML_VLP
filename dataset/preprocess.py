@@ -4,124 +4,87 @@ import random
 import os
 import pickle
 
-from simulation.simulation import testbed_simulation
+from utils.utils import printProgBar
 
-#Sets all RX signals from TX that are not in the chosen configuartion to 0
-#The different TX configuartions can be found on Github page
-def setConfiguartion(channel_data, TX_config, dynamic):
-    all_TX = [i for i in range(0,36)]
-    #list TXs needed for specific configuartion
-    list_dict = {
-    1: all_TX,
-    2: [0,2,4,12,14,16,24,26,28],
-    3: [7,10,25,28],
-    4: [0,2,3,5,12,14,15,17,18,20,21,23,30,32,33,35],
-    5: [0,5,14,15,20,21,30,35],
-    6: [14,15,20,21]}
-    #Remove needed TX from all TX to get all TX which need to be set to 0
-    #Select appropriate configuartion acoording to TX_config and iterate over TX
-    #Set all these TX to 0
-    list = [] if TX_config == 1 else [id for id in all_TX if id not in list_dict[TX_config]]
-    if dynamic:
-        return np.delete(channel_data, list, 0), len(list_dict[TX_config])
-    else:
-        for it in list:
-            channel_data[it] = 0
-        return channel_data, len(list_dict[TX_config])
+#Preprocess the Matlab database and store necessary variables into files for training
+def preprocess(dataroot, normalise, verbose):
+    #Initialise variables and directory of matfiles
+    data = np.empty((0,2)); heatmap_data = np.empty((0,2)); counter = 0
+    pth = os.path.join(dataroot,'mat_files')
+    #List mat files and select only files with row in name
+    files = os.listdir(pth)
+    files = [file for file in files if 'row' in file]
 
+    #Get the random state such that data points are shuffled similar over different mat files
+    rng_state = np.random.get_state()
 
-def readMatFile(file, data, heatmap_data, TX_config, TX_input, normalise, rng_state, dynamic):
+    #Read all the matlab files
+    for file in files:
+        counter += 1
+        if verbose:
+            printProgBar(counter,len(files))
+        tmp_data, tmp_heatmap_data = read_mat_file(os.path.join(pth,file), normalise, rng_state)
+        heatmap_data = np.append(heatmap_data,tmp_heatmap_data, axis=0)
+        data = np.append(data,tmp_data, axis=0)
+    save_data(data, dataroot, normalise, heatmap_grid=heatmap_data)
+
+    process_simulation(dataroot, rng_state, normalise, verbose)
+
+#Read a matlab file and return needed variables to store data
+def read_mat_file(file, normalise, rng_state):
     #Load matlab file
     mat = scipy.io.loadmat(file)
     #Initialising some variables
+    data = np.empty((0,2)); heatmap_data = np.empty((0,2));
     rx_id = mat['rx_id'][0]-1
     no_it = mat['no_it'][0][0]
     offset = mat['offset']
     resolution = mat['resolution'][0][0]
-    height = mat['height']/200 if normalise else mat['height']
+    #Normalise the height by dividing with 200cm as this is maximum ceiling height
+    height = (mat['height']/200)[0][0]
 
-    #Choose which type of data to use swing or channel_data
     #Swing is a measure for RSS
-    swing = 1
-    channel_data = mat['swing'] if swing else np.mean(mat['channel_data'],axis=1)
+    channel_data = mat['swing']
     input_norm = np.max(channel_data)/2
 
-    #Set the TX which are not used for the desired density to 0
-    channel_data, lenData = setConfiguartion(channel_data, TX_config, dynamic)
-    TX_input = lenData if (TX_input >= lenData and dynamic) else TX_input
     #Shuffles the received signals in such a way that the LEDs
     #are not in the correct position as they are in the testbed.
     #So the led on position 2,4 of the 6x6 grid can be replaced to position 5,1 in the 6x6 matrix
-    #This decouples the LEDs measurement from its spatial position in the testbed
+    #This decouples the LEDs measurement from their spatial position in the testbed
     np.random.set_state(rng_state)
     np.random.shuffle(channel_data)
 
-    #pos_x_mm = mat['pos_x_mm'][0]
-    #pos_y_mm = mat['pos_y_mm'][0]
-    #arr = []
-    #for id in rx_id:
-    #    x = (offset[id][0] + pos_x_mm)/3000
-    #    y = (offset[id][1] + pos_y_mm)/3000
-    #    tmp = (channel_data-input_norm)/input_norm
-    #    arr.append([[tmp[:,id,it,i,j], [x[i], y[j]]] for i in range(0,len(x)-2) for j in range(0,len(y)) for it in range(0,no_it)][0])
-
-    #New data variable, list of all data points
-    #Iterate over each measurement (each RX, each x and y position and each iteration)
+    #Iterate over each measurement (each RX, each x position and each iteration)
     for id in rx_id:
         for x in range(0,channel_data.shape[3]):
-            if len(channel_data.shape) == 4:
-                for it in range(0,no_it):
-                    #Select 1 measurement
-                    tmp_data = channel_data[:,id,it,x]
-                    #Sort measurement from high to low and select TX_input highest element
-                    high_el = np.sort(tmp_data)[::-1][TX_input-1]
-                    #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                    #print(tmp_data.shape, shape)
-                    tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
+            for it in range(0,no_it):
+                #Select 1 measurement
+                tmp_data = channel_data[:,id,it,x]
 
-                    #Calculate position of the RX for this measurement
-                    y = int(file.split("_")[-1][:-4])
-                    pos_x = offset[id][0] + y*resolution
-                    pos_y = offset[id][1] + x*resolution
+                #Calculate position of the RX for this measurement
+                #Also normalise position by dividing with 3000mm max size of test grid
+                y = int(file.split("_")[-1][:-4])
+                pos_x = (offset[id][0] + y*resolution)/3000
+                pos_y = (offset[id][1] + x*resolution)/3000
 
-                    #Normalisation for input and output
-                    if normalise:
-                        tmp_data = (tmp_data-input_norm)/input_norm
-                        pos_x = pos_x/3000
-                        pos_y = pos_y/3000
+                #Normalisation for input and output
+                if normalise:
+                    tmp_data = (tmp_data-input_norm)/input_norm
 
-                    position = [pos_x, pos_y, height]
-                    tmp_data = [tmp_data, position]
-                    if it == 0 and mat['height']==176:
-                        heatmap_data.append(tmp_data)
-                        data.append(tmp_data)
-                    else:
-                        data.append(tmp_data)
-            else:
-                for y in range(0,channel_data.shape[4]):
-                    for it in range(0,no_it):
-                        #Select 1 measurement
-                        tmp_data = channel_data[:,id,it,x,y]
-                        #Sort measurement from high to low and select TX_input highest element
-                        high_el = np.sort(tmp_data)[::-1][TX_input-1]
-                        #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                        tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
+                position = np.array([pos_x, pos_y, height])
+                tmp_data = np.expand_dims(np.array((tmp_data, position)), axis=0)
 
-                        #Calculate position of the RX for this measurement
-                        pos_x = offset[id][0] + x*resolution
-                        pos_y = offset[id][1] + y*resolution
+                #If it is data sample from first iteration and from the first height
+                #Then add it to the data of heatmap
+                if it == 0 and mat['height']==176:
+                    heatmap_data = np.append(heatmap_data,tmp_data, axis=0)
+                    data = np.append(data,tmp_data, axis=0)
+                else:
+                    data = np.append(data,tmp_data, axis=0)
+    return data, heatmap_data
 
-                        #Normalisation for input and output
-                        if normalise:
-                            tmp_data = (tmp_data-input_norm)/input_norm
-                            pos_x = pos_x/3000
-                            pos_y = pos_y/3000
-
-                        position = [pos_x, pos_y, height]
-                        tmp_data = [tmp_data, position]
-                        data.append(tmp_data)
-
-def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynamic):
+#Pre-process the simulation data similar to real data -> see comments in read_mat_file
+def process_simulation(dataroot,rng_state, normalise, verbose):
     file = os.path.join(dataroot,'simulationdata.data')
     if os.path.exists(file):
         print("Preprocessing simulation data")
@@ -133,43 +96,54 @@ def process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynam
         pos_TX = dict['pos_TX']
 
         input_norm = np.max(channel_data)/2
-        channel_data, lenData = setConfiguartion(channel_data, TX_config, dynamic)
-        TX_input = lenData if TX_input >= lenData else TX_input
-        #shape = int(np.ceil(np.sqrt(channel_data.shape[0]))) if dynamic else 6
+
         np.random.set_state(rng_state)
         np.random.shuffle(channel_data)
-        data = []
+        data = np.empty((0,2)); counter = 0
         for it in range(0,3):
             for RX in pos_RX:
-                tmp_data = channel_data[:,it, int(RX[0]/10), int(RX[1]/10)]
-                #Sort measurement from high to low and select TX_input highest element
-                high_el = np.sort(tmp_data)[::-1][TX_input-1]
-                #Set all values lower then the high_el to 0 and reshape in 6x6 grid for convolution
-                tmp_data = np.array([0 if el < high_el else el for el in tmp_data])
-                tmp_data = (tmp_data-input_norm)/input_norm
-                #Still have to implement multiple heights for simulation
-                data.append([tmp_data, [RX[0]/3000, RX[1]/3000, 187/200]])
+                counter += 1
+                if verbose:
+                    printProgBar(counter,3*len(pos_RX))
+                for i in range(len(pos_TX)):
+                    tmp_data = channel_data[:,it, int(RX[0]/10), int(RX[1]/10), i]
+                    if normalise:
+                        tmp_data = (tmp_data-input_norm)/input_norm
 
-        saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=True)
+                    position = np.array([RX[0]/3000, RX[1]/3000, pos_TX[i][0][2]/2000])
+                    tmp_data = np.expand_dims(np.array((tmp_data, position)), axis=0)
+
+                    data = np.append(data,tmp_data, axis=0)
+
+        save_data(data, dataroot,normalise, simulate=True)
     else:
         print("Simulation data doesn't exist")
 
-def saveData(data, dataroot, TX_config, TX_input, dynamic, simulate=False, heatmap_grid=None):
+#Save pre-processed data to files
+def save_data(data, dataroot, normalise, simulate=False, heatmap_grid=None):
     #Randomly shuffling and splitting data in train, val and test set
     #train test split 0.8 and 0.2 then train val split again 0.8 and 0.2 from train split -> 0.8*0.8 = 0.64 of data
-    random.shuffle(data)
-    dict = {'train': data[:int(0.64*len(data))],
-            'val':   data[int(0.64*len(data)):int(0.8*len(data))],
-            'test':  data[int(0.8*len(data)):],
-            'heatmap_grid': heatmap_grid}
+    np.random.shuffle(data)
     if simulate:
-        dict = {'train': data}
+        #Writing db to file
+        with open(os.path.join(dataroot,'simulation_data_{}_{}.data'.format(normalise, 'train')), 'wb') as f:
+            pickle.dump(data[:int(0.8*len(data))], f)
+        with open(os.path.join(dataroot,'simulation_data_{}_{}.data'.format(normalise, 'val')), 'wb') as f:
+            pickle.dump(data[int(0.8*len(data)):], f)
+    else:
+        #Writing train data to file
+        with open(os.path.join(dataroot,'data_{}_{}.data'.format(normalise, 'train')), 'wb') as f:
+            pickle.dump(data[:int(0.64*len(data))], f)
+        #Writing validation data to file
+        with open(os.path.join(dataroot,'data_{}_{}.data'.format(normalise, 'val')), 'wb') as f:
+            pickle.dump(data[int(0.64*len(data)):int(0.8*len(data))], f)
+        #Writing test data to file
+        with open(os.path.join(dataroot,'data_{}_{}.data'.format(normalise, 'test')), 'wb') as f:
+            pickle.dump(data[int(0.8*len(data)):], f)
+        #Writing heatmap data to file
+        with open(os.path.join(dataroot,'data_{}_{}.data'.format(normalise, 'heatmap')), 'wb') as f:
+            pickle.dump(heatmap_grid, f)
 
-    #Writing db to file
-    pretension = 'simulation_data_' if simulate else 'data_'
-    extension = '_'.join((str(TX_config), str(TX_input), str(dynamic))) + '.data'
-    with open(os.path.join(dataroot,pretension + extension), 'wb') as f:
-        pickle.dump(dict, f)
 
 #Get offset of the first LED (X = 230mm and y =170mm)
 #random shuffle needs to be off and run on all data
@@ -182,17 +156,3 @@ def get_offsets(data):
             best = item
 
     print(best)
-
-#Preprocess the Matlab database and store necessary variables into files for training
-def preprocess(dataroot, TX_config, TX_input, normalise, dynamic):
-    data = []; heatmap_data = []
-    pth = os.path.join(dataroot,'mat_files')
-    files = os.listdir(pth)
-    rng_state = np.random.get_state()
-    for file in files:
-        if 'row' in file:
-            print(file)
-            readMatFile(os.path.join(pth,file), data, heatmap_data, TX_config, TX_input, normalise, rng_state, dynamic)
-    saveData(data, dataroot, TX_config, TX_input, dynamic, heatmap_grid=heatmap_data)
-
-    process_simulation(dataroot, TX_config, TX_input,rng_state, normalise, dynamic)

@@ -1,5 +1,6 @@
 import torch
 import os
+import sys
 
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
@@ -24,53 +25,19 @@ def visualise(target, prediction, pause=0.0001):
 #Calculates the distance between two points a and b
 #Euclidian distance = sqrt((ax-bx))^2+(ay-by)^2)
 #The mean distance is calculated when x and y are lists of same length
-def calcDistance(x,y, area1=None, area2=None):
-    z_dist = torch.mean(torch.sqrt((x[:,2]-y[:,2])**2)).item()
-    if area1 is None:
-        dist = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)
-        return torch.mean(dist).item(), z_dist
+def calcDistance(x,y):
+    dist_2D = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)
+    dist_2D = torch.mean(dist_2D).item()
+    if len(x[0]) == 3:
+        z_dist = torch.mean(torch.sqrt((x[:,2]-y[:,2])**2)).item()
+        dist_3D = torch.sqrt(((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*300**2+((x[:,2]-y[:,2])**2)*200**2)
+        dist_3D = torch.mean(dist_3D).item()
+        return {'2D': dist_2D, 'z': z_dist, '3D': dist_3D}
     else:
-        iList = checkArea(y, area1, area2)
-        dist = []
-        for i in iList:
-            dist.append(torch.sqrt((x[i][0]-y[i][0])**2+(x[i][1]-y[i][1])**2).unsqueeze(0))
-        if dist == []:
-            return None
-        else:
-            dist = torch.cat(dist)
-            return torch.mean(dist).item(), z_dist
+        return {'2D': dist_2D}
 
-
-#Calculates the distance between predicted and real position within a certain area
-#The area is given through two points p1 and p2 defining a rectangle between them
-def checkArea(positionList, area1, area2):
-    iList = []
-
-    p1 = [area1[0][0]/3000, area1[0][1]/3000]; p2 = [area1[1][0]/3000, area1[1][1]/3000]
-    min_x1 = min((p1[0],p2[0])); max_x1 = max((p1[0],p2[0]))
-    min_y1 = min((p1[1],p2[1])); max_y1 = max((p1[1],p2[1]))
-
-    if area2 is not None:
-        p1 = [area2[0][0]/3000, area2[0][1]/3000]; p2 = [area2[1][0]/3000, area2[1][1]/3000]
-        min_x2 = min((p1[0],p2[0])); max_x2 = max((p1[0],p2[0]))
-        min_y2 = min((p1[1],p2[1])); max_y2 = max((p1[1],p2[1]))
-
-        for i in range(0,len(positionList)):
-            y = positionList[i]
-            if not (max_x1 < y[0].item() or y[0].item() < min_x1) or not (max_y1 < y[1].item() or y[1].item() < min_y1):
-                continue
-            if (max_x2 < y[0].item() < min_x2) or (max_y2 < y[1].item() < min_y2):
-                continue
-            iList.append(i)
-    else:
-        for i in range(0,len(positionList)):
-            y = positionList[i]
-            if (max_x1 < y[0].item() < min_x1) or (max_y1 < y[1].item() < min_y1):
-                continue
-            iList.append(i)
-
-    return iList
-
+#Calculates the bias or offset of the predicted points if there is any
+#For example if predictions are always off by 1cm in x direction then bias -> x = 1
 def calcBias(x,y):
     bias = [x[:,0]-y[:,0], x[:,1]-y[:,1]]
     return torch.mean(bias[0]).item(), torch.mean(bias[1]).item()
@@ -100,8 +67,8 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
     plt.savefig(resultpath)
     plt.close()
 
+#Makes a heatmap plot for a given map
 def makeHeatMap(map, filename, title, result_root):
-    #plt.figure(figsize=(10,10))
     plt.imshow(map, cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
     plt.colorbar()
     plt.title(title)
@@ -112,38 +79,34 @@ def makeHeatMap(map, filename, title, result_root):
     plt.savefig(resultpath, bbox_inches='tight')
     plt.close()
 
-#Save all the relevant arguments in a textfile such that the model,
-#the kind of data and test can be identified after training
-def saveArguments(args):
-    fileText = """Experiment: {}\n\nDATA PARAMETERS \n\n
-                Simulation used: {}\n
-                Transmitter configuartion: {}\n
-                Number of transmitter inputs used: {}\n
-                Dynamic data: {}\n\n\n
-                MODEL PARAMETERS \n\n
-                Model type: {}\n
-                Extra layers: {}\n
-                Number of features: {}\n\n\n
-                LEARNING PARAMETERS\n\n
-                Batch size: {}\n
-                Learning rate: {}""".format(
-                args.experiment,
-                args.simulate,
-                args.TX_config,
-                args.TX_input,
-                args.dynamic,
-                args.model_type,
-                args.extra_layers,
-                args.nf,
-                args.batch_size,
-                args.learning_rate)
-    fileName = os.path.join(args.result_root,'parameters.txt')
-    f = open(fileName,'w')
-    f.write(fileText)
-    f.close()
+#Make a print on the set line with certain offset
+#This way multiple lines can track progress if multiple workers are used.
+def printMultiLine(line, text, offset=0, end=False):
+    line = line*3+offset+1
+    for i in range(0,line):
+        down()
+    sys.stdout.write("\033[K")
+    print('\r' + text, end="\r")
+    if not end:
+        for i in range(0,line):
+            up()
 
+def up():
+    # My terminal breaks if we don't flush after the escape-code
+    sys.stdout.write('\x1b[1A')
+    sys.stdout.flush()
+
+def down():
+    # I could use '\x1b[1B' here, but newline is faster and easier
+    sys.stdout.write('\n')
+    sys.stdout.flush()
+
+#prints a progress bar
 def printProgBar(done, total_size):
     percent = ("{0:." + str(0) + "f}").format(100 * (done / float(total_size)))
     filledLength = int(50 * done // total_size)
     bar = "#" * filledLength + '-' * (50 - filledLength)
-    print('\r%s |%s| %s%% %s' % ("Progress", bar, percent, ""), end = '\r')
+    string = '\r%s |%s| %s%% %s' % ("Progress", bar, percent, "")
+    if done == total_size:
+        string = ''
+    return string

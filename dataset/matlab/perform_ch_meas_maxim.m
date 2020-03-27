@@ -1,21 +1,33 @@
 close all;
 clear all;
 
+%%Read in most recent file and load corresponding variables
+%d=dir('*.mat');
+%dd = zeros(1,length(d));
+%for k = 1:length(d)
+%    dd(k) = datenum(d(k).date);
+%end
+%[tmp i]=max(dd);
+%d(i).name
+%load(d(i).name,'i','j');
+%i_start = i;
+%j_start = j;
+
+height = 176;%192; %in cm
 max_no_tx = 36;
 max_no_rx = 4;
-timestring = datestr(now,'yyyy-mm-dd_HH-MM-SS');
 
 tx_id= [1:36];
 no_tx = length(tx_id);
 
 rx_id = [1 2 3 4];
-no_it = 1;
+no_it = 3;
 %% set the offset
 %default offset
-offset(1,:) = [35 10];
-offset(2,:) = [35+1630 10];
-offset(3,:) = [35 10+1550];
-offset(4,:) = [35+1630 10+1550];
+offset(1,:) = [0 0];
+offset(2,:) = [1610 0];
+offset(3,:) = [0 1550];
+offset(4,:) = [1610 1550];
 
 if(~exist('acro','var'))
     disp('running startup script');
@@ -27,12 +39,23 @@ tuning_offset = zeros(4,2);
 speed = 5000;
 
 pos_x_mm = 0:resolution:1200;
-pos_y_mm = 0:resolution:1200;
+pos_y_mm = 20:resolution:1220;
 
 inverty = 0;
-number_of_meas = 5;
 
 acro_id = rx_id;
+
+%% set initial position
+% init_pos = [pos_x_mm(47) pos_y_mm(1)];
+% pos_rx_mm_tmp = acro.offset_6x6 + 625*ones(4,2);
+% pos_rx_mm_tmp(acro_id,:) = acro.offset_6x6(acro_id,:) + init_pos;
+% pos_changed = pos_rx_mm_tmp ~= acro.pos;
+% acro_id_check = find(or(pos_changed(:,1),pos_changed(:,2)));
+% move the acro systems
+%acro = moveToPos(acro,pos_rx_mm_tmp,tuning_offset,speed);
+%waitForIdle(acro,acro_id_check)
+
+%% loop over positions
 for i=1:length(pos_x_mm)
     disp(['pos_x=',num2str(i),'/',num2str(length(pos_x_mm))]);
     for j=1:length(pos_y_mm)
@@ -55,26 +78,26 @@ for i=1:length(pos_x_mm)
         % move the acro systems
         acro = moveToPos(acro,pos_rx_mm_tmp,tuning_offset,speed);
 
-        waitForIdle(acro,acro_id_check);
+        %waitForIdle(acro,acro_id_check);
+        pause(resolution/10);       %1second delay for each cm
 
         % channel_data: tx_id x sample_number x rx_id x it_id x pos_x x pos_y
         % swing: tx_id x rx_id x it_id x pos_x x pos_y
             %         [channel_data(:,:,:,:,i,j),swing_tmp,var_high(:,:,:,i,j),var_low(:,:,:,i,j)] = perform_ch_meas(tx_id,rx_id,no_it,max_no_rx,mx);
-        for meas_i=1:number_of_meas
-            [channel_data_tmp,swing_tmp,var_high_tmp,var_low_tmp] = perform_ch_meas(tx_id,rx_id,no_it,max_no_tx,max_no_rx,mx);
-            channel_data(:,:,rx_id,:,i,y_inv,meas_i) = channel_data_tmp(:,:,rx_id,:);
-            var_high(:,rx_id,:,i,y_inv,meas_i) = var_high_tmp(:,rx_id,:);
-            var_low(:,rx_id,:,i,y_inv,meas_i) = var_low_tmp(:,rx_id,:);
-            squeeze(swing_tmp(tx_id,rx_id,:))
-            swing(:,rx_id,:,i,y_inv,meas_i) = swing_tmp(:,rx_id,:);
-        end
-        
-    save(strcat('testbed_data_',timestring,'.mat'));
+
+        [channel_data_tmp,swing_tmp,var_high_tmp,var_low_tmp] = perform_ch_meas(tx_id,rx_id,no_it,max_no_tx,max_no_rx,mx);
+        channel_data(:,:,rx_id,:,y_inv) = channel_data_tmp(:,:,rx_id,:);
+        var_high(:,rx_id,:,y_inv) = var_high_tmp(:,rx_id,:);
+        var_low(:,rx_id,:,y_inv) = var_low_tmp(:,rx_id,:);
+%         squeeze(swing_tmp(tx_id,rx_id,:))
+        swing(:,rx_id,:,y_inv) = swing_tmp(:,rx_id,:);
     end
+    filestring = strcat(num2str(resolution),'_',num2str(height),'_row_',num2str(i));
+    save(strcat('separate_files/testbed_data_',filestring,'.mat'));
     if(inverty)
-        inverty = 0
+        inverty = 0;
     else
-        inverty = 1
+        inverty = 1;
     end
 end
 

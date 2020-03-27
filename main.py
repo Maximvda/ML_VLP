@@ -1,36 +1,49 @@
-import traceback
+import random
+import numpy as np
+import torch
 
 from utils.config import parse_args
-from models.model import model_obj
-from eval.eval import eval_obj
-from utils.plotscript import plotscript
+from experiments.experiments import experiment
+from dataset.setup_database import setup_database
 
+from trainers.trainer import Trainer
+from trainers.pbt_trainer import Pbt_trainer
+from eval.eval import eval_obj
+
+#Trains or evaluates a model
 def main(args):
-    if args.is_train:
-        model = model_obj(args)
-        model.train(args)
-        return model.get_distance()
+    #Train using the PBT algorithm
+    if args.pbt_training:
+        Pbt_trainer(args)
+
+    #Get trainer and train model
+    elif args.is_train:
+        trainer = Trainer(args)
+        trainer.train()
     else:
         #Best performing model is loaded and evaluated on the test set
         evalObj = eval_obj(args)
-        if args.experiment==2:
-            evalObj.heatMap(args.TX_config)
-        #evalObj.demo([[500,750],[1000,1750]], [[100,250],[4000,2750]])
-        return evalObj.demo()
 
 if __name__ == '__main__':
-    print("Python code started")
-    try:
-        args = parse_args()
-        print("Arguments parsed")
-        if args.experiment == None and args.plot == False:
-            main(args)
-        elif args.plot == True:
-            plotscript(args)
-        else:
-            from utils.experiments import experiment
-            experiment(args)
+    print("Script started")
+    args = parse_args()
+    print("Arguments parsed")
 
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
+    #Set the random seed to reproduce results
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+
+    #Pre-process dataset if needed and return correct path
+    args.dataset_path = setup_database(args)
+
+    #Reset seeds after dataset is setup
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+
+    #Run experiment if its set else run main function
+    if args.experiment != None:
+        experiment(args)
+    else:
+        main(args)

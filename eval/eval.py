@@ -4,8 +4,8 @@ import os
 import numpy as np
 
 from dataset.setup_database import setup_database
-from utils.modelUtils import initModel
-from utils.modelUtils import loadBestModel
+from utils.modelUtils import setup_model
+#from utils.modelUtils import loadBestModel
 from utils.utils import calcDistance
 from utils.utils import visualise
 from utils.utils import calcBias
@@ -20,10 +20,10 @@ class eval_obj(object):
         if args.experiment==2:
             self.heatMap_data = setup_database(args, 'heatmap_grid')
         self.device = args.device
-        self.best_model = initModel(self.test_data_loader, args.model_type, args.nf, args.extra_layers).to(args.device)
+        self.best_model = setup_model(self.test_data_loader, args.model_type, args.nf, args.extra_layers).to(args.device)
         self.visualise = args.visualise
 
-        loadBestModel(args.result_root, self.best_model, args.device)
+        #loadBestModel(args.result_root, self.best_model, args.device)
 
         #Setting the model to evaluation mode
         self.best_model.eval()
