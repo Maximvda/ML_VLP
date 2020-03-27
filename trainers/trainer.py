@@ -24,7 +24,7 @@ class Trainer(object):
             printMultiLine(worker_id, "Setting up neural network")
         #Initialise some variables
         self.worker_id = worker_id; self.verbose = args.verbose;    self.result_root = args.result_root
-        self.device = args.device;
+        self.device = args.device; self.batch_size = args.batch_size
         self.learning = True;   self.visualise = args.visualise
 
         #Initialise model parameters
@@ -37,7 +37,6 @@ class Trainer(object):
 
         #If population based training is not used
         if not args.pbt_training and args.experiment == None:
-            self.batch_size = args.batch_size
             #Setup dataloaders
             self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
             self.val_data_loader = DataLoader(self.val_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
