@@ -66,7 +66,7 @@ def setup_model(self, file, reload_model=False):
             for k, v in state.items():
                 if torch.is_tensor(v):
                     state[k] = v.to(self.device)
-        del checkpoint
+                    
     #Init model if no checkpoint
     else:
         init_model(self, file, reload_model)

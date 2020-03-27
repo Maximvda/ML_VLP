@@ -29,7 +29,7 @@ def experiment1(args):
                                     'hidden_layers': k})
 
     #Init variables for workers
-    mp = _mp.get_context('spawn')
+    mp = _mp.get_context('forkserver')
     tasks = mp.Queue(maxsize=len(hyper_par))
 
     #Set Id for the tasks

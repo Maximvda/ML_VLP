@@ -94,7 +94,7 @@ class Trainer(object):
                 save_state(self, 'checkpoint.pth')
 
     #Calculate the performance on the validation set and store best performing model
-    def calcPerformance(self, experiment):
+    def calcPerformance(self, experiment=False):
         if self.verbose:
             printMultiLine(self.worker_id,"Calculating performance on validation set.", offset=1)
         dist_dict = {'2D': [], 'z': [], '3D': []}
