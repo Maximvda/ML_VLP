@@ -1,29 +1,30 @@
 import torch
-import torch.nn as nn
-import os
 import numpy as np
 
-from dataset.setup_database import setup_database
 from utils.modelUtils import setup_model
-#from utils.modelUtils import loadBestModel
 from utils.utils import calcDistance
 from utils.utils import visualise
 from utils.utils import calcBias
 from utils.utils import makeHeatMap
 
 #Object to evaluate the performance of the model on the test set
-class eval_obj(object):
-    def __init__(self, args):
+class Eval_obj(object):
+    def __init__(self, args, file=None):
         print("Setting up eval object")
         #Initialising some variables
-        self.test_data_loader = setup_database(args, 'test')
-        if args.experiment==2:
-            self.heatMap_data = setup_database(args, 'heatmap_grid')
-        self.device = args.device
-        self.best_model = setup_model(self.test_data_loader, args.model_type, args.nf, args.extra_layers).to(args.device)
+        self.device = args.device;  self.result_root = args.result_root
         self.visualise = args.visualise
+        if file == None:
+            file = 'model.pth'
 
-        #loadBestModel(args.result_root, self.best_model, args.device)
+        #Load model from file
+        self.best_model = setup_model(self, file, reload_model=reload)
+
+        #Setup dataset and dataloaders
+        test_dataset = Data(args.dataset_path['test'], args.TX_config, args.TX_input, args.blockage, args.output_nf)
+        heatmap_dataset = Data(args.dataset_path['heatmap'], args.TX_config, args.TX_input, args.blockage, args.output_nf)
+        self.test_data_loader = DataLoader(test_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
+        self.heatmap_loader = DataLoader(heatmap_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
 
         #Setting the model to evaluation mode
         self.best_model.eval()
@@ -31,42 +32,48 @@ class eval_obj(object):
 
     #Calculates the distance between predicted and real position of the samples in the test set
     #If visualise is enables these distances are visualy plotted
-    def demo(self, area1=None, area2=None):
-        distance = []
-        dist_height = []
+    def demo(self):
+        #Init variables to store distances
+        dist_dict = {'2D': [], 'z': [], '3D': []}
         x = []; y = []
+        #Get prediction error for every batch in validation set
         for i, data in enumerate(self.test_data_loader):
             with torch.no_grad():
-                #forward batch of test data through the network
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)
                 prediction = self.best_model(input)
-                dist, dist_z = calcDistance(prediction, output, area1, area2)
-                distance.append(dist)
-                dist_height.append(dist_z)
+
+                #Calculate the distance between predicted and target points
+                dist = calcDistance(prediction, output)
                 x1, y1 = calcBias(prediction, output)
                 x.append(x1); y.append(y1)
+
+                dist_dict['2D'].append(dist['2D'])
+                if len(dist) == 3:
+                    dist_dict['z'].append(dist['z']); dist_dict['3D'].append(dist['3D'])
 
                 if self.visualise:
                      visualise(output, prediction, pause=0.1)
 
-        #The average distance over the entire test set is calculated
-        dist = sum(filter(None,distance))/len(distance)
-        dist_z = sum(dist_height)/len(dist_height)
+        #The average error over the entire set is calculated
+        for key in dist_dict:
+            if len(dist_dict[key]) > 0:
+                dist_dict[key] = sum(dist_dict[key])/len(dist_dict[key])
+            else:
+                dist_dict[key] = np.inf
         #The distance is denormalised to cm's
-        dist = dist*300
-        dist_z = dist_z*200
-        if area1 is not None:
-            print("Distance on test set within area1: {}\tarea2: {}\tis: {}cm\theight: {}".format(area1,area2,dist,dist_z))
-        else:
-            print("Distance on test set is: {}cm\theight: {}".format(dist, dist_z))
+        dist_dict['2D'] = dist_dict['2D']*300; dist_dict['z'] = dist_dict['z']*200
+
+        print("Distance on val set 2D: {} cm\t Z: {} cm\t 3D: {} cm".format(
+                round(dist_dict['2D'],2),round(dist_dict['z'],2), round(dist_dict['3D'],2)))
+
         print("Bias on x: {}\ton y: {}".format(sum(x)/len(x), sum(y)/len(y)))
-        return dist
+
 
     def heatMap(self, title):
         map = np.full((300,300),np.inf)
         mapz = np.full((300,300),np.inf)
-        for i, data in enumerate(self.heatMap_data):
+        for i, data in enumerate(self.heatmap_loader):
             with torch.no_grad():
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)

@@ -8,7 +8,7 @@ from dataset.setup_database import setup_database
 
 from trainers.trainer import Trainer
 from trainers.pbt_trainer import Pbt_trainer
-from eval.eval import eval_obj
+from eval.eval import Eval_obj
 
 #Trains or evaluates a model
 def main(args):
@@ -22,7 +22,7 @@ def main(args):
         trainer.train()
     else:
         #Best performing model is loaded and evaluated on the test set
-        evalObj = eval_obj(args)
+        evalObj = Eval_obj(args)
 
 if __name__ == '__main__':
     print("Script started")

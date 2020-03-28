@@ -1,12 +1,7 @@
 import torch
-import torch.nn as nn
-import torch.optim as optim
 from torch.utils.data import DataLoader
-import multiprocessing
 import numpy as np
-import time
 
-from trainers.model import Model
 from utils.modelUtils import setup_model
 from utils.modelUtils import save_state
 from utils.utils import visualise
@@ -22,20 +17,21 @@ class Trainer(object):
         #Set the seed for reproducability
         if args.verbose:
             printMultiLine(worker_id, "Setting up neural network")
-        #Initialise some variables
+        #Initialise plenty of variables XS
         self.worker_id = worker_id; self.verbose = args.verbose;    self.result_root = args.result_root
         self.device = args.device; self.batch_size = args.batch_size
         self.learning = True;   self.visualise = args.visualise
 
         #Initialise model parameters
         self.size = args.size; self.model_type = args.model_type; self.nf = args.nf; self.hidden_layers = args.hidden_layers
-        self.criterion = nn.MSELoss(); self.output_nf = args.output_nf; self.learning_rate = args.learning_rate
+        self.criterion = torch.nn.MSELoss(); self.output_nf = args.output_nf; self.learning_rate = args.learning_rate
 
         #Initialise datasets
-        self.train_dataset = Data(args.dataset_path['train'], args.TX_config, args.TX_input, args.blockage, args.output_nf)
-        self.val_dataset = Data(args.dataset_path['val'], args.TX_config, args.TX_input, args.blockage, args.output_nf)
+        self.TX_config = args.TX_config; self.TX_input = args.TX_input; self.blockage = args.blockage; self.output_nf = args.output_nf
+        self.train_dataset = Data(args.dataset_path['train'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+        self.val_dataset = Data(args.dataset_path['val'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
 
-        #If population based training is not used
+        #If normal model is trained (No experiment or PBT training)
         if not args.pbt_training and args.experiment == None:
             #Setup dataloaders
             self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
@@ -91,7 +87,8 @@ class Trainer(object):
                 save_state(self, self.file)
             else:
                 save_state(self, 'checkpoint.pth')
-        printMultiLine(self.worker_id, 'Training finished after {} epochs'.format(self.iter))
+        if self.verbose:
+            printMultiLine(self.worker_id, 'Training finished after {} epochs'.format(self.iter))
 
     #Calculate the performance on the validation set and store best performing model
     def calcPerformance(self, experiment=False):
@@ -146,6 +143,12 @@ class Trainer(object):
         self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
         self.val_data_loader = DataLoader(self.val_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
         self.step = int(len(self.data_loader)/10);
+
+    def set_dataset(self):
+        #Re initialise datasets with different data configurations
+        self.train_dataset = Data(args.dataset_path['train'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+        self.val_dataset = Data(args.dataset_path['val'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+
 
     def save_checkpoint(self, save_best=False):
         if save_best:

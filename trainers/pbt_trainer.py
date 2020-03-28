@@ -1,10 +1,7 @@
 import torch.multiprocessing as _mp
-import torch.optim as optim
 import numpy as np
 import torch
 import os
-from threading import Thread
-from multiprocessing import Process
 import multiprocessing
 import time
 

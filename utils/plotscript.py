@@ -7,15 +7,32 @@ plt.switch_backend('Agg')
 from eval.eval import eval_obj
 from utils.utils import makePlot
 
-def getDist(root, list):
+#Make plots for experiment 1 showing influence of architecture parameters
+def plot_exp_1(result_root):
+    #init list to store results
     dist = []
-    for it in list:
-        pth = os.path.join(root, it)
-        cp = torch.load(os.path.join(pth,'checkpoint.pth'))
-        dist.append(min(cp['distance']))
-    return dist
+    root = os.path.join(result_root, 'checkpoints')
+    files = os.listdir(root)
+    #Get the required results
+    for key in [32,64,128,256]:
+        constraints = {'model_type': 'Type_1', 'nf':key}
+        dist.append(getDist(root, files, constraints, 'hidden_layers'))
 
-def plotExp2(args):
+    data_labels = ['number of features = 32', 'number of features = 64', 'number of features = 128', 'number of features = 256']
+    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Accuracy 2D (cm)'], result_root, data_labels)
+
+    dist = []
+    #Get the required results
+    for model in ['Type_1', 'Type_2']:
+        for key in [128,256]:
+            constraints = {'model_type': model, 'nf':key}
+            dist.append(getDist(root, files, constraints, 'hidden_layers'))
+
+    data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
+    makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], result_root, data_labels)
+
+
+def plot_exp_2(args):
     #Plots for experiment 2
     args.TX_input = 9
     args.nf = 256
@@ -74,54 +91,49 @@ def plotExp2(args):
     plt.savefig(resultpath, bbox_inches='tight')
     plt.close()
 
-def plotscript(args):
-    root = args.result_root
-    #Plots for experiment 1
-    pth = os.path.join(args.result_root, 'experiment_1')
-    list = []
-    for i in range(36):
-        list.append('TX_input_'+str(i+1))
-    dist = getDist(pth, list)
-    dist.insert(0,np.inf)
-    makePlot(dist, 'Best_TX_input.pdf', 'Error on validation set', ['Number of TX', 'Distance (cm)'], pth)
+#Makes plot for experiment 3 showing influence of Number of TX inputs
+def plot_exp_3(result_root):
+    #init list to store results
+    dist = []
+    root = os.path.join(result_root, 'checkpoints')
+    files = os.listdir(root)
+    #Get the required results
+    for i in range(1,37):
+        constraints = {'TX_input':key}
+        dist.append(getDist(root, files, constraints, 'TX_input'))
 
-    plotExp2(args)
-
-    #Plots for experiment 3
-    pth = os.path.join(root,'experiment_3')
-
-    list = ['FC_32_0', 'FC_32_1', 'FC_32_2', 'FC_32_3', 'FC_32_4']
-    dist_FC_32 = getDist(pth, list)
-    dist_FC_32.insert(0,np.inf)
-    list = ['FC_64_0', 'FC_64_1', 'FC_64_2', 'FC_64_3', 'FC_64_4']
-    dist_FC_64 = getDist(pth, list)
-    dist_FC_64.insert(0,np.inf)
-    list = ['FC_128_0', 'FC_128_1', 'FC_128_2', 'FC_128_3', 'FC_128_4']
-    dist_FC_128 = getDist(pth, list)
-    dist_FC_128.insert(0,np.inf)
-    list = ['FC_256_0', 'FC_256_1', 'FC_256_2', 'FC_256_3', 'FC_256_4']
-    dist_FC_256 = getDist(pth, list)
-    dist_FC_256.insert(0,np.inf)
-    dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
-    data_labels = ['number of features = 32', 'number of features = 64', 'number of features = 128', 'number of features = 256']
-
-    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], pth, data_labels)
+    makePlot(dist, 'Best_TX_input.pdf', 'Error on validation set', ['Number of TX', 'Accuracy 2D (cm)'],  result_root)
 
 
+#Makes plot for experiment 4 showing influence of amount of blockage
+def plot_exp_4(result_root):
+    #init list to store results
+    dist = []
+    root = os.path.join(result_root, 'checkpoints')
+    files = os.listdir(root)
+    #Get the required results
+    for i in range(1,11):
+        constraints = {'blockage':0.1*i}
+        dist.append(getDist(root, files, constraints, 'blockage'))
 
-    list = ['FC_128_0', 'FC_128_1', 'FC_128_2', 'FC_128_3', 'FC_128_4']
-    dist_FC_32 = getDist(pth, list)
-    dist_FC_32.insert(0,np.inf)
-    list = ['FC_256_0', 'FC_256_1', 'FC_256_2', 'FC_256_3', 'FC_256_4']
-    dist_FC_64 = getDist(pth, list)
-    dist_FC_64.insert(0,np.inf)
-    list = ['FC_expand_128_0', 'FC_expand_128_1', 'FC_expand_128_2', 'FC_expand_128_3', 'FC_expand_128_4']
-    dist_FC_128 = getDist(pth, list)
-    dist_FC_128.insert(0,np.inf)
-    list = ['FC_expand_256_0', 'FC_expand_256_1', 'FC_expand_256_2', 'FC_expand_256_3', 'FC_expand_256_4']
-    dist_FC_256 = getDist(pth, list)
-    dist_FC_256.insert(0,np.inf)
-    dist = [dist_FC_32, dist_FC_64, dist_FC_128, dist_FC_256]
-    data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
+    makePlot(dist, 'influence_blockage.pdf', 'Error on validation set', ['Amount of blockage', 'Accuracy 2D (cm)'],  result_root)
 
-    makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], pth, data_labels)
+
+#Sort the first list according to second list
+def sort_list(list1, list2):
+    zipped_pairs = zip(list2, list1)
+    z = [x for _, x in sorted(zipped_pairs)]
+    return z
+
+#Retrieve the min_distance of all files depending on constraints
+#also sort retreived distances depending on sorting parameter
+def getDist(root, files, constraints, sort_par):
+    dist = []; sorter = []
+    for file in files:
+        if 'task' in file:
+            cp = torch.load(os.path.join(root,file))
+            #If all constraints are satisfied by checkpoint then add distance to list
+            if all([cp[key] == constraints[key] for key in constraints]):
+                dist.append(cp['min_distance'])
+                sorter.append(cp[sort_par])
+    return sort_list(dist,sorter)

@@ -1,32 +1,11 @@
 import torch
-import torch.nn as nn
 import os
 import numpy as np
 from trainers.model import Model
 import torch.optim as optim
 
 from utils.config import get_PBT_choices
-'''
-#Loads the best model from the saved path and loads onto device
-def loadBestModel(result_root, model, device):
-    path = os.path.join(result_root,'model.pth')
-    if os.path.isfile(path):
-        print("Restoring best model")
-        save = torch.load(path, map_location=device)
-        model.load_state_dict(save['model'])
-    path = os.path.join(result_root,'checkpoints/best_model.pth')
-    if os.path.isfile(path):
-        print("Restoring best model")
-        save = torch.load(path, map_location=device)
-        size = save['size']
-        model_type = save['model_type']
-        nf = save['nf']
-        hidden_layers = save['hidden_layers']
-        model = Model(size, model_type,
-                            nf, hidden_layers).to(device)
-        model.load_state_dict(save['model'])
 
- '''
 #Loads the entire state of the training process if any
 #Else it initialises everything to start training
 def setup_model(self, file, reload_model=False):
@@ -90,7 +69,7 @@ def init_model(self, file, reload_model):
         momentum = np.random.choice(choices['momentum'])
         self.optim = optim.Adam(self.model.parameters(), lr=lr, betas=(momentum,0.999))
     else:
-        self.learning = True 
+        self.learning = True
         #Init model when PBT is not used
         self.model = Model(self.size, self.output_nf, self.model_type, self.nf, self.hidden_layers)
         self.optim = optim.Adam(self.model.parameters(), self.learning_rate, betas=(0.5, 0.999))
@@ -111,4 +90,8 @@ def save_state(self, file):
             'best_iter': self.best_iter,
             'model': self.model.state_dict(),
             'optim': self.optim.state_dict(),
+            'TX_config': self.TX_config,
+            'TX_input': self.TX_input,
+            'blockage': self.blockage,
+            'output_nf': self.output_nf
             }, path)

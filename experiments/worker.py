@@ -20,12 +20,18 @@ class Worker(mp.Process):
         while True:
             if self.tasks.empty():
                 break
-            # Train model
+            #Get Id of the task to perform
             task = self.tasks.get()
+            #Set the hyperparameters
             par_dict = self.par_list[task['id']]
             for key in par_dict:
                 self.trainer.set_attribute(key, par_dict[key])
 
+            #Re initialise datasets if data configuration is changed
+            if any([par in par_dict for par in ['TX_config', 'TX_input', 'blockage', 'output_nf']]):
+                self.trainer.set_dataset()
+
+            #Initialise model in trainer for task id
             self.trainer.set_id(task['id'])
             #Train the model till no performance improvement
             self.trainer.train(experiment=True)

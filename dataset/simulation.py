@@ -20,7 +20,7 @@ def testbed_simulation(dataroot, verbose):
         for RX in pos_RX:
             counter += 1
             if verbose:
-                printProgBar(counter, len(pos_RX))
+                print(printProgBar(counter, len(pos_RX)), end='\r')
             RSS = []; RSS1 = []; RSS2 = []
             for i in range(len(pos_TX)):
                 for TX in pos_TX[i]:
