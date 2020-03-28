@@ -91,6 +91,7 @@ class Trainer(object):
                 save_state(self, self.file)
             else:
                 save_state(self, 'checkpoint.pth')
+        printMultiLine(self.worker_id, 'Training finished after {} epochs'.format(self.iter))
 
     #Calculate the performance on the validation set and store best performing model
     def calcPerformance(self, experiment=False):

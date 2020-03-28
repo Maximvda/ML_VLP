@@ -66,7 +66,7 @@ def setup_model(self, file, reload_model=False):
             for k, v in state.items():
                 if torch.is_tensor(v):
                     state[k] = v.to(self.device)
-                    
+
     #Init model if no checkpoint
     else:
         init_model(self, file, reload_model)
@@ -90,6 +90,7 @@ def init_model(self, file, reload_model):
         momentum = np.random.choice(choices['momentum'])
         self.optim = optim.Adam(self.model.parameters(), lr=lr, betas=(momentum,0.999))
     else:
+        self.learning = True 
         #Init model when PBT is not used
         self.model = Model(self.size, self.output_nf, self.model_type, self.nf, self.hidden_layers)
         self.optim = optim.Adam(self.model.parameters(), self.learning_rate, betas=(0.5, 0.999))
