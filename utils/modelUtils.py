@@ -8,6 +8,7 @@ from utils.config import get_PBT_choices
 
 #Loads the entire state of the training process if any
 #Else it initialises everything to start training
+#When reload_model is set to true it loads the model and model parameters from the file
 def setup_model(self, file, reload_model=False):
     resultpath = os.path.join(self.result_root,file)
     #check if there exists a checkpoint if so load it

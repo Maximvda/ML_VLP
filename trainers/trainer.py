@@ -8,6 +8,7 @@ from utils.utils import visualise
 from utils.utils import calcDistance
 from utils.utils import printMultiLine
 from utils.utils import printProgBar
+from utils.config import config2size
 
 from dataset.dataset import Data
 
@@ -149,7 +150,8 @@ class Trainer(object):
         #Re initialise datasets with different data configurations
         self.train_dataset = Data(self.dataset_path['train'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
         self.val_dataset = Data(self.dataset_path['val'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
-
+        #If configuration is changed model size has to be adapted
+        self.size = config2size(self.TX_config)
 
     def save_checkpoint(self, save_best=False):
         if save_best:
