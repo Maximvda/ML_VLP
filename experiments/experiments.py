@@ -25,6 +25,8 @@ def experiment(args):
                                         'nf': j,
                                         'hidden_layers': k})
         run_experiment(args, hyper_par)
+        #Make plots of this experiment 
+        #And print performance on test set for the three best models
         best_files = plot_exp_1(args.result_root)
         for file in best_files:
             obj = Eval_obj(args, file)

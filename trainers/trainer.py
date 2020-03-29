@@ -27,9 +27,10 @@ class Trainer(object):
         self.criterion = torch.nn.MSELoss(); self.output_nf = args.output_nf; self.learning_rate = args.learning_rate
 
         #Initialise datasets
+        self.dataset_path = args.dataset_path
         self.TX_config = args.TX_config; self.TX_input = args.TX_input; self.blockage = args.blockage; self.output_nf = args.output_nf
-        self.train_dataset = Data(args.dataset_path['train'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
-        self.val_dataset = Data(args.dataset_path['val'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+        self.train_dataset = Data(self.dataset_path['train'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+        self.val_dataset = Data(self.dataset_path['val'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
 
         #If normal model is trained (No experiment or PBT training)
         if not args.pbt_training and args.experiment == None:
@@ -146,8 +147,8 @@ class Trainer(object):
 
     def set_dataset(self):
         #Re initialise datasets with different data configurations
-        self.train_dataset = Data(args.dataset_path['train'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
-        self.val_dataset = Data(args.dataset_path['val'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+        self.train_dataset = Data(self.dataset_path['train'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+        self.val_dataset = Data(self.dataset_path['val'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
 
 
     def save_checkpoint(self, save_best=False):
