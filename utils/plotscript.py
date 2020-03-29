@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
 
-from eval.eval import eval_obj
+from eval.eval import Eval_obj
 from utils.utils import makePlot
 
 #Make plots for experiment 1 showing influence of architecture parameters
@@ -46,7 +46,7 @@ def plot_exp_2(args):
     for i in range(1,7):
         args.TX_config = i
         args.result_root = os.path.join(pth, 'TX_config_' + str(i))
-        evalObj = eval_obj(args)
+        evalObj = Eval_obj(args)
         maps.append(evalObj.heatMap(args.TX_config))
 
     fig, axs = plt.subplots(nrows=2, ncols=3)
