@@ -16,7 +16,7 @@ def setup_database(args, split="train"):
         path_dict['sim_val'] = 'simulation_data_{}_val.data'.format(args.normalise)
 
     #Add the paths of the experimental data to dictionary
-    for split in ['train', 'val', 'test']:
+    for split in ['train', 'val', 'test', 'heatmap']:
         path_dict[split] = os.path.join(args.dataroot, 'data_{}_{}.data'.format(args.normalise,split))
 
     #Check if all data files are preprocessed if not rerun preprocessing

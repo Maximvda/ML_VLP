@@ -1,4 +1,5 @@
 import torch
+from torch.utils.data import DataLoader
 import numpy as np
 
 from utils.modelUtils import setup_model
@@ -6,6 +7,7 @@ from utils.utils import calcDistance
 from utils.utils import visualise
 from utils.utils import calcBias
 from utils.utils import makeHeatMap
+from dataset.dataset import Data
 
 #Object to evaluate the performance of the model on the test set
 class Eval_obj(object):
@@ -18,7 +20,7 @@ class Eval_obj(object):
             file = 'model.pth'
 
         #Load model from file
-        self.best_model = setup_model(self, file, reload_model=reload)
+        setup_model(self, file, reload_model=True)
 
         #Setup dataset and dataloaders
         test_dataset = Data(args.dataset_path['test'], args.TX_config, args.TX_input, args.blockage, args.output_nf)
@@ -27,7 +29,7 @@ class Eval_obj(object):
         self.heatmap_loader = DataLoader(heatmap_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
 
         #Setting the model to evaluation mode
-        self.best_model.eval()
+        self.model.eval()
         self.result_root = args.result_root
 
     #Calculates the distance between predicted and real position of the samples in the test set
@@ -41,7 +43,7 @@ class Eval_obj(object):
             with torch.no_grad():
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)
-                prediction = self.best_model(input)
+                prediction = self.model(input)
 
                 #Calculate the distance between predicted and target points
                 dist = calcDistance(prediction, output)
@@ -77,7 +79,7 @@ class Eval_obj(object):
             with torch.no_grad():
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)
-                prediction = self.best_model(input)
+                prediction = self.model(input)
                 for it in range(0,len(input)):
                     pos = output[it]
                     x = int(round(pos[0].item()*300)); y = int(round(pos[1].item()*300))

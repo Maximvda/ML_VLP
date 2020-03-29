@@ -19,6 +19,7 @@ def setup_model(self, file, reload_model=False):
             self.model_type = checkpoint['model_type']
             self.nf = checkpoint['nf']
             self.hidden_layers = checkpoint['hidden_layers']
+            self.output_nf = checkpoint['output_nf']
             self.model = Model(self.size, self.output_nf, self.model_type,
                             self.nf, self.hidden_layers)
             for param_group in checkpoint['optim']['param_groups']:

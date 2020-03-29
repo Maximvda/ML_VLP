@@ -3,6 +3,7 @@ import torch.multiprocessing as _mp
 
 from experiments.worker import Worker
 from utils.plotscript import *
+from eval.eval import Eval_obj
 
 
 def experiment(args):
@@ -24,8 +25,10 @@ def experiment(args):
                                         'nf': j,
                                         'hidden_layers': k})
         run_experiment(args, hyper_par)
-        plot_exp_1(args.result_root)
-
+        best_files = plot_exp_1(args.result_root)
+        for file in best_files:
+            obj = Eval_obj(args, file)
+            obj.demo()
 
     #Experiment 2 performs a sweep over the different configurations
     #Performance is evaluated on the validation set

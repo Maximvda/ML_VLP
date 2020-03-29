@@ -37,6 +37,8 @@ def plot_exp_1(result_root):
     print("Second:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: {}".format(dict['2']['model_type'], dict['2']['nf'],dict['2']['hidden_layers'], dict['2']['min_distance']))
     print("Third:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: {}".format(dict['3']['model_type'], dict['3']['nf'],dict['3']['hidden_layers'], dict['3']['min_distance']))
 
+    return dict['files']
+
 def plot_exp_2(args):
     #Plots for experiment 2
     args.TX_input = 9
@@ -148,11 +150,18 @@ def getDist(root, files, constraints, sort_par):
 #Retrieve the parameters of three best performing models
 #According to their min_distance on validation set
 def get_best_three(root, files):
-    checkpoints = []; sorter = []
+    checkpoints = []; sorter = []; file_names = []
     for file in files:
         if 'task' in file:
             cp = torch.load(os.path.join(root,file))
             checkpoints.append(cp)
             sorter.append(cp['min_distance'])
+            file_names.append(file)
     checkpoints = sort_list(checkpoints,sorter)
-    return {'1': checkpoints[0], '2': checkpoints[1], '3': checkpoints[2]}
+    file_names = sort_list(file_names,sorter)
+
+    best_files = []
+    for file in file_names[0:3]:
+        ext = file.split("-")[-1]
+        best_files.append("best-"+ext)
+    return {'1': checkpoints[0], '2': checkpoints[1], '3': checkpoints[2], 'files': best_files}
