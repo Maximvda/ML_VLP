@@ -152,9 +152,7 @@ def get_best_three(root, files):
     for file in files:
         if 'task' in file:
             cp = torch.load(os.path.join(root,file))
-            #If all constraints are satisfied by checkpoint then add distance to list
-            if all([cp[key] == constraints[key] for key in constraints]):
-                checkpoints.append(cp)
-                sorter.append(cp['min_distance'])
+            checkpoints.append(cp)
+            sorter.append(cp['min_distance'])
     checkpoints = sort_list(checkpoints,sorter)
     return {'1': checkpoints[0], '2': checkpoints[1], '3': checkpoints[2]}
