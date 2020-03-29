@@ -30,7 +30,12 @@ def plot_exp_1(result_root):
 
     data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
     makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], result_root, data_labels)
+    print("Plots for experiment 1 saved to {}".format(result_root))
 
+    dict = get_best_three(root, files)
+    print("Best:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: {}".format(dict['1']['model_type'], dict['1']['nf'],dict['1']['hidden_layers'], dict['1']['min_distance']))
+    print("Second:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: {}".format(dict['2']['model_type'], dict['2']['nf'],dict['2']['hidden_layers'], dict['2']['min_distance']))
+    print("Third:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: {}".format(dict['3']['model_type'], dict['3']['nf'],dict['3']['hidden_layers'], dict['3']['min_distance']))
 
 def plot_exp_2(args):
     #Plots for experiment 2
@@ -139,3 +144,17 @@ def getDist(root, files, constraints, sort_par):
     dist = sort_list(dist,sorter)
     dist.insert(0,np.inf)
     return dist
+
+#Retrieve the parameters of three best performing models
+#According to their min_distance on validation set
+def get_best_three(root, files):
+    checkpoints = []; sorter = []
+    for file in files:
+        if 'task' in file:
+            cp = torch.load(os.path.join(root,file))
+            #If all constraints are satisfied by checkpoint then add distance to list
+            if all([cp[key] == constraints[key] for key in constraints]):
+                checkpoints.append(cp)
+                sorter.append(cp['min_distance'])
+    checkpoints = sort_list(checkpoints,sorter)
+    return {'1': checkpoints[0], '2': checkpoints[1], '3': checkpoints[2]}
