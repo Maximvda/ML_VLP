@@ -58,9 +58,9 @@ def parse_args():
     parser.add_argument('--blockage', type=float, default=0.0, help="Percentage of TX who are blocked")
 
     #Model options
-    parser.add_argument('--model_type', type=str, default='Type_1', choices=['Type_1, Type_2'], help="Set the model type to use")
-    parser.add_argument('--nf', type=int, default=64, help="The numer of features for the model layers")
-    parser.add_argument('--hidden_layers', type=int, default=5, help="The number of hidden layers in the model")
+    parser.add_argument('--model_type', type=str, default='Type_2', choices=['Type_1, Type_2'], help="Set the model type to use")
+    parser.add_argument('--nf', type=int, default=256, help="The numer of features for the model layers")
+    parser.add_argument('--hidden_layers', type=int, default=4, help="The number of hidden layers in the model")
     parser.add_argument('--output_nf', type=int, default=3, choices=[2,3], help="Can be set to two then height is not predicted")
 
     #Training options
