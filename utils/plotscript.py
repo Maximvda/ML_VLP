@@ -136,4 +136,6 @@ def getDist(root, files, constraints, sort_par):
             if all([cp[key] == constraints[key] for key in constraints]):
                 dist.append(cp['min_distance'])
                 sorter.append(cp[sort_par])
-    return sort_list(dist,sorter)
+    dist = sort_list(dist,sorter)
+    dist.insert(0,np.inf)
+    return dist
