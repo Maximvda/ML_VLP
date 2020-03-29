@@ -163,5 +163,5 @@ def get_best_three(root, files):
     best_files = []
     for file in file_names[0:3]:
         ext = file.split("-")[-1]
-        best_files.append("best-"+ext)
+        best_files.append("checkpoints/best-"+ext)
     return {'1': checkpoints[0], '2': checkpoints[1], '3': checkpoints[2], 'files': best_files}
