@@ -47,7 +47,7 @@ def experiment(args):
         files = os.listdir(root)
         for file in files:
             if 'best' in file:
-                obj = Eval_obj(args, file)
+                obj = Eval_obj(args, os.path.join('checkpoints',file))
                 maps.append(obj.heatMap())
         plot_exp_2(args.result_root, maps)
 
