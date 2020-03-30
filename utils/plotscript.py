@@ -39,22 +39,9 @@ def plot_exp_1(result_root):
 
     return dict['files']
 
-def plot_exp_2(args):
+def plot_exp_2(result_root, maps):
     #Plots for experiment 2
-    args.TX_input = 9
-    args.nf = 256
-    args.extra_layers = 3
-    args.model_type = 'FC_expand'
-    args.dynamic = True
-    args.experiment=2
-    pth = os.path.join(args.result_root, 'experiment_4')
-
-    maps = []
-    for i in range(1,7):
-        args.TX_config = i
-        args.result_root = os.path.join(pth, 'TX_config_' + str(i))
-        evalObj = Eval_obj(args)
-        maps.append(evalObj.heatMap(args.TX_config))
+    root = os.path.join(result_root, 'checkpoints')
 
     fig, axs = plt.subplots(nrows=2, ncols=3)
     #fig, axs = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True)
@@ -82,7 +69,7 @@ def plot_exp_2(args):
     conv = [0,1,1,1]
     for i in [0, 3]:
         ax = axs.flat[conv[i]]
-        img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=6.5, interpolation='nearest')
+        img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=5.5, interpolation='nearest')
         ax.set_xlabel('x-axis (cm)')
         if i == 0:
             ax.set_ylabel('y-axis (cm)')
