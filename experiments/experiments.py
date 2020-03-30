@@ -7,6 +7,7 @@ from eval.eval import Eval_obj
 
 
 def experiment(args):
+    print("Running experiment {}".format(args.experiment))
     hyper_par = []
 
     #Experiment 1 does a hyperparameter search to find a good model architecture
@@ -42,6 +43,7 @@ def experiment(args):
             hyper_par.append({'TX_config': i})
 
         run_experiment(args, hyper_par)
+
         maps = []
         root = os.path.join(args.result_root, 'checkpoints')
         files = os.listdir(root)
