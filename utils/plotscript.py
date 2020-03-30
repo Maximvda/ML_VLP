@@ -56,7 +56,7 @@ def plot_exp_2(result_root, maps):
         ax.set_title('Conf {}'.format(i+1))
 
     fig.suptitle('Prediction error (cm)')
-    resultpath = os.path.join(pth, 'heatmap_comparison.pdf')
+    resultpath = os.path.join(result_root, 'heatmap_comparison.pdf')
     plt.tight_layout()
     #fig.text(0.5, -0.05, "X-axis: (cm)", ha='center')
     #fig.text(-0.05, 0.5, "Y-axis: (cm)", va='center', rotation='vertical')
@@ -77,7 +77,7 @@ def plot_exp_2(result_root, maps):
         ax.set_title('Conf {}'.format(i+1))
 
     fig.suptitle('Prediction error (cm)')
-    resultpath = os.path.join(pth, 'heatmap_comparison_high.pdf')
+    resultpath = os.path.join(result_root, 'heatmap_comparison_high.pdf')
     plt.tight_layout()
     #fig.text(0.5, -0.05, "X-axis: (cm)", ha='center')
     #fig.text(-0.05, 0.5, "Y-axis: (cm)", va='center', rotation='vertical')

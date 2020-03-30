@@ -12,7 +12,8 @@ from dataset.dataset import Data
 #Object to evaluate the performance of the model on the test set
 class Eval_obj(object):
     def __init__(self, args, file=None):
-        print("Setting up eval object")
+        if args.verbose:
+            print("Setting up eval object")
         #Initialising some variables
         self.device = args.device;  self.result_root = args.result_root
         self.visualise = args.visualise
