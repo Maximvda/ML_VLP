@@ -47,6 +47,7 @@ def experiment(args):
         maps = []
         root = os.path.join(args.result_root, 'checkpoints')
         files = os.listdir(root)
+        files.sort()
         for file in files:
             if 'best' in file:
                 obj = Eval_obj(args, os.path.join('checkpoints',file))

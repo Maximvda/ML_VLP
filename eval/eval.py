@@ -8,6 +8,7 @@ from utils.utils import visualise
 from utils.utils import calcBias
 from utils.utils import makeHeatMap
 from dataset.dataset import Data
+from utils.utils import printProgBar
 
 #Object to evaluate the performance of the model on the test set
 class Eval_obj(object):
@@ -16,7 +17,7 @@ class Eval_obj(object):
             print("Setting up eval object")
         #Initialising some variables
         self.device = args.device;  self.result_root = args.result_root
-        self.visualise = args.visualise
+        self.visualise = args.visualise; self.verbose = args.verbose
         if file == None:
             file = 'model.pth'
 
@@ -36,12 +37,16 @@ class Eval_obj(object):
     #Calculates the distance between predicted and real position of the samples in the test set
     #If visualise is enables these distances are visualy plotted
     def demo(self):
+        if self.verbose:
+            print("Running demo, testing performance on test set.")
         #Init variables to store distances
         dist_dict = {'2D': [], 'z': [], '3D': []}
         x = []; y = []
         #Get prediction error for every batch in validation set
         for i, data in enumerate(self.test_data_loader):
             with torch.no_grad():
+                if self.verbose:
+                    print(printProgBar(i,len(self.test_data_loader)),end='\r')
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)
                 prediction = self.model(input)
@@ -74,10 +79,14 @@ class Eval_obj(object):
 
 
     def heatMap(self):
+        if self.verbose:
+            print("Creating heatmap")
         map = np.full((300,300),np.inf)
         mapz = np.full((300,300),np.inf)
         for i, data in enumerate(self.heatmap_loader):
             with torch.no_grad():
+                if self.verbose:
+                    print(printProgBar(i,len(self.heatmap_loader)),end='\r')
                 input = data[0].to(self.device)
                 output = data[1].to(self.device)
                 prediction = self.model(input)
@@ -88,7 +97,8 @@ class Eval_obj(object):
                     dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
                     map[x,y] = dist*300
                     mapz[x,y] = dist_z*200
-
+        if self.verbose:
+            print("Heatmaps stored at {}".format(self.result_root))
         makeHeatMap(map, 'TX_config_'+str(self.TX_config)+'.pdf', 'Prediction error (cm)', self.result_root)
         makeHeatMap(mapz, 'TX_config_'+str(self.TX_config)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
         return map
