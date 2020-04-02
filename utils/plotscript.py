@@ -125,7 +125,7 @@ def getDist(root, files, constraints, sort_par):
     dist = []; sorter = []
     for file in files:
         if 'task' in file:
-            cp = torch.load(os.path.join(root,file))
+            cp = torch.load(os.path.join(root,file),map_location=torch.device('cpu'))
             #If all constraints are satisfied by checkpoint then add distance to list
             if all([cp[key] == constraints[key] for key in constraints]):
                 dist.append(cp['min_distance'])
@@ -140,7 +140,7 @@ def get_best_three(root, files):
     checkpoints = []; sorter = []; file_names = []
     for file in files:
         if 'task' in file:
-            cp = torch.load(os.path.join(root,file))
+            cp = torch.load(os.path.join(root,file),map_location=torch.device('cpu'))
             checkpoints.append(cp)
             sorter.append(cp['min_distance'])
             file_names.append(file)
