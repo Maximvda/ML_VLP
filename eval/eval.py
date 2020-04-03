@@ -103,4 +103,4 @@ class Eval_obj(object):
             print("Heatmaps stored at {}".format(self.result_root))
         makeHeatMap(map, 'TX_config_'+str(self.TX_config)+'.pdf', 'Prediction error (cm)', self.result_root)
         makeHeatMap(mapz, 'TX_config_'+str(self.TX_config)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
-        return {'map': map, 'TX_conf': self.TX_conf, 'dist': sum(dist_2D)/len(dist_2D)}
+        return {'map': map, 'TX_conf': self.TX_config, 'dist': sum(dist_2D)/len(dist_2D)}
