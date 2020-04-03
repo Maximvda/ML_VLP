@@ -53,7 +53,7 @@ def experiment(args):
             if 'best' in file:
                 obj = Eval_obj(args, os.path.join('checkpoints',file))
                 dict.append(obj.heatMap())
-        print(dict)
+                
         plot_exp_2(args.result_root, dict)
 
 

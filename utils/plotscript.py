@@ -49,6 +49,7 @@ def plot_exp_2(result_root, dict_list):
         for dict in dict_list:
             if dict['TX_conf'] == i:
                 maps.append(dict['map'])
+                print("2D accuracy on heatmap split for TX_config {} is: {}".format(i,round(dict['dist'],2)))
 
     fig, axs = plt.subplots(nrows=2, ncols=3)
     for i in range(0,6):

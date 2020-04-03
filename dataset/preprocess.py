@@ -17,6 +17,10 @@ def preprocess(dataroot, normalise, verbose):
 
     #Get the random state such that data points are shuffled similar over different mat files
     rng_state = np.random.get_state()
+    index_map = np.arange(36)
+    np.random.shuffle(index_map)
+    np.savetxt(os.path.join(dataroot,'index_map.txt'), index_map, delimiter=",")
+    np.random.set_state(rng_state)
 
     #Read all the matlab files
     for file in files:
