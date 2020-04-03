@@ -39,8 +39,8 @@ def plot_exp_1(result_root):
 
     return dict['files']
 
+#Make plots for experiment 2 plotting difference between TX configurations
 def plot_exp_2(result_root, dict_list):
-    #Plots for experiment 2
     root = os.path.join(result_root, 'checkpoints')
 
     #Retrieve maps from dict
@@ -99,7 +99,7 @@ def plot_exp_3(result_root):
     root = os.path.join(result_root, 'checkpoints')
     files = os.listdir(root)
     #Get the required results
-    for i in range(1,37):
+    for key in range(1,37):
         constraints = {'TX_input':key}
         dist.append(getDist(root, files, constraints, 'TX_input'))
 

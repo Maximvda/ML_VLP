@@ -53,7 +53,7 @@ def experiment(args):
             if 'best' in file:
                 obj = Eval_obj(args, os.path.join('checkpoints',file))
                 dict.append(obj.heatMap())
-                
+
         plot_exp_2(args.result_root, dict)
 
 
@@ -68,6 +68,7 @@ def experiment(args):
             hyper_par.append({'TX_input': i})
 
         run_experiment(args, hyper_par)
+        
         plot_exp_3(args.result_root)
 
 
