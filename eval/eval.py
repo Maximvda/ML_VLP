@@ -79,6 +79,7 @@ class Eval_obj(object):
 
 
     def heatMap(self):
+        dist_2D = []
         if self.verbose:
             print("Creating heatmap")
         map = np.full((300,300),np.inf)
@@ -97,8 +98,9 @@ class Eval_obj(object):
                     dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
                     map[x,y] = dist*300
                     mapz[x,y] = dist_z*200
+                    dist_2D.append(dist*300)
         if self.verbose:
             print("Heatmaps stored at {}".format(self.result_root))
         makeHeatMap(map, 'TX_config_'+str(self.TX_config)+'.pdf', 'Prediction error (cm)', self.result_root)
         makeHeatMap(mapz, 'TX_config_'+str(self.TX_config)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
-        return map
+        return {'map': map, 'TX_conf': self.TX_conf, 'dist': sum(dist_2D)/len(dist_2D)}

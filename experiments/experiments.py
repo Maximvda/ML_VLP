@@ -26,6 +26,7 @@ def experiment(args):
                                         'nf': j,
                                         'hidden_layers': k})
         run_experiment(args, hyper_par)
+        print("")
         #Make plots of this experiment
         #And print performance on test set for the three best models
         best_files = plot_exp_1(args.result_root)
@@ -44,15 +45,16 @@ def experiment(args):
 
         run_experiment(args, hyper_par)
 
-        maps = []
+        dict = []
         root = os.path.join(args.result_root, 'checkpoints')
         files = os.listdir(root)
         files.sort()
         for file in files:
             if 'best' in file:
                 obj = Eval_obj(args, os.path.join('checkpoints',file))
-                maps.append(obj.heatMap())
-        plot_exp_2(args.result_root, maps)
+                dict.append(obj.heatMap())
+        print(dict)
+        plot_exp_2(args.result_root, dict)
 
 
 

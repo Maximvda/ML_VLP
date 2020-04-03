@@ -39,12 +39,18 @@ def plot_exp_1(result_root):
 
     return dict['files']
 
-def plot_exp_2(result_root, maps):
+def plot_exp_2(result_root, dict_list):
     #Plots for experiment 2
     root = os.path.join(result_root, 'checkpoints')
 
+    #Retrieve maps from dict
+    maps = []
+    for i in range(1,7):
+        for dict in dict_list:
+            if dict['TX_conf'] == i:
+                maps.append(dict['map'])
+
     fig, axs = plt.subplots(nrows=2, ncols=3)
-    #fig, axs = plt.subplots(nrows=2, ncols=3, sharex=True, sharey=True)
     for i in range(0,6):
         ax = axs.flat[i]
         img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
