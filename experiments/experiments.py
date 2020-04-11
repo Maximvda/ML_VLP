@@ -99,6 +99,7 @@ def experiment(args):
     #Experiment 5 investigates if it is possible to train a model on simulation data
     #and then use this model for a real environment
     #the influence of normalisation on the input data is also investigated
+    #Finally the difference between predicting 2D and 3D position is investigated
     elif args.experiment == 5:
         setup_dir(args, 'experiment_5')
 
@@ -111,6 +112,9 @@ def experiment(args):
         hyper_par.append({'dataset_path': {'train': 'simulation_data_True_train.data',
                                             'val': 'data_True_val.data',
                                             'test': 'data_True_test.data'}})
+
+        #Experiment that only estimates a 2D position
+        hyper_par.append({'output_nf': 2})
 
         run_experiment(args, hyper_par)
         plot_exp_5(args.result_root)

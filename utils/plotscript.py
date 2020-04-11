@@ -135,6 +135,7 @@ def plot_exp_5(result_root):
     dist = getDist(root, files, {}, None)
     print("Training model on non-normalised inputs results in 2D accuracy of : {}".format(round(dist[0],3)))
     print("Training model on simulation data and validating on real data results in 2D accuracy of : {}".format(round(dist[1],3)))
+    print("Training model on 2D prediction results in 2D accuracy of : {}".format(round(dist[2],3)))
 
 
 
