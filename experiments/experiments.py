@@ -105,16 +105,20 @@ def experiment(args):
     #Finally the difference between predicting 2D and 3D position is investigated
     elif args.experiment == 5:
         setup_dir(args, 'experiment_5')
+        args.normalise = False
+        setup_database(args)
+        args.simulate = True
+        setup_database(args)
 
         #Experiment without normalised inputs
-        hyper_par.append({'dataset_path': {'train': 'data_False_train.data',
-                                            'val': 'data_False_val.data',
-                                            'test': 'data_False_test.data'}})
+        hyper_par.append({'dataset_path': {'train': '/home/r0579568/ML_VLP/dataset/database/data_False_train.data',
+                                            'val': '/home/r0579568/ML_VLP/dataset/database/data_False_val.data',
+                                            'test': '/home/r0579568/ML_VLP/dataset/database/data_False_test.data'}})
 
         #Experiment with simulated training data, val and test set on real data
-        hyper_par.append({'dataset_path': {'train': 'simulation_data_True_train.data',
-                                            'val': 'data_True_val.data',
-                                            'test': 'data_True_test.data'}})
+        hyper_par.append({'dataset_path': {'train': '/home/r0579568/ML_VLP/dataset/database/simulation_data_True_train.data',
+                                            'val': '/home/r0579568/ML_VLP/dataset/database/data_True_val.data',
+                                            'test': '/home/r0579568/ML_VLP/dataset/database/data_True_test.data'}})
 
         #Experiment that only estimates a 2D position
         hyper_par.append({'output_nf': 2})
