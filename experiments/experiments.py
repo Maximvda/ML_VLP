@@ -36,8 +36,8 @@ def experiment(args):
             obj = Eval_obj(args, file)
             obj.demo()
 
-    if args.verbose:
-        print("Results of experiment 1 saved at {}".format(args.result_root))
+        if args.verbose:
+            print("Results of experiment 1 saved at {}".format(args.result_root))
 
     #Experiment 2 performs a sweep over the different configurations
     #Performance is evaluated on the validation set
@@ -96,6 +96,9 @@ def experiment(args):
         plot_exp_4(args.result_root)
 
 
+        if args.verbose:
+            print("Results of experiment 4 saved at {}".format(args.result_root))
+
     #Experiment 5 investigates if it is possible to train a model on simulation data
     #and then use this model for a real environment
     #the influence of normalisation on the input data is also investigated
@@ -118,6 +121,10 @@ def experiment(args):
 
         run_experiment(args, hyper_par)
         plot_exp_5(args.result_root)
+
+        if args.verbose:
+            print("Results of experiment 5 saved at {}".format(args.result_root))
+
     else:
         print("Experiment {} is not implemented".format(args.experiment))
 

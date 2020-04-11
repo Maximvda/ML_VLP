@@ -30,6 +30,7 @@ def preprocess(dataroot, normalise, verbose):
         tmp_data, tmp_heatmap_data = read_mat_file(os.path.join(pth,file), normalise, rng_state)
         heatmap_data = np.append(heatmap_data,tmp_heatmap_data, axis=0)
         data = np.append(data,tmp_data, axis=0)
+    print("")
     save_data(data, dataroot, normalise, heatmap_grid=heatmap_data)
 
     process_simulation(dataroot, rng_state, normalise, verbose)
@@ -103,7 +104,7 @@ def process_simulation(dataroot,rng_state, normalise, verbose):
 
         np.random.set_state(rng_state)
         np.random.shuffle(channel_data)
-        data = np.empty((0,2)); counter = 0
+        data = []; counter = 0
         for it in range(0,3):
             for RX in pos_RX:
                 counter += 1
@@ -117,8 +118,10 @@ def process_simulation(dataroot,rng_state, normalise, verbose):
                     position = np.array([RX[0]/3000, RX[1]/3000, pos_TX[i][0][2]/2000])
                     tmp_data = np.expand_dims(np.array((tmp_data, position)), axis=0)
 
-                    data = np.append(data,tmp_data, axis=0)
+                    data.append(tmp_data)
 
+        data = np.reshape(data, (-1,2))
+        print("")
         save_data(data, dataroot,normalise, simulate=True)
     else:
         print("Simulation data not generated yet")
