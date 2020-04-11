@@ -122,6 +122,9 @@ def experiment(args):
 
         #Experiment that only estimates a 2D position
         hyper_par.append({'output_nf': 2})
+        hyper_par.append({'dataset_path': {'train': '/home/r0579568/ML_VLP/dataset/database/data_True_train.data',
+                                            'val': '/home/r0579568/ML_VLP/dataset/database/data_True_val.data',
+                                            'test': '/home/r0579568/ML_VLP/dataset/database/data_True_test.data'}})
 
         run_experiment(args, hyper_par)
         plot_exp_5(args.result_root)
