@@ -126,6 +126,18 @@ def plot_exp_4(result_root):
 
     makePlot(dist, 'influence_blockage.pdf', 'Error on validation set', ['Amount of blockage', 'Accuracy 2D (cm)'],  result_root)
 
+#Just print the obtained scores of both models
+def plot_exp_5(result_root):
+    #init list to store results
+    root = os.path.join(result_root, 'checkpoints')
+    files = os.listdir(root)
+    files.sort()
+    dist = getDist(root, files, {}, None)
+    print("Training model on non-normalised inputs results in 2D accuracy of : {}".format(round(dist[0],3)))
+    print("Training model on simulation data and validating on real data results in 2D accuracy of : {}".format(round(dist[1],3)))
+
+
+
 
 #Sort the first list according to second list
 def sort_list(list1, list2):
@@ -143,9 +155,11 @@ def getDist(root, files, constraints, sort_par):
             #If all constraints are satisfied by checkpoint then add distance to list
             if all([cp[key] == constraints[key] for key in constraints]):
                 dist.append(cp['min_distance'])
-                sorter.append(cp[sort_par])
+                if not sort_par == None:
+                    sorter.append(cp[sort_par])
     #Sort list according to the sorting parameter
-    dist = sort_list(dist,sorter)
+    if not sort_par == None:
+        dist = sort_list(dist,sorter)
     return dist
 
 #Retrieve the parameters of three best performing models

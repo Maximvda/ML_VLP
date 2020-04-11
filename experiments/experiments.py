@@ -113,6 +113,7 @@ def experiment(args):
                                             'test': 'data_True_test.data'}})
 
         run_experiment(args, hyper_par)
+        plot_exp_5(args.result_root)
     else:
         print("Experiment {} is not implemented".format(args.experiment))
 
