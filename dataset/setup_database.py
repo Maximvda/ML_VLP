@@ -16,8 +16,8 @@ def setup_database(args, split="train"):
     #Add paths to dictionary if simulation is generated
     if args.simulate:
         testbed_simulation(args.dataroot, args.verbose)
-        path_dict['train'] = 'simulation_data_{}_train.data'.format(args.normalise)
-        path_dict['sim_val'] = 'simulation_data_{}_val.data'.format(args.normalise)
+        path_dict['train'] = os.path.join(args.dataroot, 'simulation_data_{}_train.data'.format(args.normalise))
+        path_dict['sim_val'] = os.path.join(args.dataroot, 'simulation_data_{}_val.data'.format(args.normalise))
 
     #Check if all data files are preprocessed if not rerun preprocessing
     for key in path_dict:
