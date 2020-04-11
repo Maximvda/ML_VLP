@@ -21,8 +21,8 @@ def testbed_simulation(dataroot, verbose):
             counter += 1
             if verbose:
                 print(printProgBar(counter, len(pos_RX)), end='\r')
-            RSS = []; RSS1 = []; RSS2 = []
             for i in range(len(pos_TX)):
+                RSS = []; RSS1 = []; RSS2 = []
                 for TX in pos_TX[i]:
                     d, psi = getDistAndAngle(RX, TX)
                     #Generate three measurements with different noise
