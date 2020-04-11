@@ -5,6 +5,8 @@ from experiments.worker import Worker
 from utils.plotscript import *
 from eval.eval import Eval_obj
 
+from dataset.setup_database import setup_database
+
 
 def experiment(args):
     print("Running experiment {}".format(args.experiment))
@@ -34,6 +36,9 @@ def experiment(args):
             obj = Eval_obj(args, file)
             obj.demo()
 
+    if args.verbose:
+        print("Results of experiment 1 saved at {}".format(args.result_root))
+
     #Experiment 2 performs a sweep over the different configurations
     #Performance is evaluated on the validation set
     #Heatmaps for all different configurations are then plotted to compare performance
@@ -56,6 +61,9 @@ def experiment(args):
 
         plot_exp_2(args.result_root, dict)
 
+        if args.verbose:
+            print("Results of experiment 2 saved at {}".format(args.result_root))
+
 
 
     #Experiment 3 runs a sweep over all number of TX_inputs
@@ -68,10 +76,12 @@ def experiment(args):
             hyper_par.append({'TX_input': i})
 
         run_experiment(args, hyper_par)
-        
+
         plot_exp_3(args.result_root)
 
 
+        if args.verbose:
+            print("Results of experiment 3 saved at {}".format(args.result_root))
 
     #Experiment 4 runs a sweep over the amount of blockage
     #For each blockage a new model is trained to compare the performance difference
@@ -85,6 +95,24 @@ def experiment(args):
         run_experiment(args, hyper_par)
         plot_exp_4(args.result_root)
 
+
+    #Experiment 5 investigates if it is possible to train a model on simulation data
+    #and then use this model for a real environment
+    #the influence of normalisation on the input data is also investigated
+    elif args.experiment == 5:
+        setup_dir(args, 'experiment_5')
+
+        #Experiment without normalised inputs
+        hyper_par.append({'dataset_path': {'train': 'data_False_train.data',
+                                            'val': 'data_False_val.data',
+                                            'test': 'data_False_test.data'}})
+
+        #Experiment with simulated training data, val and test set on real data
+        hyper_par.append({'dataset_path': {'train': 'simulation_data_True_train.data',
+                                            'val': 'data_True_val.data',
+                                            'test': 'data_True_test.data'}})
+
+        run_experiment(args, hyper_par)
     else:
         print("Experiment {} is not implemented".format(args.experiment))
 

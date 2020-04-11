@@ -16,7 +16,9 @@ def plot_exp_1(result_root):
     #Get the required results
     for key in [32,64,128,256]:
         constraints = {'model_type': 'Type_1', 'nf':key}
-        dist.append(getDist(root, files, constraints, 'hidden_layers'))
+        acc_list = getDist(root, files, constraints, 'hidden_layers')
+        acc_list.insert(0,np.inf)       #Add value in front of list to indicate hidden layers = 0
+        dist.append(acc_list)
 
     data_labels = ['number of features = 32', 'number of features = 64', 'number of features = 128', 'number of features = 256']
     makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Accuracy 2D (cm)'], result_root, data_labels)
@@ -26,7 +28,9 @@ def plot_exp_1(result_root):
     for model in ['Type_1', 'Type_2']:
         for key in [128,256]:
             constraints = {'model_type': model, 'nf':key}
-            dist.append(getDist(root, files, constraints, 'hidden_layers'))
+            acc_list = getDist(root, files, constraints, 'hidden_layers')
+            acc_listacc_list.insert(0,np.infg)
+            dist.append(acc_list)
 
     data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
     makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], result_root, data_labels)
@@ -49,7 +53,7 @@ def plot_exp_2(result_root, dict_list):
         for dict in dict_list:
             if dict['TX_conf'] == i:
                 maps.append(dict['map'])
-                print("2D accuracy on heatmap split for TX_config {} is: {}".format(i,round(dict['dist'],2)))
+                print("2D accuracy on heatmap split for TX_config {} is: {}".format(i,round(dict['dist'].item(),2)))
 
     fig, axs = plt.subplots(nrows=2, ncols=3)
     for i in range(0,6):
@@ -100,8 +104,11 @@ def plot_exp_3(result_root):
     files = os.listdir(root)
     #Get the required results
     for key in range(1,37):
-        constraints = {'TX_input':key}
-        dist.append(getDist(root, files, constraints, 'TX_input'))
+        constraints = {}
+        dist.append(getDist(root, files, constraints, 'TX_input')[0])
+
+    #Add element in front of list as TX_input = 0 is not possible
+    dist.insert(0,np.inf)
 
     makePlot(dist, 'Best_TX_input.pdf', 'Error on validation set', ['Number of TX', 'Accuracy 2D (cm)'],  result_root)
 
@@ -137,8 +144,8 @@ def getDist(root, files, constraints, sort_par):
             if all([cp[key] == constraints[key] for key in constraints]):
                 dist.append(cp['min_distance'])
                 sorter.append(cp[sort_par])
+    #Sort list according to the sorting parameter
     dist = sort_list(dist,sorter)
-    dist.insert(0,np.inf)
     return dist
 
 #Retrieve the parameters of three best performing models
