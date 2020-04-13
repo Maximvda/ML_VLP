@@ -15,7 +15,7 @@ mp = _mp.get_context('spawn')
 def Pbt_trainer(args):
     #Set and create path for the checkpoints of each task of the population
     args.result_root = os.path.join(args.result_root, 'pbt_training')
-    if not os.exists(args.result_root):
+    if not os.path.exists(args.result_root):
         os.mkdir(args.result_root)
     pth = os.path.join(args.result_root,'checkpoints')
     if not os.path.exists(pth):
