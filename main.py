@@ -9,12 +9,19 @@ from dataset.setup_database import setup_database
 from trainers.trainer import Trainer
 from trainers.pbt_trainer import Pbt_trainer
 from eval.eval import Eval_obj
+from trainers.svm_rf import *
 
 #Trains or evaluates a model
 def main(args):
     #Train using the PBT algorithm
     if args.pbt_training:
         Pbt_trainer(args)
+
+    #Train SVM or RF
+    elif args.SVM:
+        SVM(args)
+    elif args.RF:
+        RF(args)
 
     #Get trainer and train model
     elif args.is_train:

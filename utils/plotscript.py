@@ -58,7 +58,7 @@ def plot_exp_2(result_root, dict_list):
     fig, axs = plt.subplots(nrows=2, ncols=3)
     for i in range(0,6):
         ax = axs.flat[i]
-        img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
+        img = ax.imshow(maps[i], cmap='viridis', vmin=0, vmax=25, interpolation='nearest')
         if i ==3 or i == 4 or i == 5:
             ax.set_xlabel('x-axis (cm)')
         if i == 0 or i == 3:

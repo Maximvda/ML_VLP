@@ -52,10 +52,10 @@ def parse_args():
     #Dataset options
     parser.add_argument('--dataroot', default=None, required=False, help="Path to the dataset")
     parser.add_argument('--result_root', default=None, required=False, help="Path to the result directory")
-    parser.add_argument('--normalise', type=str2bool, default="True", help="If set to true dataset input and output are normalised")
-    parser.add_argument('--TX_config', type=int, default=1, help='Select the TX configuartion with a certain density. Configurations can be found at https://github.com/Maximvda/ML_VLP')
+    parser.add_argument('--normalise', type=str2bool, default="True", help="If set to true the model inputs are normalised. The output is always normalised")
+    parser.add_argument('--TX_config', type=int, default=1, help='Select the TX configuartion you want to use. Different configurations can be found at https://github.com/Maximvda/ML_VLP')
     parser.add_argument('--TX_input', type=int, default=36, help="Limit the amount of inputs of the network to only the best received signals")
-    parser.add_argument('--blockage', type=float, default=0.0, help="Percentage of TX who are blocked")
+    parser.add_argument('--blockage', type=float, default=0.0, help="Percentage of TXs who are blocked")
 
     #Model options
     parser.add_argument('--model_type', type=str, default='Type_1', choices=['Type_1, Type_2'], help="Set the model type to use")
@@ -70,6 +70,10 @@ def parse_args():
     parser.add_argument('--learning_rate', type=float, default=1e-4, help="Learning rate of the optimiser")
     parser.add_argument('--workers', type=int, default=1, help="Set number of workers used, to train multiple models simultanious")
     parser.add_argument('--population_size', type=int, default=120, help='Size of the population when using PBT')
+
+    #Training SVM or RF
+    parser.add_argument('--SVM', type=str2bool, default="false", help="Set to true if you wish to train a SVM")
+    parser.add_argument('--RF', type=str2bool, default="false", help="Set to true if you wish to train RF")
 
     #Visual options
     parser.add_argument('--visualise', type=str2bool, default='False', help="Visualising the training process with a plot")
@@ -100,6 +104,11 @@ def check_args(args):
         assert args.hidden_layers >= 1
     except:
         print("Number of hidden layers must be greater or equal to one")
+
+    if (not args.normalise) and (args.blockage != 0.0):
+        print("Configuration of blockage with normalisation=False is not correctly implemented.")
+        print("Data processing to set amount of blockage in the Data class in file dataset/dataset.py should be extended for non normalised inputs (value should be set to 0 instead of -1).")
+        raise NameError('Configuration not implemented')
 
     setup_directories(args)
 

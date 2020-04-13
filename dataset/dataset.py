@@ -46,6 +46,9 @@ class Data(Dataset):
 
         return input, output
 
+    def get_data(self):
+        return self.data
+
 
 def set_output(position_data):
     for i in range(len(position_data)):
