@@ -27,7 +27,7 @@ python main.py --help
 ```
 Or by looking at the configuration file [config](https://github.com/Maximvda/ML_VLP/blob/master/utils/config.py) where the default values can be directly changes as well.
 The main things that can be changed by the parameters are the model architecture which is defined by three parameters: model_type, nf, hidden_layers. How exactly the model is constructed from these parameters can be seen in the figure below.
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/Experimental%20setup.pdf" width="256">
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/models.png" width="256">
 
 Other parameters are mainly used to change behaviour of data processing, training behaviour and system settings.
 
@@ -58,12 +58,22 @@ The second experiment investigates the performance difference between different 
 
 ### Experiment 3
 Experiment three looks at how much performance improvement you get by using more received signals as input for the network. The experiment starts with a model that only uses one signal as input. This signal is the received signal with the highest RSS. More signals are added throughout the experiment each time adding the next best signal, the one with the highest RSS. Of course, when only one signal is used the position estimate will be bad. A plot of the obtained accuracies for each of these models is made at the end of the experiment. This result can be seen in the figure below.
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/Best_TX_input.pdf" width="256">
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/Best_TX_input-1.png" width="256">
 
 ### Experiment 4
+Experiment four looks at the influence of blockage of the TXs. 10 models are trained in this experiment each time increasing the amount of blockage.
+The blockage is introduced by setting the signal to zero of randomly selected TXs. The obtained scores are listed in the table below.
 
+| | Model 1| Model 2| Model 3| Model 4| Model 5|
+| --- | --- | --- | --- | --- | --- |--- |
+| **# blockage** | 10% | 20% | 30% | 40%| 50% |
+| **2D accuracy** | 1.25 cm | 1.52 cm | 1.62 cm | 2.46 cm| 3.46 cm |
+| | Model 6| Model 7| Model 8| Model 9| Model 10|
+| **# blockage** | 60% | 70% | 80% | 90%| 100% |
+| **2D accuracy** | 5.95 cm | 9.48 cm | 17.70 cm | 52.54 cm| 117.22 cm |
 
-
+### Exeperiment 5
+Experiment five performs quick comparisons between a variety of parameters and settings, more information on this experiment in the thesis.
 
 ## Training and running tests
 
