@@ -9,21 +9,21 @@ def RF(args):
     input_train, output_train = process_data(args,'train')
     input_val, output_val = process_data(args,'val')
 
-    print("Start fitting")
+    print("Started fitting random forest")
     rf = RandomForestRegressor(n_estimators = 1000, random_state = 42, n_jobs=8)
     rf.fit(input_train, output_train)
 
     print("Predicting and calculating performance")
     prediction = rf.predict(input_val)
-    distance = np.mean(np.sqrt((output_val-prediction)**2))
-    print("Distance on validation set with random forest: ", distance)
+    dist_dict = calc_dist(output_val, prediction)
+    print("Distance on validation set with random forest: 2D {}\t 3D {}".format(dist_dict['2D'], dist_dict['3D']))
 
 #Train three SVM for each position coordinate one
 def SVM(args):
     input_train, output_train = process_data(args,'train')
     input_val, output_val = process_data(args,'val')
 
-    print("Start fitting")
+    print("Started fitting a SVM")
     svm_x = SVR();svm_y = SVR();svm_z = SVR();
     svm_x.fit(input_train, output_train[:,0])
     svm_y.fit(input_train, output_train[:,1])
@@ -39,8 +39,8 @@ def SVM(args):
         prediction.append([pred_x[i], pred_y[i], pred_z[i]])
 
     prediction = np.array(prediction)
-    distance = np.mean(np.sqrt((output_val-prediction)**2))
-    print("Distance on validation set with SVM: ", distance)
+    dist_dict = calc_dist(output_val, prediction)
+    print("Distance on validation set with SVM: 2D {}\t 3D {}".format(dist_dict['2D'], dist_dict['3D']))
 
 
 def process_data(args,split):
@@ -62,3 +62,13 @@ def process_data(args,split):
         input_list.append(input)
 
     return np.array(input_list), np.array(output_list)
+
+def calc_dist(x,y):
+    dist_2D = np.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*300
+    dist_2D = np.mean(dist_2D)
+    if len(x[0]) == 3:
+        dist_3D = np.sqrt(((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*300**2+((x[:,2]-y[:,2])**2)*200**2)
+        dist_3D = np.mean(dist_3D)
+        return {'2D': dist_2D, '3D': dist_3D}
+    else:
+        return {'2D': dist_2D, '3D': np.inf}

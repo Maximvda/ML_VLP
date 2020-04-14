@@ -1,5 +1,6 @@
 import torch
 import os
+import numpy as np
 import sys
 
 import matplotlib.pyplot as plt
@@ -26,15 +27,15 @@ def visualise(target, prediction, pause=0.0001):
 #Euclidian distance = sqrt((ax-bx))^2+(ay-by)^2)
 #The mean distance is calculated when x and y are lists of same length
 def calcDistance(x,y):
-    dist_2D = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)
+    dist_2D = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*300
     dist_2D = torch.mean(dist_2D).item()
     if len(x[0]) == 3:
-        z_dist = torch.mean(torch.sqrt((x[:,2]-y[:,2])**2)).item()
+        z_dist = torch.mean(torch.sqrt((x[:,2]-y[:,2])**2)*200).item()
         dist_3D = torch.sqrt(((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*300**2+((x[:,2]-y[:,2])**2)*200**2)
         dist_3D = torch.mean(dist_3D).item()
         return {'2D': dist_2D, 'z': z_dist, '3D': dist_3D}
     else:
-        return {'2D': dist_2D}
+        return {'2D': dist_2D, '3D': np.inf}
 
 #Calculates the bias or offset of the predicted points if there is any
 #For example if predictions are always off by 1cm in x direction then bias -> x = 1

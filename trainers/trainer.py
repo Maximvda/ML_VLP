@@ -118,8 +118,6 @@ class Trainer(object):
                 dist_dict[key] = sum(dist_dict[key])/len(dist_dict[key])
             else:
                 dist_dict[key] = np.inf
-        #The distance is denormalised to cm's
-        dist_dict['2D'] = dist_dict['2D']*300; dist_dict['z'] = dist_dict['z']*200
         if self.verbose:
             printMultiLine(self.worker_id,"Distance on val set 2D: {} cm\t Z: {} cm\t 3D: {} cm".format(
                 round(dist_dict['2D'],2),round(dist_dict['z'],2), round(dist_dict['3D'],2)), offset=1)
