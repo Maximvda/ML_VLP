@@ -10,7 +10,7 @@ class Worker(mp.Process):
         super().__init__()
         self.tasks = tasks
         if type(args.gpu_number) == list:
-            args.device = torch.device('cuda', worker_id % len(args.gpu_number)+args.gpu_number[0])
+            args.device = torch.device('cuda', args.gpu_number[worker_id % len(args.gpu_number))
         else:
             args.device = torch.device('cuda', args.gpu_number)
         self.trainer = Trainer(args,worker_id=worker_id)

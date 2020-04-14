@@ -11,6 +11,9 @@ from utils.config import get_PBT_choices
 
 mp = _mp.get_context('spawn')
 
+#List used to keep track of best performing tasks of the population
+best_ids = [1,2,3,4,5,6]
+
 #PBT training script
 def Pbt_trainer(args):
     #Set and create path for the checkpoints of each task of the population
@@ -126,7 +129,7 @@ class Worker(mp.Process):
         self.population = population
         self.finish_tasks = finish_tasks
         if type(args.gpu_number) == list:
-            args.device = torch.device('cuda', worker_id % len(args.gpu_number)+args.gpu_number[0])
+            args.device = torch.device('cuda', args.gpu_number[worker_id % len(args.gpu_number)])
         else:
             args.device = torch.device('cuda', args.gpu_number)
         self.trainer = Trainer(args,worker_id=worker_id)
@@ -152,10 +155,12 @@ class Worker(mp.Process):
                         self.trainer.save_checkpoint(save_best=True)
                         self.best_score.value = score
                 self.trainer.save_checkpoint()
-                #Get best iteration of task
-                with self.best_iter.get_lock():
-                    self.best_iter.value = max(self.trainer.get_best_iter(), self.best_iter.value)
-                self.finish_tasks.put(dict(id=task['id'], score=score))
+                #If the task is in the best performing tasks than update the best_iter criteria
+                if task['id'] in best_ids:
+                    #Get best iteration of task
+                    with self.best_iter.get_lock():
+                        self.best_iter.value = max(self.trainer.get_best_iter(), self.best_iter.value)
+                    self.finish_tasks.put(dict(id=task['id'], score=score))
             except KeyboardInterrupt:
                 break
 
@@ -208,6 +213,7 @@ class Explorer(mp.Process):
                 #Fraction of population to exploit and explore
                 fraction = 0.2
                 cutoff = int(np.ceil(fraction * len(tasks)))
+                best_ids = [best['id'] for best in tasks[:int(np.ceil(0.05 * len(tasks)))]]
                 tops = tasks[:cutoff]
                 bottoms = tasks[len(tasks) - cutoff:]
                 for bottom in bottoms:
