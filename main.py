@@ -30,6 +30,7 @@ def main(args):
     else:
         #Best performing model is loaded and evaluated on the test set
         evalObj = Eval_obj(args)
+        evalObj.demo()
 
 if __name__ == '__main__':
     print("Script started")
