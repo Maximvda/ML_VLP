@@ -40,7 +40,7 @@ def setup_model(self, file, reload_model=False):
             self.optim.load_state_dict(checkpoint['optim'])
         self.iter = checkpoint['iter']
         self.learning = checkpoint['learning']
-        self.min_distance = checkpoint['min_distance']
+        self.min_dist = checkpoint['min_dist']
         self.best_iter = checkpoint['best_iter']
         self.batch_size = checkpoint['batch_size']
         #Correctly push all values from optimiser to device
@@ -56,7 +56,7 @@ def setup_model(self, file, reload_model=False):
     self.model.to(self.device)
 
 def init_model(self, file, reload_model):
-    self.iter = 0; self.best_iter = 0; self.min_distance = 3000
+    self.iter = 0; self.best_iter = 0; self.min_dist = {'2D': np.inf, 'z': np.inf, '3D': np.inf}
     if reload_model:
         #Get the random choices for PBT algorithm
         choices = get_PBT_choices()
@@ -89,7 +89,7 @@ def save_state(self, file):
             'hidden_layers': self.hidden_layers,
             'learning': self.learning,
             'batch_size': self.batch_size,
-            'min_distance': self.min_distance,
+            'min_dist': self.min_dist,
             'best_iter': self.best_iter,
             'model': self.model.state_dict(),
             'optim': self.optim.state_dict(),

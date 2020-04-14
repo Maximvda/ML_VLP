@@ -36,9 +36,12 @@ def plot_exp_1(result_root):
     print("Plots for experiment 1 saved to {}".format(result_root))
 
     dict = get_best_three(root, files)
-    print("Best:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: {}".format(dict['1']['model_type'], dict['1']['nf'],dict['1']['hidden_layers'], dict['1']['min_distance']))
-    print("Second:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: {}".format(dict['2']['model_type'], dict['2']['nf'],dict['2']['hidden_layers'], dict['2']['min_distance']))
-    print("Third:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: {}".format(dict['3']['model_type'], dict['3']['nf'],dict['3']['hidden_layers'], dict['3']['min_distance']))
+    print("Best:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: 2D {}, 3D {}".format(
+        dict['1']['model_type'], dict['1']['nf'],dict['1']['hidden_layers'], dict['1']['min_dist']['2D'], dict['1']['min_dist']['3D']))
+    print("Second:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: 2D {}, 3D {}".format(
+        dict['2']['model_type'], dict['2']['nf'],dict['2']['hidden_layers'], dict['2']['min_dist']['2D'], dict['2']['min_dist']['3D']))
+    print("Third:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: 2D {}, 3D {}".format(
+        dict['3']['model_type'], dict['3']['nf'],dict['3']['hidden_layers'], dict['3']['min_dist']['2D'], dict['3']['min_dist']['3D']))
 
     return dict['files']
 
@@ -154,7 +157,7 @@ def getDist(root, files, constraints, sort_par):
             cp = torch.load(os.path.join(root,file),map_location=torch.device('cpu'))
             #If all constraints are satisfied by checkpoint then add distance to list
             if all([cp[key] == constraints[key] for key in constraints]):
-                dist.append(cp['min_distance'])
+                dist.append(cp['min_dist']['2D'])
                 if not sort_par == None:
                     sorter.append(cp[sort_par])
     #Sort list according to the sorting parameter
@@ -170,7 +173,7 @@ def get_best_three(root, files):
         if 'task' in file:
             cp = torch.load(os.path.join(root,file),map_location=torch.device('cpu'))
             checkpoints.append(cp)
-            sorter.append(cp['min_distance'])
+            sorter.append(cp['min_dist']['2D'])
             file_names.append(file)
     checkpoints = sort_list(checkpoints,sorter)
     file_names = sort_list(file_names,sorter)

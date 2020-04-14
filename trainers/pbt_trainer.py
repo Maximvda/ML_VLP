@@ -33,7 +33,7 @@ def Pbt_trainer(args):
         if os.path.exists(file):
             checkpoint = torch.load(file,map_location=torch.device('cpu'))
             _iter = max(_iter,checkpoint['iter']); _best_iter = max(_best_iter, checkpoint['best_iter'])
-            _best_score = min(_best_score, checkpoint['min_distance'])
+            _best_score = min(_best_score, checkpoint['min_dist']['2D'])
             #Delete checkpoint to free up the memory
             del checkpoint
 

@@ -123,10 +123,10 @@ class Trainer(object):
                 round(dist_dict['2D'],2),round(dist_dict['z'],2), round(dist_dict['3D'],2)), offset=1)
 
         #If performance of new model is better then all previous ones it is saved
-        if dist_dict['2D'] < self.min_distance:
+        if dist_dict['2D'] < self.min_dist['2D']:
             if self.verbose:
-                printMultiLine(self.worker_id,"Dist: {}\tis smaller than min distance: {}".format(round(dist_dict['2D'],2),round(self.min_distance,2)), offset=2)
-            self.min_distance = dist_dict['2D']
+                printMultiLine(self.worker_id,"Dist: {}\tis smaller than min distance: {}".format(round(dist_dict['2D'],2),round(self.min_dist['2D'],2)), offset=2)
+            self.min_dist = dist_dict
             self.best_iter = self.iter
             save_state(self,"checkpoints/best-%03d.pth" % self.task_id) if experiment else save_state(self, 'model.pth')
         self.model.train()
