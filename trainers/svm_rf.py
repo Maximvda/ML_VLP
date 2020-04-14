@@ -1,6 +1,4 @@
-import os
 import numpy as np
-import pickle
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 
@@ -20,7 +18,7 @@ def RF(args):
     distance = np.mean(np.sqrt((output_val-prediction)**2))
     print("Distance on validation set with random forest: ", distance)
 
-#Train three SVM for each position coordinate one 
+#Train three SVM for each position coordinate one
 def SVM(args):
     input_train, output_train = process_data(args,'train')
     input_val, output_val = process_data(args,'val')

@@ -41,6 +41,7 @@ def testbed_simulation(dataroot, verbose):
 
         with open(file, 'wb') as f:
             pickle.dump(dict, f)
+        print("")
 
 
 #First TX offset from origin:X = 230mm and y =170mm

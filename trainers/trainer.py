@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 import numpy as np
 
+from dataset.dataset import Data
 from utils.modelUtils import setup_model
 from utils.modelUtils import save_state
 from utils.utils import visualise
@@ -9,8 +10,6 @@ from utils.utils import calcDistance
 from utils.utils import printMultiLine
 from utils.utils import printProgBar
 from utils.config import config2size
-
-from dataset.dataset import Data
 
 #Class to train model save desired results and evaluate performance on validation
 class Trainer(object):

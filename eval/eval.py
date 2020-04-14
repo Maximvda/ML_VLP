@@ -62,7 +62,7 @@ class Eval_obj(object):
 
                 if self.visualise:
                      visualise(output, prediction, pause=0.1)
-
+        print("")
         #The average error over the entire set is calculated
         for key in dist_dict:
             if len(dist_dict[key]) > 0:
@@ -99,6 +99,7 @@ class Eval_obj(object):
                     map[x,y] = dist*300
                     mapz[x,y] = dist_z*200
                     dist_2D.append(dist*300)
+        print("")
         if self.verbose:
             print("Heatmaps stored at {}".format(self.result_root))
         makeHeatMap(map, 'TX_config_'+str(self.TX_config)+'.pdf', 'Prediction error (cm)', self.result_root)

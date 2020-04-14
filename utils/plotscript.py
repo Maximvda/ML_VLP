@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
 
-from eval.eval import Eval_obj
 from utils.utils import makePlot
 
 #Make plots for experiment 1 showing influence of architecture parameters
