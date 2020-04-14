@@ -28,7 +28,7 @@ def plot_exp_1(result_root):
         for key in [128,256]:
             constraints = {'model_type': model, 'nf':key}
             acc_list = getDist(root, files, constraints, 'hidden_layers')
-            acc_list.insert(0,np.infg)
+            acc_list.insert(0,np.inf)
             dist.append(acc_list)
 
     data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
