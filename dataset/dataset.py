@@ -2,6 +2,7 @@ import pickle
 import torch
 import numpy as np
 import os
+import random
 
 from torch.utils.data import Dataset
 from utils.config import cell_rotation

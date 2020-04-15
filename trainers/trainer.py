@@ -47,8 +47,6 @@ class Trainer(object):
             text = 'Epoch: {}'.format(self.iter) if epoch else 'Iter: {}\t Task {}'.format(self.iter, self.task_id)
             printMultiLine(self.worker_id, text)
         for i, data in enumerate(self.data_loader):
-            if i % self.step == 0 and self.verbose:
-                printMultiLine(self.worker_id, printProgBar(i,len(self.data_loader)), offset=1)
             self.model.zero_grad()
 
             #Get a data sample
@@ -60,6 +58,11 @@ class Trainer(object):
             loss = self.criterion(prediction, output)
             loss.backward()
             self.optim.step()
+
+            #print training progress
+            if i % self.step == 0 and self.verbose:
+                printMultiLine(self.worker_id, printProgBar(i,len(self.data_loader)), offset=1)
+                printMultiLine(self.worker_id, "Prediction: {}\tOutput: {}".format(prediction[0].item(), output[0].item()), offset=2)
 
             #Visualise training if visualise is true
             if self.visualise:

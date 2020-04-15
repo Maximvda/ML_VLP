@@ -61,7 +61,8 @@ def visualise(target, prediction, pause=0.0001):
 def calcDistance(x,y, cell_type):
     #Calculate normalisation constant
     center_pos = get_cel_center_position()[cell_type]
-    norm = 550+np.sqrt(center_pos[0]**2+center_pos[1]**2)
+    norm = (550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10
+
     dist_2D = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*norm
     dist_2D = torch.mean(dist_2D).item()
     if len(x[0]) == 3:
