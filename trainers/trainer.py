@@ -37,7 +37,7 @@ class Trainer(object):
             #Setup dataloaders
             self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
             self.val_data_loader = DataLoader(self.val_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
-            self.step = int(len(self.data_loader)/10);
+            self.step = int(len(self.data_loader)/25);
             #Load checkpoint
             setup_model(self, 'checkpoint.pth')
 

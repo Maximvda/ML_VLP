@@ -56,12 +56,15 @@ def visualise(target, prediction, pause=0.0001):
 #Calculates the distance between two points a and b
 #Euclidian distance = sqrt((ax-bx))^2+(ay-by)^2)
 #The mean distance is calculated when x and y are lists of same length
-def calcDistance(x,y):
-    dist_2D = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*300
+def calcDistance(x,y, cell_type):
+    #Calculate normalisation constant
+    center_pos = get_cel_center_position()[cell_type]
+    norm = 550+np.sqrt(center_pos[0]**2+center_pos[1]**2)
+    dist_2D = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*norm
     dist_2D = torch.mean(dist_2D).item()
     if len(x[0]) == 3:
         z_dist = torch.mean(torch.sqrt((x[:,2]-y[:,2])**2)*200).item()
-        dist_3D = torch.sqrt(((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*300**2+((x[:,2]-y[:,2])**2)*200**2)
+        dist_3D = torch.sqrt(((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*norm**2+((x[:,2]-y[:,2])**2)*200**2)
         dist_3D = torch.mean(dist_3D).item()
         return {'2D': dist_2D, 'z': z_dist, '3D': dist_3D}
     else:

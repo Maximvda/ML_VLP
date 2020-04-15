@@ -125,6 +125,7 @@ def process_measurement(measurement, height, measurement_pos, mask, center_pos, 
 
 #Save pre-processed data to files
 def save_data(data_dict, dataroot, normalise, cell_type):
+    print("Saving data")
     #Write data for each split to separate file
     for key in data_dict:
         with open(os.path.join(dataroot,'data_{}_{}_{}.data'.format(cell_type,normalise,key)), 'wb') as f:
