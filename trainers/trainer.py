@@ -62,7 +62,6 @@ class Trainer(object):
             #print training progress
             if i % self.step == 0 and self.verbose:
                 printMultiLine(self.worker_id, printProgBar(i,len(self.data_loader)), offset=1)
-                printMultiLine(self.worker_id, "Prediction: {}\tOutput: {}".format(prediction[0].item(), output[0].item()), offset=2)
 
             #Visualise training if visualise is true
             if self.visualise:

@@ -45,7 +45,7 @@ class Fc_layer(nn.Module):
         if submodule == None:
             model = layer
         elif final:
-            model = [submodule] + [lin, nn.Sigmoid()]
+            model = [submodule] + [lin, nn.Tanh()]
         else:
             model = [submodule] + layer
         self.main = nn.Sequential(*model)
