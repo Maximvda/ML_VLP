@@ -97,8 +97,11 @@ def process_measurement(measurement, height, measurement_pos, mask, center_pos, 
     #Iterate over all the possible unit cells for particular cell type
     for i in cell_dict['all']:
         #Get cell position and translate it to center of cel position
-        pos = getCelPosition(i)
-        pos = [pos[0]+center_pos[0], pos[1]+center_pos[1]]
+        if type(center_pos) is list:
+            pos = getCelPosition(i)
+            pos = [pos[0]+center_pos[0], pos[1]+center_pos[1]]
+        else:
+            pos = getCelPosition(i+center_pos['col']+6*center_pos['row'])
         dist = np.sqrt((pos[0]-measurement_pos[0])**2+(pos[1]-measurement_pos[1])**2)
 
         if dist <= max:
@@ -149,9 +152,25 @@ def get_cells(mask):
                 cell_list.append(min(index_list))
     return cell_list
 
+"""
+#Retrieve the data for a particular given cel
+def data_from_cel(data, cel):
+    return [data[cel-7], data[cel-6], data[cel-5],
+            data[cel-1], data[cel], data[cel+1],
+            data[cel+5], data[cel+6], data[cel+7]]
+"""
 
 #Retrieve the data for a particular given cel
 def data_from_cel(data, cel):
+    return [data[cel], data[cel+1], data[cel+2],
+            data[cel+3], data[cel+4], data[cel+5],
+            data[cel+6], data[cel+7], data[cel+8]]
+
+#Retrieve the data for a particular given cel
+def data_from_cel(data, cel, mask):
+    arr = []
+    for item in mask:
+        arr.append(data[cel])
     return [data[cel-7], data[cel-6], data[cel-5],
             data[cel-1], data[cel], data[cel+1],
             data[cel+5], data[cel+6], data[cel+7]]
