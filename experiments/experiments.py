@@ -4,6 +4,7 @@ import torch.multiprocessing as _mp
 from experiments.worker import Worker
 from utils.plotscript import *
 from eval.eval import Eval_obj
+from dataset.setup_database import setup_database
 
 def experiment(args):
     print("Running experiment {}".format(args.experiment))
@@ -102,6 +103,11 @@ def experiment(args):
     #Finally the difference between predicting 2D and 3D position is investigated
     elif args.experiment == 5:
         setup_dir(args, 'experiment_5')
+        #make sure all files are preprocessed for this experiment
+        args.normalise = False
+        setup_database(args)
+        args.simulation = True; args.normalise = True
+        setup_database(args)
 
         #Experiment without normalised inputs
         hyper_par.append({'dataset_path': {'train': '/home/r0579568/ML_VLP/dataset/database/data_False_train.data',
