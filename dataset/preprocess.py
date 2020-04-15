@@ -62,7 +62,6 @@ def read_mat_file(file, normalise, mask, center_pos, cell_dict, data_dict):
     resolution = mat['resolution'][0][0]
     #Normalise the height by dividing with 200cm as this is maximum ceiling height
     height = (mat['height']/200)[0][0]
-    print("height", mat['height'] == 176)
 
     #Swing is a measure for RSS
     channel_data = mat['swing']
@@ -78,14 +77,14 @@ def read_mat_file(file, normalise, mask, center_pos, cell_dict, data_dict):
                 #Calculate position of the RX for this measurement
                 #Also normalise position by dividing with 3000mm max size of test grid
                 y = int(file.split("_")[-1][:-4])
-                pos_x = (offset[id][0] + y*resolution)/3000
-                pos_y = (offset[id][1] + x*resolution)/3000
+                pos_x = (offset[id][0] + y*resolution)
+                pos_y = (offset[id][1] + x*resolution)
 
                 #Normalisation for input and output
                 if normalise:
                     tmp_data = (tmp_data-input_norm)/input_norm
 
-                bool = (it == 0 and mat['height']==176)
+                bool = (it == 0 and (mat['height']==176)[0][0])
                 process_measurement(tmp_data, height, [pos_x, pos_y], mask, center_pos, cell_dict, data_dict, bool)
 
 #Process one measurement and return all data that is used for training of unit cell approach
