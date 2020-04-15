@@ -70,7 +70,7 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
 
 #Makes a heatmap plot for a given map
 def makeHeatMap(map, filename, title, result_root):
-    plt.imshow(map, cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
+    plt.imshow(map, cmap='viridis', vmin=0, vmax=25, interpolation='nearest')
     plt.colorbar()
     plt.title(title)
     plt.xlabel('x-axis (cm)')
