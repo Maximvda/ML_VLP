@@ -6,6 +6,8 @@ import sys
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
 
+from utils.config import get_cel_center_position
+
 
 #This function searches the most likely unit cell where the measurement was taken
 #by performing a 2D convolution on the measured data with the unit cell as mask
