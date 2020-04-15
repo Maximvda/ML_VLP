@@ -107,7 +107,7 @@ class Trainer(object):
                 prediction = self.model(input)
 
                 #Calculate the distance between predicted and target points
-                dist = calcDistance(prediction, output)
+                dist = calcDistance(prediction, output, self.cell_type)
                 dist_dict['2D'].append(dist['2D'])
                 if len(dist) == 3:
                     dist_dict['z'].append(dist['z']); dist_dict['3D'].append(dist['3D'])
