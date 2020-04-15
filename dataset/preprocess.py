@@ -105,7 +105,7 @@ def process_measurement(measurement, height, measurement_pos, mask, center_pos, 
         dist = np.sqrt((pos[0]-measurement_pos[0])**2+(pos[1]-measurement_pos[1])**2)
 
         if dist <= max:
-            data = data_from_cel(measurement, i)
+            data = data_from_cel(measurement, i, mask)
             rel_pos = [(measurement_pos[0]-pos[0])/max, (measurement_pos[1]-pos[1])/max, height]
             data = [data, rel_pos]
             #Correctly assign the data to correct splits
@@ -159,18 +159,16 @@ def data_from_cel(data, cel):
             data[cel-1], data[cel], data[cel+1],
             data[cel+5], data[cel+6], data[cel+7]]
 """
-
+"""
 #Retrieve the data for a particular given cel
 def data_from_cel(data, cel):
     return [data[cel], data[cel+1], data[cel+2],
             data[cel+3], data[cel+4], data[cel+5],
             data[cel+6], data[cel+7], data[cel+8]]
-
+"""
 #Retrieve the data for a particular given cel
 def data_from_cel(data, cel, mask):
     arr = []
     for item in mask:
-        arr.append(data[cel])
-    return [data[cel-7], data[cel-6], data[cel-5],
-            data[cel-1], data[cel], data[cel+1],
-            data[cel+5], data[cel+6], data[cel+7]]
+        arr.append(data[cel+item['col']+6*item['row']])
+    return arr
