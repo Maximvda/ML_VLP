@@ -17,7 +17,7 @@ def setup_model(self, file, reload_model=False):
         #Reloads model parameters from the checkpoint
         if reload_model:
             self.size = checkpoint['size']
-            self.TX_config = checkpoint['TX_config']; self.TX_input = checkpoint['TX_input']
+            self.cell_type = checkpoint['cell_type']; self.rotations = checkpoint['rotations']
             self.blockage = checkpoint['blockage']; self.output_nf = checkpoint['output_nf']
             self.model_type = checkpoint['model_type']
             self.nf = checkpoint['nf']
@@ -93,8 +93,8 @@ def save_state(self, file):
             'best_iter': self.best_iter,
             'model': self.model.state_dict(),
             'optim': self.optim.state_dict(),
-            'TX_config': self.TX_config,
-            'TX_input': self.TX_input,
+            'cell_type': self.cell_type,
+            'rotations': self.rotations,
             'blockage': self.blockage,
             'output_nf': self.output_nf
             }, path)

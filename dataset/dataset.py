@@ -4,21 +4,19 @@ import numpy as np
 import os
 
 from torch.utils.data import Dataset
-
-from utils.config import get_configuration_dict
+from utils.config import cell_rotation
 
 #Expansion of the Dataset class to fit our dataset
 class Data(Dataset):
-    def __init__(self, path, TX_config, TX_input, blockage, output_nf):
+    def __init__(self, path, blockage, rotations, output_nf, cell_type, real_block=False):
+        #init variables
         self.blockage = blockage
+        self.rotations = rotations
+        self.cell_type = cell_type
+        self.real_block = real_block
         #Open the file with data
         with open(path, 'rb') as f:
             data = pickle.load(f)
-
-        #Load index_map array
-        index_map = np.loadtxt(os.path.join("/".join(path.split("/")[0:-1]),'index_map.txt'))
-
-        set_data_configuration(data[:,0], index_map, TX_config, TX_input, blockage)
 
         #If height is not predicted remove the z coordinate from the data samples
         if output_nf == 2:
@@ -34,14 +32,10 @@ class Data(Dataset):
         input = self.data[idx][0]
         output = self.data[idx][1]
 
-        #Get indices of blockage
-        indices = np.random.choice(np.arange(len(input)), replace=False, size=int(self.blockage*len(input)))
-        for ind in indices:
-            input[ind] = -1
+        input, output = augment_data(input, output, self.rotations, self.blockage, self.real_block, self.cell_type)
 
         #Transform to torch tensor and to desired dimension and type
         input = torch.from_numpy(input).type(torch.FloatTensor)
-        #input = torch.unsqueeze(input,0).type(torch.FloatTensor)
         output = torch.FloatTensor(output)
 
         return input, output
@@ -49,31 +43,38 @@ class Data(Dataset):
     def get_data(self):
         return self.data
 
-
+#Remove the z coordinates from the output
 def set_output(position_data):
     for i in range(len(position_data)):
         position_data[i] = position_data[i][0:2]
 
-#Deletes all RX signals from TX that are not in the chosen configuartion
-#Sets all RX signals that are not in top heighest TX_input to zero
-def set_data_configuration(channel_data, index_map, TX_config, TX_input, blockage):
-    all_TX = [i for i in range(0,36)]
-    #list TXs needed for specific configuartion
-    list_dict = get_configuration_dict()
-    #Remove needed TX from all TX to get all TX which need to be set to 0
-    #Select appropriate configuartion acoording to TX_config and iterate over TX
-    list = [] if TX_config == 1 else [id for id in all_TX if id not in list_dict[TX_config]]
-    #retrieve the correct indexes as the data has been shuffled during preprocessing
-    indexes = [np.where(index_map == i)[0][0] for i in list]
+#Augment the training data by performing rotations and setting the blockage
+def augmentation(input, output, rotations, blockage, real_block, cell_type):
+    #Get the indices of the TX that are blocked
+    #In the more realistic setting always a random amount of TXs are blocked
+    #Otherwise it is always a fixed percentage of blocked TXs
+    if real_block:
+        prob = random.random()
+        if prob < 0.8:
+            indices = np.random.choice(np.arange(len(input)), replace=False, size=int(prob*len(input)))
+    else:
+        indices = np.random.choice(np.arange(len(input)), replace=False, size=int(blockage*len(input)))
 
-    #Set TX_input to length of configuration if its higher then number of TX in configuration
-    len_conf = len(list_dict[TX_config])
-    TX_input = len_conf if (TX_input >= len_conf) else TX_input
+    for ind in indices:
+        input[ind] = -1
 
-    for i in range(len(channel_data)):
-        channel_data[i] = np.delete(channel_data[i], indexes, 0)
-
-        #Sort measurement from high to low and select TX_input highest element
-        high_el = np.sort(channel_data[i])[::-1][TX_input-1]
-        #Set all values lower then the high_el to -1 (As if nothing was received)
-        channel_data[i] = np.array([-1 if el < high_el else el for el in channel_data[i]])
+    if rotations:
+        prob = random.random()
+        #rotate data 90 deg
+        if 0.25 < prob <= 0.5:
+            input, output = cell_rotation(input, output, cell_type)
+        #rotate data 180 deg
+        elif 0.5 < prob <= 0.75:
+            input, output = cell_rotation(input, output, cell_type)
+            input, output = cell_rotation(input, output, cell_type)
+        #rotate data 270 deg
+        elif 0.75 < prob <= 1:
+            input, output = cell_rotation(input, output, cell_type)
+            input, output = cell_rotation(input, output, cell_type)
+            input, output = cell_rotation(input, output, cell_type)
+    return input, output

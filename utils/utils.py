@@ -6,6 +6,36 @@ import sys
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
 
+
+#This function searches the most likely unit cell where the measurement was taken
+#by performing a 2D convolution on the measured data with the unit cell as mask
+#The most likely cell is then the one that obtained the highest score
+def convolution2d(measurement, cell_mask, max=True,):
+    #hold array of the obtained convolution scores
+    conv_score = []
+    #Iterate over the rows of measurement
+    for i in range(0,6):
+        #iterate over the colums
+        for j in range(0,6):
+            #caluculate list of all needed indexes (leds) for that convulation
+            index_list = []
+            for led_pos in cell_mask:
+                col = j+led_pos['col']; row = i+led_pos['row']
+                index_list.append(col+6*row)
+                #Check if the index is not outside of the LED grid
+                if (col >= 6) or (row >= 6):
+                    index_list = []
+                    break
+
+            conv_score.append(
+                sum([measurement[index] for index in index_list])
+            )
+    if max:
+        ind = np.argmax(conv_score)
+    else:
+        ind = np.argmin(conv_score)
+    return int(ind+7+2*np.floor(ind/4))
+
 #Shows a grid of the possible positions of the measurement device
 #The predicted positions for a batch are plotted in red
 #The real position is plotted in green while a line shows the distance between predicted and real position
@@ -79,6 +109,16 @@ def makeHeatMap(map, filename, title, result_root):
     resultpath = os.path.join(result_root, filename)
     plt.savefig(resultpath, bbox_inches='tight')
     plt.close()
+
+#Function to get the position of a particular led
+def getCelPosition(cel):
+    pos_LEDs = [[230, 170], [730, 175], [1240, 170], [1740, 170], [2240, 170], [2740, 170],
+            [230, 670], [720, 725], [1230, 670], [1735, 670], [2225, 725], [2725, 670],
+            [230, 1170], [730, 1170], [1240, 1170], [1745, 1170], [2245, 1170], [2735, 1170],
+            [230, 1670], [730, 1670], [1240, 1670], [1745, 1670], [2245, 1670], [2735, 1670],
+            [230, 2170], [720, 2225], [1235, 2170], [1720, 2170], [2220, 2225], [2710, 2170],
+            [215, 2670], [715, 2670], [1245, 2670], [1730, 2670], [2245, 2670], [2730, 2670]]
+    return pos_LEDs[cel]
 
 #Make a print on the set line with certain offset
 #This way multiple lines can track progress if multiple workers are used.

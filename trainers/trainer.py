@@ -9,7 +9,7 @@ from utils.utils import visualise
 from utils.utils import calcDistance
 from utils.utils import printMultiLine
 from utils.utils import printProgBar
-from utils.config import config2size
+from utils.config import cell2size
 
 #Class to train model save desired results and evaluate performance on validation
 class Trainer(object):
@@ -28,9 +28,9 @@ class Trainer(object):
 
         #Initialise datasets
         self.dataset_path = args.dataset_path
-        self.TX_config = args.TX_config; self.TX_input = args.TX_input; self.blockage = args.blockage; self.output_nf = args.output_nf
-        self.train_dataset = Data(self.dataset_path['train'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
-        self.val_dataset = Data(self.dataset_path['val'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+        self.rotations = args.rotations; self.cell_type = args.cell_type; self.blockage = args.blockage; self.output_nf = args.output_nf
+        self.train_dataset = Data(self.dataset_path['train'], self.blockage, self.rotations, self.cell_type, self.output_nf)
+        self.val_dataset = Data(self.dataset_path['val'], self.blockage, self.rotations, self.cell_type, self.output_nf)
 
         #If normal model is trained (No experiment or PBT training)
         if not args.pbt_training and args.experiment == None:
@@ -145,10 +145,10 @@ class Trainer(object):
 
     def set_dataset(self):
         #Re initialise datasets with different data configurations
-        self.train_dataset = Data(self.dataset_path['train'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
-        self.val_dataset = Data(self.dataset_path['val'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+        self.train_dataset = Data(self.dataset_path['train'], self.blockage, self.rotations, self.cell_type, self.output_nf)
+        self.val_dataset = Data(self.dataset_path['val'], self.blockage, self.rotations, self.cell_type, self.output_nf)
         #If configuration is changed model size has to be adapted
-        self.size = config2size(self.TX_config)
+        self.size = cell2size(self.cell_type)
 
     def save_checkpoint(self, save_best=False):
         if save_best:

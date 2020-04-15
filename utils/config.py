@@ -21,23 +21,39 @@ def get_PBT_choices():
     }
     return dict
 
-#TX configurations can be added here
-#List the TX you want in your configuration
-def get_configuration_dict():
+#New unit cells can be added here by adding corresponding mask
+#Define the unit cell by making a list of dictionaries that indicate row and column of each LED in the cell
+#Always start the unit cell at position col = 0 and row = 0
+def get_cell_mask():
     #The predefined TX configuartions from 1 to 6 can be found on the Github page
-    list_dict = {
-    1: [i for i in range(0,36)],
-    2: [0,2,4,12,14,16,24,26,28],
-    3: [7,10,25,28],
-    4: [0,2,3,5,12,14,15,17,18,20,21,23,30,32,33,35],
-    5: [0,5,14,15,20,21,30,35],
-    6: [14,15,20,21]}
-    return list_dict
+    mask_dict = {
+    '3x3': [{'col': 0, 'row': 0}, {'col': 1, 'row': 0}, {'col': 2, 'row': 0},
+        {'col': 0, 'row': 1}, {'col': 1, 'row': 1}, {'col': 2, 'row': 1},
+        {'col': 0, 'row': 2}, {'col': 1, 'row': 2}, {'col': 2, 'row': 2}],
+    '2x2': [{'col': 0, 'row': 0}, {'col': 1, 'row': 0},
+        {'col': 0, 'row': 1}, {'col': 1, 'row': 1}]}
+    return mask_dict
 
-#Get the size of a specific configuration
-def config2size(TX_config):
-    return len(get_configuration_dict()[TX_config])
+#Here you should set the offset of the cell center from the led at row 0 and col 0
+def get_cel_center_position():
+    return {
+    '3x3': [500, 500],
+    '2x2': [250, 250]
+    }
 
+#if you wish to add data augmentation through rotations for your unit cell you have to define the function here
+#You should transform input and output data according to a 90deg rotation
+def cell_rotation(input, output, cell_type):
+    if cell_type == '3x3':
+        input = [input[2], input[5], input[8],
+                input[1], input[4], input[7],
+                input[0], input[3], input[6]]
+        output = [output[1], -output[0]]
+    elif cell_type == '2x2':
+        input = [input[1], input[3],
+                input[0], input[2]]
+        output = [output[1], -output[0]]
+    return input, output
 
 def parse_args():
     #Argument parser
@@ -46,16 +62,15 @@ def parse_args():
     #General/harware options
     parser.add_argument('--gpu_number', type=str2list, default=0, help="Number or list of GPUs that will be used")
     parser.add_argument('--experiment', type=int, default=None, help='Select a certain experiment to run or leave default None to train a single model')
-    parser.add_argument('--simulate', type=str2bool, default="False", help='Train model through usage of a simulation')
     parser.add_argument('--seed', type=int, default=1996, help="Set random seed to reproduce results")
 
     #Dataset options
     parser.add_argument('--dataroot', default=None, required=False, help="Path to the dataset")
     parser.add_argument('--result_root', default=None, required=False, help="Path to the result directory")
     parser.add_argument('--normalise', type=str2bool, default="True", help="If set to true the model inputs are normalised. The output is always normalised")
-    parser.add_argument('--TX_config', type=int, default=1, help='Select the TX configuartion you want to use. Different configurations can be found at https://github.com/Maximvda/ML_VLP')
-    parser.add_argument('--TX_input', type=int, default=36, help="Limit the amount of inputs of the network to only the best received signals")
     parser.add_argument('--blockage', type=float, default=0.0, help="Percentage of TXs who are blocked")
+    parser.add_argument('--cell_type', type=str, default='3x3', choices=['3x3', '2x2'], help="Set the desired cell type you wish to use")
+    parser.add_argument('--rotations', type=str2bool, default="False", help='Adds rotations to the data as a form of data augmentation')
 
     #Model options
     parser.add_argument('--model_type', type=str, default='Type_1', choices=['Type_1, Type_2'], help="Set the model type to use")
@@ -84,16 +99,8 @@ def parse_args():
 #Check if arguments are valid and initialise
 def check_args(args):
     set_GPU(args)
-    try:
-        assert 1 <= args.TX_config <= len(get_configuration_dict())
-        args.size = config2size(args.TX_config)
-    except:
-        print("TX_config must be one of the 6 configuartions so a value between 1 and 6")
-
-    try:
-        assert args.TX_input > 0 and args.TX_input <= 36
-    except:
-        print("TX_input must have a value between one and 36")
+    
+    args.size = cell2size(args.cell_type)
 
     try:
         assert args.batch_size >= 1
@@ -164,3 +171,7 @@ def str2list(v):
         for item in vlist:
             list.append(int(item))
         return list
+
+#Get number of TX in a cell which is related to number of inputs of model
+def cell2size(cell_type):
+    return len(get_cell_mask()[cell_type])
