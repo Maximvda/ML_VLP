@@ -35,7 +35,7 @@ class Data(Dataset):
         input, output = augment_data(input, output, self.rotations, self.blockage, self.real_block, self.cell_type)
 
         #Transform to torch tensor and to desired dimension and type
-        input = torch.from_numpy(input).type(torch.FloatTensor)
+        input = torch.FloatTensor(input)
         output = torch.FloatTensor(output)
 
         return input, output
@@ -49,7 +49,7 @@ def set_output(position_data):
         position_data[i] = position_data[i][0:2]
 
 #Augment the training data by performing rotations and setting the blockage
-def augmentation(input, output, rotations, blockage, real_block, cell_type):
+def augment_data(input, output, rotations, blockage, real_block, cell_type):
     #Get the indices of the TX that are blocked
     #In the more realistic setting always a random amount of TXs are blocked
     #Otherwise it is always a fixed percentage of blocked TXs

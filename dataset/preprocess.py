@@ -103,7 +103,7 @@ def process_measurement(measurement, height, measurement_pos, mask, center_pos, 
 
         if dist <= max:
             data = data_from_cel(measurement, i)
-            rel_pos = [(measurement_pos[0]-pos[0])/max, (measurement_pos[1]-pos[1])/max]
+            rel_pos = [(measurement_pos[0]-pos[0])/max, (measurement_pos[1]-pos[1])/max, height]
             data = [data, rel_pos]
             #Correctly assign the data to correct splits
             if i in cell_dict['train']:
