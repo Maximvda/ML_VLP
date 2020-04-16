@@ -160,7 +160,7 @@ class Worker(mp.Process):
                     #Get best iteration of task
                     with self.best_iter.get_lock():
                         self.best_iter.value = max(self.trainer.get_best_iter(), self.best_iter.value)
-                    self.finish_tasks.put(dict(id=task['id'], score=score))
+                self.finish_tasks.put(dict(id=task['id'], score=score))
             except KeyboardInterrupt:
                 break
 

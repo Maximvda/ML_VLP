@@ -152,20 +152,6 @@ def get_cells(mask):
                 cell_list.append(min(index_list))
     return cell_list
 
-"""
-#Retrieve the data for a particular given cel
-def data_from_cel(data, cel):
-    return [data[cel-7], data[cel-6], data[cel-5],
-            data[cel-1], data[cel], data[cel+1],
-            data[cel+5], data[cel+6], data[cel+7]]
-"""
-"""
-#Retrieve the data for a particular given cel
-def data_from_cel(data, cel):
-    return [data[cel], data[cel+1], data[cel+2],
-            data[cel+3], data[cel+4], data[cel+5],
-            data[cel+6], data[cel+7], data[cel+8]]
-"""
 #Retrieve the data for a particular given cel
 def data_from_cel(data, cel, mask):
     arr = []

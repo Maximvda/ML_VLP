@@ -9,23 +9,16 @@ def experiment(args):
     print("Running experiment {}".format(args.experiment))
     hyper_par = []
 
-    #Experiment 1 does a hyperparameter search to find a good model architecture
-    #The amount of hidden layers, the number of features and model type are explored
+    #Experiment 1 looks at the influence on performance of different cell_types in function of the amount of blockage
     if args.experiment == 1:
-        setup_dir(args, 'experiment_1')
-        #Define the hyperparameter search
-        #First model type
-        for i in ['Type_1','Type_2']:
-            #Number of features used
-            for j in [32, 64, 128, 256]:
-                #Number of hidden layers
-                for k in [1,2,3,4,5]:
-                    if not ((j == 32 or j == 64) and i == 'Type_2'):
-                        hyper_par.append({  'model_type': i,
-                                        'nf': j,
-                                        'hidden_layers': k})
+        setup_dir(args, 'experiment_unit_cell_1')
+        #Define the parameters to train models on
+        for i in range(11):
+            hyper_par.append({'cell_type': '3x3', 'blockage': i*0.1})
+            hyper_par.append({'cell_type': '2x2', 'blockage': i*0.1})
+
         run_experiment(args, hyper_par)
-        print("")
+
         #Make plots of this experiment
         #And print performance on test set for the three best models
         best_files = plot_exp_1(args.result_root)
@@ -36,14 +29,13 @@ def experiment(args):
         if args.verbose:
             print("Results of experiment 1 saved at {}".format(args.result_root))
 
-    #Experiment 2 performs a sweep over the different configurations
-    #Performance is evaluated on the validation set
-    #Heatmaps for all different configurations are then plotted to compare performance
+    #Experiment 2 looks at the influence on performance by application rotational transformations on the input data
     elif args.experiment == 2:
-        setup_dir(args, 'experiment_2')
-        #Define the hyperparameter list for all TX_config
-        for i in range(1,7):
-            hyper_par.append({'TX_config': i})
+        setup_dir(args, 'experiment_unit_cell_2')
+
+        #Train one model with rotations as data augmentation and one without
+        hyper_par.append({'rotations': True})
+        hyper_par.append({'rotations': False})
 
         run_experiment(args, hyper_par)
 
@@ -60,69 +52,6 @@ def experiment(args):
 
         if args.verbose:
             print("Results of experiment 2 saved at {}".format(args.result_root))
-
-
-
-    #Experiment 3 runs a sweep over all number of TX_inputs
-    #For each possible number of TX_inputs a model is trained
-    #The achieved distance on the val set is then plotted in function of the TX_inputs for each model
-    elif args.experiment == 3:
-        setup_dir(args, 'experiment_3')
-        #Define the hyperparameter list for all TX_inputs
-        for i in range(1,37):
-            hyper_par.append({'TX_input': i})
-
-        run_experiment(args, hyper_par)
-
-        plot_exp_3(args.result_root)
-
-
-        if args.verbose:
-            print("Results of experiment 3 saved at {}".format(args.result_root))
-
-    #Experiment 4 runs a sweep over the amount of blockage
-    #For each blockage a new model is trained to compare the performance difference
-    #The achieved distance on the val set is plotted in function of amount of blockage for each model
-    elif args.experiment == 4:
-        setup_dir(args, 'experiment_4')
-        #Define the hyperparameter list for all TX_inputs
-        for i in range(1,11):
-            hyper_par.append({'blockage': i*0.1})
-
-        run_experiment(args, hyper_par)
-        plot_exp_4(args.result_root)
-
-
-        if args.verbose:
-            print("Results of experiment 4 saved at {}".format(args.result_root))
-
-    #Experiment 5 investigates if it is possible to train a model on simulation data
-    #and then use this model for a real environment
-    #the influence of normalisation on the input data is also investigated
-    #Finally the difference between predicting 2D and 3D position is investigated
-    elif args.experiment == 5:
-        setup_dir(args, 'experiment_5')
-
-        #Experiment without normalised inputs
-        hyper_par.append({'dataset_path': {'train': '/home/r0579568/ML_VLP/dataset/database/data_False_train.data',
-                                            'val': '/home/r0579568/ML_VLP/dataset/database/data_False_val.data',
-                                            'test': '/home/r0579568/ML_VLP/dataset/database/data_False_test.data'}})
-
-        #Experiment with simulated training data, val and test set on real data
-        hyper_par.append({'dataset_path': {'train': '/home/r0579568/ML_VLP/dataset/database/simulation_data_True_train.data',
-                                            'val': '/home/r0579568/ML_VLP/dataset/database/data_True_val.data',
-                                            'test': '/home/r0579568/ML_VLP/dataset/database/data_True_test.data'}})
-
-        #Experiment that only estimates a 2D position
-        hyper_par.append({'output_nf': 2, 'dataset_path': {'train': '/home/r0579568/ML_VLP/dataset/database/data_True_train.data',
-                                            'val': '/home/r0579568/ML_VLP/dataset/database/data_True_val.data',
-                                            'test': '/home/r0579568/ML_VLP/dataset/database/data_True_test.data'}})
-
-        run_experiment(args, hyper_par)
-        plot_exp_5(args.result_root)
-
-        if args.verbose:
-            print("Results of experiment 5 saved at {}".format(args.result_root))
 
     else:
         print("Experiment {} is not implemented".format(args.experiment))
@@ -144,6 +73,7 @@ def run_experiment(args, hyper_par):
     #Start worker processes and wait for them to finish
     [w.start() for w in workers]
     [w.join() for w in workers]
+    print("")
 
 #Inits the directories for an experiment
 def setup_dir(args, experiment):

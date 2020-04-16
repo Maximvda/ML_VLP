@@ -28,7 +28,7 @@ class Worker(mp.Process):
                 self.trainer.set_attribute(key, par_dict[key])
 
             #Re initialise datasets if data configuration is changed
-            if any([par in par_dict for par in ['TX_config', 'TX_input', 'blockage', 'output_nf', 'dataset_path']]):
+            if any([par in par_dict for par in ['blockage', 'rotations', 'cell_type', 'output_nf', 'dataset_path']]):
                 self.trainer.set_dataset()
 
             #Initialise model in trainer for task id

@@ -13,26 +13,13 @@ def plot_exp_1(result_root):
     root = os.path.join(result_root, 'checkpoints')
     files = os.listdir(root)
     #Get the required results
-    for key in [32,64,128,256]:
-        constraints = {'model_type': 'Type_1', 'nf':key}
-        acc_list = getDist(root, files, constraints, 'hidden_layers')
-        acc_list.insert(0,np.inf)       #Add value in front of list to indicate hidden layers = 0
+    for key in ['3x3', '2x2']:
+        constraints = {'cell_type': key}
+        acc_list = getDist(root, files, constraints, 'blockage')
         dist.append(acc_list)
 
-    data_labels = ['number of features = 32', 'number of features = 64', 'number of features = 128', 'number of features = 256']
-    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Accuracy 2D (cm)'], result_root, data_labels)
-
-    dist = []
-    #Get the required results
-    for model in ['Type_1', 'Type_2']:
-        for key in [128,256]:
-            constraints = {'model_type': model, 'nf':key}
-            acc_list = getDist(root, files, constraints, 'hidden_layers')
-            acc_list.insert(0,np.inf)
-            dist.append(acc_list)
-
-    data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
-    makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], result_root, data_labels)
+    data_labels = ['cell type = 3x3', 'cell type = 2x2']
+    makePlot(dist, 'type_infl_blockage.pdf', 'Error on validation set', ['Amount of blockage (%)', 'Accuracy 2D (cm)'], result_root, data_labels, ticks=np.linspace(0,1,11))
     print("Plots for experiment 1 saved to {}".format(result_root))
 
     dict = get_best_three(root, files)
