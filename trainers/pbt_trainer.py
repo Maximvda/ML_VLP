@@ -139,6 +139,9 @@ class Worker(mp.Process):
             #Stop training if no improvement since last 5 iterations
             if self.iter.value - self.best_iter.value >= 5:
                 break
+            print(self.iter.value, self.best_iter.value)
+            if self.iter.value >= 40:
+                break
             # Set the correct parameters for the Trainer class depending on the task id
             task = self.population.get()
             self.trainer.set_id(task['id'], reload=True)
@@ -160,7 +163,7 @@ class Worker(mp.Process):
                     #Get best iteration of task
                     with self.best_iter.get_lock():
                         self.best_iter.value = max(self.trainer.get_best_iter(), self.best_iter.value)
-                        
+
                 self.finish_tasks.put(dict(id=task['id'], score=score))
             except KeyboardInterrupt:
                 break
@@ -199,6 +202,8 @@ class Explorer(mp.Process):
         while True:
             #Stop training if no improvement since last 5 iterations
             if self.iter.value - self.best_iter.value >= 5:
+                break
+            if self.iter.value >= 40:
                 break
             if self.population.empty() and self.finish_tasks.full():
                 if self.verbose:
