@@ -139,7 +139,6 @@ class Worker(mp.Process):
             #Stop training if no improvement since last 5 iterations
             if self.iter.value - self.best_iter.value >= 5:
                 break
-            print(self.iter.value, self.best_iter.value)
             if self.iter.value >= 40:
                 break
             # Set the correct parameters for the Trainer class depending on the task id

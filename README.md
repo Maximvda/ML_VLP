@@ -76,8 +76,20 @@ The blockage is introduced by setting the signal to zero of randomly selected TX
 | **# blockage** | 60% | 70% | 80% | 90%| 100% |
 | **2D accuracy** | 5.95 cm | 9.48 cm | 17.70 cm | 52.54 cm| 117.22 cm |
 
-### Exeperiment 5
-Experiment five performs quick comparisons between a variety of parameters and settings, more information on this experiment in the thesis.
+### Experiment 5
+In experiment five the PBT algorithm is used to train models.
+The population is set to 120 and training iterations are 45 seconds long.
+The explored parameters are the number of hidden layers, the number of features, the model type, the batch size and the learning rate.
+Obtained results are shown in the table below.
+
+| Iterations | Model type | nf | layers | batch size | 2D accuracy |
+| --- | --- | ---| --- | --- | --- |
+| 40 | Type 2 | 512 |5 | 304 | 0.711 cm |
+ | 55 |   Type 2  | 705 | 5 | 128 | 0.592 cm  |
+  |98 |Type 2 |736 |5 |1906 |0.533 cm | 
+
+### Experiment 6
+Experiment six performs quick comparisons between a variety of parameters and settings, more information on this experiment in the thesis.
 
 ## Training and running tests
 
