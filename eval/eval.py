@@ -25,8 +25,8 @@ class Eval_obj(object):
         setup_model(self, file, reload_model=True)
 
         #Setup dataset and dataloaders
-        test_dataset = Data(args.dataset_path['test'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
-        heatmap_dataset = Data(args.dataset_path['heatmap'], self.TX_config, self.TX_input, self.blockage, self.output_nf)
+        test_dataset = Data(args.dataset_path['test'], self.blockage, self.rotations, self.cell_type, self.output_nf)
+        heatmap_dataset = Data(args.dataset_path['heatmap'], self.blockage, self.rotations, self.cell_type, self.output_nf)
         self.test_data_loader = DataLoader(test_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
         self.heatmap_loader = DataLoader(heatmap_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
 
