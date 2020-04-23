@@ -26,7 +26,7 @@ class Eval_obj(object):
 
         #Setup dataset and dataloaders
         test_dataset = Data(args.dataset_path['test'], self.blockage, self.rotations, self.cell_type, self.output_nf)
-        heatmap_dataset = Data(args.dataset_path['heatmap'], self.blockage, self.rotations, self.cell_type, self.output_nf)
+        heatmap_dataset = Data(args.dataset_path['grid'], self.blockage, self.rotations, self.cell_type, self.output_nf)
         self.test_data_loader = DataLoader(test_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
         self.heatmap_loader = DataLoader(heatmap_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
 
@@ -100,6 +100,6 @@ class Eval_obj(object):
         print("")
         if self.verbose:
             print("Heatmaps stored at {}".format(self.result_root))
-        makeHeatMap(map, 'TX_config_'+str(self.TX_config)+'.pdf', 'Prediction error (cm)', self.result_root)
-        makeHeatMap(mapz, 'TX_config_'+str(self.TX_config)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
-        return {'map': map, 'TX_conf': self.TX_config, 'dist': sum(dist_2D)/len(dist_2D)}
+        makeHeatMap(map, 'TX_config_'+str(self.cell_type)+'.pdf', 'Prediction error (cm)', self.result_root)
+        makeHeatMap(mapz, 'TX_config_'+str(self.cell_type)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
+        return {'map': map, 'cell_type': self.cell_type, 'dist': sum(dist_2D)/len(dist_2D)}
