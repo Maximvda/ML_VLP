@@ -52,7 +52,7 @@ class Eval_obj(object):
                 prediction = self.model(input)
 
                 #Calculate the distance between predicted and target points
-                dist = calcDistance(prediction, output)
+                dist = calcDistance(prediction, output, self.cell_type)
                 x1, y1 = calcBias(prediction, output)
                 x.append(x1); y.append(y1)
 
@@ -92,11 +92,12 @@ class Eval_obj(object):
                 for it in range(0,len(input)):
                     pos = output[it]
                     x = int(round(pos[0].item()*300)); y = int(round(pos[1].item()*300))
-                    dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
-                    dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
-                    map[x,y] = dist*300
-                    mapz[x,y] = dist_z*200
-                    dist_2D.append(dist*300)
+                    dist = calcDistance(prediction, output, self.cell_type)
+                    #dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
+                    #dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
+                    map[x,y] = dist['2D']
+                    mapz[x,y] = dist['z']
+                    dist_2D.append(dist['2D'])
         print("")
         if self.verbose:
             print("Heatmaps stored at {}".format(self.result_root))

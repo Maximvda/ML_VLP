@@ -22,16 +22,26 @@ def experiment(args):
         #Define the parameters to train models on
         for i in range(11):
             hyper_par.append({'cell_type': '3x3', 'blockage': i*0.1,
+                                'rotations': False,
                                 'dataset_path': {
                                     'train': '/home/r0579568/ML_VLP/dataset/database/data_3x3_True_train.data',
                                     'val': '/home/r0579568/ML_VLP/dataset/database/data_3x3_True_val.data',
                                     'test': '/home/r0579568/ML_VLP/dataset/database/data_3x3_True_test.data',
                                 }})
             hyper_par.append({'cell_type': '2x2', 'blockage': i*0.1,
+                                'rotations': False,
                                 'dataset_path': {
                                     'train': '/home/r0579568/ML_VLP/dataset/database/data_2x2_True_train.data',
                                     'val': '/home/r0579568/ML_VLP/dataset/database/data_2x2_True_val.data',
                                     'test': '/home/r0579568/ML_VLP/dataset/database/data_2x2_True_test.data',
+                                }})
+
+            hyper_par.append({'cell_type': '3x3', 'blockage': i*0.1,
+                                'rotations': True,
+                                'dataset_path': {
+                                    'train': '/home/r0579568/ML_VLP/dataset/database/data_3x3_True_train.data',
+                                    'val': '/home/r0579568/ML_VLP/dataset/database/data_3x3_True_val.data',
+                                    'test': '/home/r0579568/ML_VLP/dataset/database/data_3x3_True_test.data',
                                 }})
 
         run_experiment(args, hyper_par)
