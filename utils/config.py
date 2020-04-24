@@ -81,7 +81,7 @@ def parse_args():
     #Training options
     parser.add_argument('--is_train', type=str2bool, default='True', help="Set to true if you want to train model or false to evaluate it")
     parser.add_argument('--pbt_training', type=str2bool, default="false", help="Set to true if you wish to use PBT algorithm")
-    parser.add_argument('--batch_size', type=int, default=128, help="The size of the batch for training")
+    parser.add_argument('--batch_size', type=int, default=256, help="The size of the batch for training")
     parser.add_argument('--learning_rate', type=float, default=1e-4, help="Learning rate of the optimiser")
     parser.add_argument('--workers', type=int, default=1, help="Set number of workers used, to train multiple models simultanious")
     parser.add_argument('--population_size', type=int, default=120, help='Size of the population when using PBT')
