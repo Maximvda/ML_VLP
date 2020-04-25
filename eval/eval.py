@@ -93,11 +93,12 @@ def calcMap(args,map_split):
     error = []
     heatmap_dataset = Data(args.dataset_path[map_split], args.blockage, args.rotations, args.cell_type, args.output_nf)
     dataLoader = DataLoader(heatmap_dataset, batch_size = args.batch_size, shuffle=True, num_workers=4)
+    max = int((550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10)
+    
     if 'grid' == map_split:
         map = np.full((300,300),np.inf)
     else:
         center_pos = get_cel_center_position()[args.cell_type]
-        max = int((550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10)
         map = np.full((int(max*2),int(max*2)),np.inf)
 
     for i, data in enumerate(dataLoader):
