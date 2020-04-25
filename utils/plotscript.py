@@ -20,8 +20,7 @@ def plot_exp_1(result_root):
         dist.append(acc_list)
 
     data_labels = ['cell type = 3x3', 'cell type = 2x2']
-    makePlot(dist, 'type_infl_blockage.pdf', 'Error on validation set', ['Amount of blockage (%)', 'Accuracy 2D (cm)'], result_root, data_labels, ticks=np.linspace(0,1,11))
-    print("Plots for experiment 1 saved to {}".format(result_root))
+    makePlot(dist, 'type_infl_blockage.pdf', 'Error on validation set', ['Amount of blockage (%)', 'Accuracy 2D (cm)'], result_root, data_labels, ticks=np.linspace(0,100,11))
 
 
     #init list to store results
@@ -33,7 +32,7 @@ def plot_exp_1(result_root):
         dist.append(acc_list)
 
     data_labels = ['Rotations = True', 'Rotations = False']
-    makePlot(dist, 'rotation_infl_blockage.pdf', 'Error on validation set', ['Amount of blockage (%)', 'Accuracy 2D (cm)'], result_root, data_labels, ticks=np.linspace(0,1,11))
+    makePlot(dist, 'rotation_infl_blockage.pdf', 'Error on validation set', ['Amount of blockage (%)', 'Accuracy 2D (cm)'], result_root, data_labels, ticks=np.linspace(0,100,11))
     print("Plots for experiment 1 saved to {}".format(result_root))
 
     dict = get_best_three(root, files)

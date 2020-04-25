@@ -91,8 +91,8 @@ class Eval_obj(object):
 
 def calcMap(args,map_split):
     error = []
-    heatmap_dataset = Data(args.dataset_path[map_split], self.blockage, self.rotations, self.cell_type, self.output_nf)
-    dataLoader = DataLoader(heatmap_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
+    heatmap_dataset = Data(args.dataset_path[map_split], args.blockage, args.rotations, args.cell_type, args.output_nf)
+    dataLoader = DataLoader(heatmap_dataset, batch_size = args.batch_size, shuffle=True, num_workers=4)
     if 'grid' == map_split:
         map = np.full((300,300),np.inf)
     else:
@@ -122,7 +122,7 @@ def calcMap(args,map_split):
                 else:
                     x = int(round(pos[0].item()*max+max+1e-04)); y = int(round(pos[1].item()*max+max+1e-04))
 
-                dist = calcDistance(prediction, output, self.cell_type)
+                dist = calcDistance(prediction, output, args.cell_type)
                 #dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
                 #dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
                 map[x,y] = dist['2D']
