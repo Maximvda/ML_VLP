@@ -20,6 +20,7 @@ class Eval_obj(object):
         #Initialising some variables
         self.device = args.device;  self.result_root = args.result_root
         self.visualise = args.visualise; self.verbose = args.verbose
+        self.dataset_path = args.dataset_path
         if file == None:
             file = 'model.pth'
 
