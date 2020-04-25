@@ -130,5 +130,7 @@ def calcMap(args,map_split):
 
     print("")
     error = (sum(error)/len(error))
+    if args.verbose:
+        print("The average error over the entire heatmap {} is: {}".format(map_split, error))
 
     makeHeatMap(map, str(map_split)+'.pdf', 'Prediction error (cm)', error, args.result_root)
