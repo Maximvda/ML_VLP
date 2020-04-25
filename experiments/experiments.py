@@ -49,7 +49,8 @@ def experiment(args):
         #Make plots of this experiment
         #And print performance on test set for the three best models
         best_files = plot_exp_1(args.result_root)
-        for i, file in best_files:
+        for i in range(len(best_files)):
+            file = best_files[i]
             obj = Eval_obj(args, file)
             obj.demo()
             if i == 0:
