@@ -9,6 +9,8 @@ from utils.utils import calcBias
 from utils.utils import makeHeatMap
 from dataset.dataset import Data
 from utils.utils import printProgBar
+from utils.config import get_cel_center_position
+from utils.utils import getCelPosition
 
 #Object to evaluate the performance of the model on the test set
 class Eval_obj(object):
@@ -26,9 +28,7 @@ class Eval_obj(object):
 
         #Setup dataset and dataloaders
         test_dataset = Data(args.dataset_path['test'], self.blockage, self.rotations, self.cell_type, self.output_nf)
-        heatmap_dataset = Data(args.dataset_path['grid'], self.blockage, self.rotations, self.cell_type, self.output_nf)
         self.test_data_loader = DataLoader(test_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
-        self.heatmap_loader = DataLoader(heatmap_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
 
         #Setting the model to evaluation mode
         self.model.eval()
@@ -77,30 +77,58 @@ class Eval_obj(object):
 
 
     def heatMap(self):
-        dist_2D = []
         if self.verbose:
-            print("Creating heatmap")
-        map = np.full((300,300),np.inf)
-        mapz = np.full((300,300),np.inf)
-        for i, data in enumerate(self.heatmap_loader):
-            with torch.no_grad():
-                if self.verbose:
-                    print(printProgBar(i,len(self.heatmap_loader)),end='\r')
-                input = data[0].to(self.device)
-                output = data[1].to(self.device)
-                prediction = self.model(input)
-                for it in range(0,len(input)):
-                    pos = output[it]
-                    x = int(round(pos[0].item()*300)); y = int(round(pos[1].item()*300))
-                    dist = calcDistance(prediction, output, self.cell_type)
-                    #dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
-                    #dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
-                    map[x,y] = dist['2D']
-                    mapz[x,y] = dist['z']
-                    dist_2D.append(dist['2D'])
-        print("")
+            print("Creating Heatmaps")
+
+        calcMap(self,'grid')
+        calcMap(self,'train_map')
+        calcMap(self,'test_map')
+
         if self.verbose:
             print("Heatmaps stored at {}".format(self.result_root))
-        makeHeatMap(map, 'TX_config_'+str(self.cell_type)+'.pdf', 'Prediction error (cm)', self.result_root)
-        makeHeatMap(mapz, 'TX_config_'+str(self.cell_type)+'_height.pdf', 'Height prediction error (cm)', self.result_root)
-        return {'map': map, 'cell_type': self.cell_type, 'dist': sum(dist_2D)/len(dist_2D)}
+
+
+def calcMap(args,map_split):
+    error = []
+    heatmap_dataset = Data(args.dataset_path[map_split], self.blockage, self.rotations, self.cell_type, self.output_nf)
+    dataLoader = DataLoader(heatmap_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
+    if 'grid' == map_split:
+        map = np.full((300,300),np.inf)
+    else:
+        center_pos = get_cel_center_position()[args.cell_type]
+        max = int((550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10)
+        map = np.full((int(max*2),int(max*2)),np.inf)
+
+    for i, data in enumerate(dataLoader):
+        with torch.no_grad():
+            if args.verbose:
+                print(printProgBar(i,len(dataLoader)),end='\r')
+            input = data[0].to(args.device)
+
+            if 'grid' == map_split:
+                output = data[1][0].to(args.device)
+                cels = data[1][1]
+            else:
+                output = data[1].to(args.device)
+
+            prediction = args.model(input)
+            for it in range(0,len(input)):
+                pos = output[it]
+
+                if 'grid' == map_split:
+                    pos_cel = getCelPosition(cels[it].item())
+                    x = int(round(pos[0].item()*max+pos_cel[0]/10)); y = int(round(pos[1].item()*max+pos_cel[1]/10))
+                else:
+                    x = int(round(pos[0].item()*max+max+1e-04)); y = int(round(pos[1].item()*max+max+1e-04))
+
+                dist = calcDistance(prediction, output, self.cell_type)
+                #dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
+                #dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
+                map[x,y] = dist['2D']
+                error.append(dist['2D'])
+
+
+    print("")
+    error = (sum(error)/len(error))
+
+    makeHeatMap(map, str(map_split)+'.pdf', 'Prediction error (cm)', error, args.result_root)

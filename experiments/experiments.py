@@ -49,9 +49,11 @@ def experiment(args):
         #Make plots of this experiment
         #And print performance on test set for the three best models
         best_files = plot_exp_1(args.result_root)
-        for file in best_files:
+        for i, file in best_files:
             obj = Eval_obj(args, file)
             obj.demo()
+            if i == 0:
+                obj.heatMap()
 
         if args.verbose:
             print("Results of experiment 1 saved at {}".format(args.result_root))
