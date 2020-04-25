@@ -29,15 +29,23 @@ class Data(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
+        data = self.data[idx]
+        cel = None
+        if type(data) is dict:
+            cel = data["cel"]
+            data = data["data"]
         #Load a specific data item
-        input = self.data[idx][0]
-        output = self.data[idx][1]
+        input = data[0]
+        output = data[1]
 
         input, output = augment_data(input, output, self.rotations, self.blockage, self.real_block, self.cell_type)
 
         #Transform to torch tensor and to desired dimension and type
         input = torch.FloatTensor(input)
         output = torch.FloatTensor(output)
+
+        if cel != None:
+            output = [output, cel]
 
         return input, output
 
