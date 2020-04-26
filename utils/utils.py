@@ -107,10 +107,11 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
     plt.close()
 
 #Makes a heatmap plot for a given map
-def makeHeatMap(map, filename, title, result_root):
+def makeHeatMap(map, filename, title, error, result_root):
     plt.imshow(map, cmap='viridis', vmin=0, vmax=45, interpolation='nearest')
     plt.colorbar()
-    plt.title(title)
+    plt.suptitle(title,fontsize=14, fontweight='bold')
+    plt.title(plt.title('Average error: {} cm'.format(round(error,2))))
     plt.xlabel('x-axis (cm)')
     plt.ylabel('y-axis (cm)')
     plt.gca().invert_yaxis()

@@ -93,7 +93,7 @@ def calcMap(args,map_split):
     error = []
     heatmap_dataset = Data(args.dataset_path[map_split], args.blockage, args.rotations, args.cell_type, args.output_nf)
     dataLoader = DataLoader(heatmap_dataset, batch_size = args.batch_size, shuffle=True, num_workers=4)
-    
+
     center_pos = get_cel_center_position()[args.cell_type]
     max = int((550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10)
 
@@ -135,5 +135,4 @@ def calcMap(args,map_split):
     error = (sum(error)/len(error))
     if args.verbose:
         print("The average error over the entire heatmap {} is: {}".format(map_split, error))
-
     makeHeatMap(map, str(map_split)+'.pdf', 'Prediction error (cm)', error, args.result_root)
