@@ -17,7 +17,7 @@ best_ids = [1,2,3,4,5,6]
 #PBT training script
 def Pbt_trainer(args):
     #Set and create path for the checkpoints of each task of the population
-    args.result_root = os.path.join(args.result_root, 'pbt_training')
+    args.result_root = os.path.join(args.result_root, 'pbt_training_unit_cell')
     if not os.path.exists(args.result_root):
         os.mkdir(args.result_root)
     pth = os.path.join(args.result_root,'checkpoints')
