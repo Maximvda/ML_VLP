@@ -3,6 +3,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 
 from dataset.dataset import Data
+from dataset.dataset import augment_data
+from utils.config import get_cel_center_position
 
 #Train a random forest for the regression task
 def RF(args):
@@ -44,7 +46,7 @@ def SVM(args):
 
 
 def process_data(args,split):
-    dataset = Data(args.dataset_path[split], args.TX_config, args.TX_input, args.blockage, args.output_nf)
+    dataset = Data(args.dataset_path[split], args.blockage, args.rotations, args.cell_type, args.output_nf)
     data = dataset.get_data()
 
     input_list = []; output_list = [];
@@ -52,22 +54,23 @@ def process_data(args,split):
     print("Creating {} data".format(split))
     for sample in data:
         input = sample[0]
-        output_list.append(sample[1])
+        output = sample[1]
 
-        #Get indices of blockage
-        indices = np.random.choice(np.arange(len(input)), replace=False, size=int(args.blockage*len(input)))
-        for ind in indices:
-            input[ind] = -1
+        input, output = augment_data(input, output, args.rotations, args.blockage, False, args.cell_type)
 
         input_list.append(input)
+        output_list.append(output)
 
     return np.array(input_list), np.array(output_list)
 
 def calc_dist(x,y):
-    dist_2D = np.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*300
+    center_pos = get_cel_center_position()[cell_type]
+    norm = (550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10
+
+    dist_2D = np.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*norm
     dist_2D = np.mean(dist_2D)
     if len(x[0]) == 3:
-        dist_3D = np.sqrt(((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*300**2+((x[:,2]-y[:,2])**2)*200**2)
+        dist_3D = np.sqrt(((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*norm**2+((x[:,2]-y[:,2])**2)*200**2)
         dist_3D = np.mean(dist_3D)
         return {'2D': dist_2D, '3D': dist_3D}
     else:
