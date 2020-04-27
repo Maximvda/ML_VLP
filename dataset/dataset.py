@@ -76,14 +76,18 @@ def augment_data(input, output, rotations, blockage, real_block, cell_type):
         prob = random.random()
         #rotate data 90 deg
         if 0.25 < prob <= 0.5:
-            input, output = cell_rotation(input, output, cell_type)
+            input, output_p = cell_rotation(input, output, cell_type)
         #rotate data 180 deg
         elif 0.5 < prob <= 0.75:
-            input, output = cell_rotation(input, output, cell_type)
-            input, output = cell_rotation(input, output, cell_type)
+            input, output_p = cell_rotation(input, output, cell_type)
+            input, output_p = cell_rotation(input, output, cell_type)
         #rotate data 270 deg
         elif 0.75 < prob <= 1:
-            input, output = cell_rotation(input, output, cell_type)
-            input, output = cell_rotation(input, output, cell_type)
-            input, output = cell_rotation(input, output, cell_type)
+            input, output_p = cell_rotation(input, output, cell_type)
+            input, output_p = cell_rotation(input, output, cell_type)
+            input, output_p = cell_rotation(input, output, cell_type)
+    if len(output) == 3:
+        output = [output_p[0], output_p[1], output[2]]
+    else:
+        output = output_p
     return input, output

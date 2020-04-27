@@ -17,7 +17,7 @@ def RF(args):
 
     print("Predicting and calculating performance")
     prediction = rf.predict(input_val)
-    dist_dict = calc_dist(output_val, prediction)
+    dist_dict = calc_dist(output_val, prediction, args.cell_type)
     print("Distance on validation set with random forest: 2D {}\t 3D {}".format(dist_dict['2D'], dist_dict['3D']))
 
 #Train three SVM for each position coordinate one
@@ -41,7 +41,7 @@ def SVM(args):
         prediction.append([pred_x[i], pred_y[i], pred_z[i]])
 
     prediction = np.array(prediction)
-    dist_dict = calc_dist(output_val, prediction)
+    dist_dict = calc_dist(output_val, prediction, args.cell_type))
     print("Distance on validation set with SVM: 2D {}\t 3D {}".format(dist_dict['2D'], dist_dict['3D']))
 
 
@@ -63,7 +63,7 @@ def process_data(args,split):
 
     return np.array(input_list), np.array(output_list)
 
-def calc_dist(x,y):
+def calc_dist(x,y, cell_type):
     center_pos = get_cel_center_position()[cell_type]
     norm = (550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10
 
