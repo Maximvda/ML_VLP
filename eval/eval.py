@@ -14,7 +14,7 @@ from utils.utils import getCelPosition
 
 #Object to evaluate the performance of the model on the test set
 class Eval_obj(object):
-    def __init__(self, args, file=None):
+    def __init__(self, args, file=None, blockage=False):
         if args.verbose:
             print("Setting up eval object")
         #Initialising some variables
@@ -28,7 +28,7 @@ class Eval_obj(object):
         setup_model(self, file, reload_model=True)
 
         #Setup dataset and dataloaders
-        test_dataset = Data(args.dataset_path['test'], self.blockage, self.rotations, self.cell_type, self.output_nf)
+        test_dataset = Data(args.dataset_path['test'], self.blockage, self.rotations, self.cell_type, self.output_nf, real_block=blockage)
         self.test_data_loader = DataLoader(test_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
 
         #Setting the model to evaluation mode

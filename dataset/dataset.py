@@ -9,7 +9,7 @@ from utils.config import cell_rotation
 
 #Expansion of the Dataset class to fit our dataset
 class Data(Dataset):
-    def __init__(self, path, blockage, rotations, output_nf, cell_type, real_block=False):
+    def __init__(self, path, blockage, rotations, cell_type, output_nf, real_block=False):
         #init variables
         self.blockage = blockage
         self.rotations = rotations
@@ -64,8 +64,8 @@ def augment_data(input, output, rotations, blockage, real_block, cell_type):
     #Otherwise it is always a fixed percentage of blocked TXs
     if real_block:
         prob = random.random()
-        if prob < 0.8:
-            indices = np.random.choice(np.arange(len(input)), replace=False, size=int(prob*len(input)))
+        prob = min(prob, 0.7)
+        indices = np.random.choice(np.arange(len(input)), replace=False, size=int(prob*len(input)))
     else:
         indices = np.random.choice(np.arange(len(input)), replace=False, size=int(blockage*len(input)))
 

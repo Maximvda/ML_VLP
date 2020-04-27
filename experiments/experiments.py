@@ -17,6 +17,7 @@ def experiment(args):
     setup_database(args)
 
     #Experiment 1 looks at the influence on performance of different cell_types in function of the amount of blockage
+    #It also checks the influence of rotations on the amount of blockage
     if args.experiment == 1:
         setup_dir(args, 'experiment_unit_cell_1')
         #Define the parameters to train models on
@@ -48,7 +49,7 @@ def experiment(args):
 
         #Make plots of this experiment
         #And print performance on test set for the three best models
-        best_files = plot_exp_1(args.result_root)
+        best_files, rotation_files = plot_exp_1(args.result_root)
         for i in range(len(best_files)):
             file = best_files[i]
             obj = Eval_obj(args, file)
@@ -56,35 +57,12 @@ def experiment(args):
             if i == 0:
                 obj.heatMap()
 
+        for file in rotation_files:
+            obj = Eval_obj(args, file, blockage=True)
+            obj.demo()
+
         if args.verbose:
             print("Results of experiment 1 saved at {}".format(args.result_root))
-
-    #Experiment 2 looks at the influence on performance by application rotational transformations on the input data
-    elif args.experiment == 2:
-        setup_dir(args, 'experiment_unit_cell_2')
-
-        #Train one model with rotations as data augmentation and one without
-        hyper_par.append({'rotations': True})
-        hyper_par.append({'rotations': False})
-
-        run_experiment(args, hyper_par)
-
-        dict = []
-        root = os.path.join(args.result_root, 'checkpoints')
-        files = os.listdir(root)
-        files.sort()
-        for file in files:
-            if 'best' in file:
-                obj = Eval_obj(args, os.path.join('checkpoints',file))
-                dict.append(obj.heatMap())
-
-        plot_exp_2(args.result_root, dict)
-
-        if args.verbose:
-            print("Results of experiment 2 saved at {}".format(args.result_root))
-
-    else:
-        print("Experiment {} is not implemented".format(args.experiment))
 
 
 #Trains all models for the given hyper_par list

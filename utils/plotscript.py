@@ -43,7 +43,7 @@ def plot_exp_1(result_root):
     print("Third:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: 2D {}, 3D {}".format(
         dict['3']['model_type'], dict['3']['nf'],dict['3']['hidden_layers'], dict['3']['min_dist']['2D'], dict['3']['min_dist']['3D']))
 
-    return dict['files']
+    return dict['files'], get_rotation_files(root, files)
 
 
 
@@ -69,6 +69,25 @@ def getDist(root, files, constraints, sort_par):
     if not sort_par == None:
         dist = sort_list(dist,sorter)
     return dist
+
+#Get the files where rotation == True
+def get_rotation_files(root, files):
+    sorter = []; file_names = []
+    for file in files:
+        if 'task' in file:
+            cp = torch.load(os.path.join(root,file),map_location=torch.device('cpu'))
+            if cp["rotations"] == True:
+                sorter.append(cp['min_dist']['2D'])
+                file_names.append(file)
+
+    file_names = sort_list(file_names,sorter)
+
+    rotation_files = []
+    for file in file_names:
+        ext = file.split("-")[-1]
+        rotation_files.append("checkpoints/best-"+ext)
+    return rotation_files
+
 
 #Retrieve the parameters of three best performing models
 #According to their min_distance on validation set
