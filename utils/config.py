@@ -48,11 +48,17 @@ def cell_rotation(input, output, cell_type):
         input = [input[2], input[5], input[8],
                 input[1], input[4], input[7],
                 input[0], input[3], input[6]]
-        output = [output[1], -output[0]]
+        if len(output) == 3:
+            output = [output[1], -output[0], output[2]]
+        else:
+            output = [output[1], -output[0]]
     elif cell_type == '2x2':
         input = [input[1], input[3],
                 input[0], input[2]]
-        output = [output[1], -output[0]]
+        if len(output) == 3:
+            output = [output[1], -output[0], output[2]]
+        else:
+            output = [output[1], -output[0]]
     return input, output
 
 def parse_args():
