@@ -41,7 +41,7 @@ def SVM(args):
         prediction.append([pred_x[i], pred_y[i], pred_z[i]])
 
     prediction = np.array(prediction)
-    dist_dict = calc_dist(output_val, prediction, args.cell_type))
+    dist_dict = calc_dist(output_val, prediction, args.cell_type)
     print("Distance on validation set with SVM: 2D {}\t 3D {}".format(dist_dict['2D'], dist_dict['3D']))
 
 
