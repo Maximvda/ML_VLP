@@ -100,7 +100,7 @@ def calcMap(args,map_split):
     if 'grid' == map_split:
         map = np.full((300,300),np.inf)
     else:
-        map = np.full((int(max*2),int(max*2)),np.inf)
+        map = np.full((int(max*2+1),int(max*2+1)),np.inf)
 
     for i, data in enumerate(dataLoader):
         with torch.no_grad():
