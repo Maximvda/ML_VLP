@@ -90,6 +90,15 @@ def exploit_and_explore(result_root, iter, top_checkpoint_path, bot_checkpoint_p
         perturb = np.random.choice(choices['perturb_factors'])
         checkpoint[parameter] = int(np.ceil(perturb * checkpoint[parameter]))
 
+    #Perform perturbation on booleans
+    for bool in choices['booleans']:
+        #Copy the boolean from best model with only 50% probability
+        if np.random.uniform() =< 0.5:
+            bad_check = torch.load(os.path.join(result_root,bot_checkpoint_path),map_location=torch.device('cpu'))
+            checkpoint[bool] = bad_check[bool]
+            del bad_check
+
+
     #Perturb the model parameters for the first 7 iterations
     if iter <= 7:
         checkpoint['model'] = None; checkpoint['iter'] = 0
@@ -141,6 +150,7 @@ class Worker(mp.Process):
                 break
             # Set the correct parameters for the Trainer class depending on the task id
             task = self.population.get()
+            self.trainer.set_dataset()
             self.trainer.set_id(task['id'], reload=True)
             try:
                 #Train task with one iteration

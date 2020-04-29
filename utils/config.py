@@ -17,6 +17,7 @@ def get_PBT_choices():
         'optimiser': ['lr', 'betas'],
         'model': ['nf', 'hidden_layers'],
         'parameters': ['batch_size'],
+        'booleans': ['rotations'],
         'perturb_factors': (1.2, 0.8)
     }
     return dict
