@@ -150,7 +150,6 @@ class Worker(mp.Process):
                 break
             # Set the correct parameters for the Trainer class depending on the task id
             task = self.population.get()
-            self.trainer.set_dataset()
             self.trainer.set_id(task['id'], reload=True)
             try:
                 #Train task with one iteration

@@ -140,8 +140,10 @@ class Trainer(object):
         self.task_id = id
         #Correctly load model for the task
         setup_model(self, self.file, reload_model=reload)
+        if reload:
+            self.set_dataset()
         #Setup dataloaders with correct batch size for the task
-        self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=16)
+        self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=12)
         self.val_data_loader = DataLoader(self.val_dataset, batch_size = self.batch_size, shuffle=True, num_workers=8)
         self.step = int(len(self.train_dataset)/10);
 
