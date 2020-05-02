@@ -64,11 +64,11 @@ def calcDistance(x,y, cell_type):
     norm = (550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10
 
     dist_2D = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*norm
-    dist_2D = torch.mean(dist_2D).item()
+    dist_2D = torch.mean(dist_2D).item()*x.size()[0]
     if len(x[0]) == 3:
-        z_dist = torch.mean(torch.sqrt((x[:,2]-y[:,2])**2)*200).item()
+        z_dist = torch.mean(torch.sqrt((x[:,2]-y[:,2])**2)*200).item()*x.size()[0]
         dist_3D = torch.sqrt(((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*norm**2+((x[:,2]-y[:,2])**2)*200**2)
-        dist_3D = torch.mean(dist_3D).item()
+        dist_3D = torch.mean(dist_3D).item()*x.size()[0]
         return {'2D': dist_2D, 'z': z_dist, '3D': dist_3D}
     else:
         return {'2D': dist_2D, '3D': np.inf}

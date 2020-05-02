@@ -97,7 +97,7 @@ class Trainer(object):
     def calcPerformance(self, experiment=False):
         if self.verbose:
             printMultiLine(self.worker_id,"Calculating performance on validation set.", offset=1)
-        dist_dict = {'2D': [], 'z': [], '3D': []}
+        dist_dict = {'2D': 0, 'z': 0, '3D': 0}
         #Set model to evaluation mode
         self.model.eval()
         #Get prediction error for every batch in validation set
@@ -110,16 +110,16 @@ class Trainer(object):
 
                 #Calculate the distance between predicted and target points
                 dist = calcDistance(prediction, output, self.cell_type)
-                dist_dict['2D'].append(dist['2D'])
+                dist_dict['2D'] += dist['2D']
                 if len(dist) == 3:
-                    dist_dict['z'].append(dist['z']); dist_dict['3D'].append(dist['3D'])
+                    dist_dict['z'] += dist['z']; dist_dict['3D'] += dist['3D']
 
         #The average error over the entire set is calculated
         for key in dist_dict:
-            if len(dist_dict[key]) > 0:
-                dist_dict[key] = sum(dist_dict[key])/len(dist_dict[key])
-            else:
+            if dist_dict[key] == 0:
                 dist_dict[key] = np.inf
+            else:
+                dist_dict[key] /= len(self.val_dataset)
         if self.verbose:
             printMultiLine(self.worker_id,"Distance on val set 2D: {} cm\t Z: {} cm\t 3D: {} cm".format(
                 round(dist_dict['2D'],2),round(dist_dict['z'],2), round(dist_dict['3D'],2)), offset=1)
@@ -141,14 +141,14 @@ class Trainer(object):
         #Correctly load model for the task
         setup_model(self, self.file, reload_model=reload)
         #Setup dataloaders with correct batch size for the task
-        self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
-        self.val_data_loader = DataLoader(self.val_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
-        self.step = int(len(self.data_loader)/10);
+        self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=16)
+        self.val_data_loader = DataLoader(self.val_dataset, batch_size = self.batch_size, shuffle=True, num_workers=8)
+        self.step = int(len(self.train_dataset)/10);
 
     def set_dataset(self):
         #Re initialise datasets with different data configurations
-        self.train_dataset = Data(self.dataset_path['train'], self.blockage, self.rotations, self.cell_type, self.output_nf)
-        self.val_dataset = Data(self.dataset_path['val'], self.blockage, self.rotations, self.cell_type, self.output_nf)
+        self.train_dataset.set_params(self.blockage, self.rotations, self.cell_type)
+        self.val_dataset.set_params(self.blockage, self.rotations, self.cell_type)
         #If configuration is changed model size has to be adapted
         self.size = cell2size(self.cell_type)
 

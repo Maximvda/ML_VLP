@@ -93,7 +93,7 @@ def exploit_and_explore(result_root, iter, top_checkpoint_path, bot_checkpoint_p
     #Perform perturbation on booleans
     for bool in choices['booleans']:
         #Copy the boolean from best model with only 50% probability
-        if np.random.uniform() =< 0.5:
+        if np.random.uniform() >= 0.5:
             bad_check = torch.load(os.path.join(result_root,bot_checkpoint_path),map_location=torch.device('cpu'))
             checkpoint[bool] = bad_check[bool]
             del bad_check
@@ -158,12 +158,14 @@ class Worker(mp.Process):
 
                 score = self.trainer.calcPerformance()
                 #Save best task if it has the lowest score from entire population
-                with self.best_score.get_lock():
-                    if score < self.best_score.value:
-                        if self.verbose:
-                            printMultiLine(0, "Improved best score from: {}\t to: {} by task: {}".format(round(self.best_score.value,3),round(score,3),task['id']),offset=-1)
-                        self.trainer.save_checkpoint(save_best=True)
+                if score < self.best_score.value:
+                    if self.verbose:
+                        printMultiLine(0, "Improved best score from: {}\t to: {} by task: {}".format(round(self.best_score.value,3),round(score,3),task['id']),offset=-1)
+                    self.trainer.save_checkpoint(save_best=True)
+
+                    with self.best_score.get_lock():
                         self.best_score.value = score
+
                 self.trainer.save_checkpoint()
                 #If the task is in the best performing tasks than update the best_iter criteria
                 if task['id'] in best_ids:

@@ -52,6 +52,13 @@ class Data(Dataset):
     def get_data(self):
         return self.data
 
+    def set_params(self, blockage, rotations, cell_type, real_block=False):
+        #init variables
+        self.blockage = blockage
+        self.rotations = rotations
+        self.cell_type = cell_type
+        self.real_block = real_block
+
 #Remove the z coordinates from the output
 def set_output(position_data):
     for i in range(len(position_data)):

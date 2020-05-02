@@ -13,7 +13,7 @@ def get_PBT_choices():
         'model_type': ['Type_1', 'Type_2'],
         'nf': [2**x for x in range(5,10)],
         'hidden_layers': [x for x in range(1,6)],
-        'batch_size': [2**x for x in range(5,12)],
+        'batch_size': [2**x for x in range(8,15)],
         'optimiser': ['lr', 'betas'],
         'model': ['nf', 'hidden_layers'],
         'parameters': ['batch_size'],
