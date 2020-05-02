@@ -143,9 +143,9 @@ class Trainer(object):
         if reload:
             self.set_dataset()
         #Setup dataloaders with correct batch size for the task
-        self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=12)
-        self.val_data_loader = DataLoader(self.val_dataset, batch_size = self.batch_size, shuffle=True, num_workers=8)
-        self.step = int(len(self.train_dataset)/10);
+        self.data_loader = DataLoader(self.train_dataset, batch_size = self.batch_size, shuffle=True, num_workers=0)
+        self.val_data_loader = DataLoader(self.val_dataset, batch_size = self.batch_size, shuffle=True, num_workers=0)
+        self.step = int(len(self.data_loader)/10);
 
     def set_dataset(self):
         #Re initialise datasets with different data configurations
