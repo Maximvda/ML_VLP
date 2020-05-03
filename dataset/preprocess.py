@@ -92,7 +92,8 @@ def process_measurement(measurement, height, measurement_pos, mask, center_pos, 
     #Max distance from center of cell
     max = 550+np.sqrt(center_pos[0]**2+center_pos[1]**2)
     #Get the most likely cell where measurement was taken
-    cel = convolution2d(measurement, mask)
+    cel = convolution2d(measurement, mask, cell_dict['all'])
+    #print(cel)
 
     #Iterate over all the possible unit cells for particular cell type
     for i in cell_dict['all']:

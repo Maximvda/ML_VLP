@@ -31,6 +31,7 @@ def main(args):
         #Best performing model is loaded and evaluated on the test set
         evalObj = Eval_obj(args)
         evalObj.demo()
+        evalObj.heatMap()
 
 if __name__ == '__main__':
     print("Script started")

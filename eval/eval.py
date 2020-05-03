@@ -28,8 +28,8 @@ class Eval_obj(object):
         setup_model(self, file, reload_model=True)
 
         #Setup dataset and dataloaders
-        test_dataset = Data(args.dataset_path['test'], self.blockage, self.rotations, self.cell_type, self.output_nf, real_block=blockage)
-        self.test_data_loader = DataLoader(test_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
+        self.test_dataset = Data(args.dataset_path['test'], self.blockage, self.rotations, self.cell_type, self.output_nf, real_block=blockage)
+        self.test_data_loader = DataLoader(self.test_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
 
         #Setting the model to evaluation mode
         self.model.eval()
@@ -41,7 +41,7 @@ class Eval_obj(object):
         if self.verbose:
             print("Running demo, testing performance on test set.")
         #Init variables to store distances
-        dist_dict = {'2D': [], 'z': [], '3D': []}
+        dist_dict = {'2D': 0, 'z': 0, '3D': 0}
         x = []; y = []
         #Get prediction error for every batch in validation set
         for i, data in enumerate(self.test_data_loader):
@@ -57,19 +57,19 @@ class Eval_obj(object):
                 x1, y1 = calcBias(prediction, output)
                 x.append(x1); y.append(y1)
 
-                dist_dict['2D'].append(dist['2D'])
+                dist_dict['2D'] += dist['2D']
                 if len(dist) == 3:
-                    dist_dict['z'].append(dist['z']); dist_dict['3D'].append(dist['3D'])
+                    dist_dict['z'] += dist['z']; dist_dict['3D'] += dist['3D']
 
                 if self.visualise:
                      visualise(output, prediction, pause=0.1)
         print("")
         #The average error over the entire set is calculated
         for key in dist_dict:
-            if len(dist_dict[key]) > 0:
-                dist_dict[key] = sum(dist_dict[key])/len(dist_dict[key])
-            else:
+            if dist_dict[key] == 0:
                 dist_dict[key] = np.inf
+            else:
+                dist_dict[key] /= len(self.test_dataset)
 
         print("Distance on val set 2D: {} cm\t Z: {} cm\t 3D: {} cm".format(
                 round(dist_dict['2D'],2),round(dist_dict['z'],2), round(dist_dict['3D'],2)))
@@ -90,7 +90,7 @@ class Eval_obj(object):
 
 
 def calcMap(args,map_split):
-    error = []
+    error = 0
     heatmap_dataset = Data(args.dataset_path[map_split], args.blockage, args.rotations, args.cell_type, args.output_nf)
     dataLoader = DataLoader(heatmap_dataset, batch_size = args.batch_size, shuffle=True, num_workers=4)
 
@@ -120,19 +120,19 @@ def calcMap(args,map_split):
 
                 if 'grid' == map_split:
                     pos_cel = getCelPosition(cels[it].item())
-                    x = int(round(pos[0].item()*max+pos_cel[0]/10)); y = int(round(pos[1].item()*max+pos_cel[1]/10))
+                    x = int(round(pos[0].item()*max+pos_cel[0]/10+center_pos[0]/10)); y = int(round(pos[1].item()*max+pos_cel[1]/10+center_pos[1]/10))
                 else:
                     x = int(round(pos[0].item()*max+max+1e-04)); y = int(round(pos[1].item()*max+max+1e-04))
 
-                dist = calcDistance(prediction, output, args.cell_type)
+                dist = calcDistance(prediction[it].unsqueeze(0), output[it].unsqueeze(0), args.cell_type)
                 #dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
                 #dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
                 map[x,y] = dist['2D']
-                error.append(dist['2D'])
+                error += dist['2D']
 
 
     print("")
-    error = (sum(error)/len(error))
+    error /= len(heatmap_dataset)
     if args.verbose:
         print("The average error over the entire heatmap {} is: {}".format(map_split, error))
     makeHeatMap(map, str(map_split)+'.pdf', 'Prediction error (cm)', error, args.result_root)

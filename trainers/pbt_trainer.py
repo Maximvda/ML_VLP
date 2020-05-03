@@ -8,6 +8,7 @@ import time
 from trainers.trainer import Trainer
 from utils.utils import printMultiLine
 from utils.config import get_PBT_choices
+from eval.eval import Eval_obj
 
 mp = _mp.get_context('spawn')
 
@@ -67,6 +68,12 @@ def Pbt_trainer(args):
     task = sorted(task, key=lambda x: x['score'], reverse=False)
     printMultiLine(1,"",offset=2, end=True)
     print('best score for task: ', task[0]['id'], ' with score: ', task[0]['score'])
+
+    file = 'checkpoints/best_model.pth'
+    obj = Eval_obj(args, file)
+    obj.demo()
+    obj.heatMap()
+
 
 #"""Copy parameters from the better model and the hyperparameters
 #   and running averages from the corresponding optimizer."""

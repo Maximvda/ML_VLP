@@ -12,7 +12,7 @@ from utils.config import get_cel_center_position
 #This function searches the most likely unit cell where the measurement was taken
 #by performing a 2D convolution on the measured data with the unit cell as mask
 #The most likely cell is then the one that obtained the highest score
-def convolution2d(measurement, cell_mask, max=True,):
+def convolution2d(measurement, cell_mask, cells, max=True,):
     #hold array of the obtained convolution scores
     conv_score = []
     #Iterate over the rows of measurement
@@ -28,15 +28,20 @@ def convolution2d(measurement, cell_mask, max=True,):
                 if (col >= 6) or (row >= 6):
                     index_list = []
                     break
-
-            conv_score.append(
-                sum([measurement[index] for index in index_list])
-            )
+            list = [measurement[index] for index in index_list]
+            if len(list) != 0:
+                conv_score.append(sum(list))
     if max:
         ind = np.argmax(conv_score)
     else:
         ind = np.argmin(conv_score)
-    return int(ind+7+2*np.floor(ind/4))
+    #print(" space ")
+    #print(measurement)
+    #print(conv_score, ind)
+    #print(cells[ind])
+    #print(cells)
+    return cells[ind]
+    #return int(ind+7+2*np.floor(ind/4))
 
 #Shows a grid of the possible positions of the measurement device
 #The predicted positions for a batch are plotted in red
