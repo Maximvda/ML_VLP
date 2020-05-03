@@ -41,7 +41,7 @@ def Pbt_trainer(args):
             #Delete checkpoint to free up the memory
             del checkpoint
 
-    if _iter - _best_iter =< 5:
+    if (_iter - _best_iter) <= 5:
 
         #multiprocessing shared variables to keep track of progress
         iter = mp.Value('i', _iter)
