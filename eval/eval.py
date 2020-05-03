@@ -91,6 +91,7 @@ class Eval_obj(object):
 
 def calcMap(args,map_split):
     error = 0
+    test_error = []
     heatmap_dataset = Data(args.dataset_path[map_split], args.blockage, args.rotations, args.cell_type, args.output_nf)
     dataLoader = DataLoader(heatmap_dataset, batch_size = args.batch_size, shuffle=True, num_workers=4)
 
@@ -125,6 +126,8 @@ def calcMap(args,map_split):
                     x = int(round(pos[0].item()*max+max+1e-04)); y = int(round(pos[1].item()*max+max+1e-04))
 
                 dist = calcDistance(prediction[it].unsqueeze(0), output[it].unsqueeze(0), args.cell_type)
+                if map_split == 'test_map' and abs(x - max) < 50 and abs(y-max) < 50:
+                    test_error.append(dist['2D'])
                 #dist = torch.sqrt((prediction[it][0]-pos[0])**2+(prediction[it][1]-pos[1])**2)
                 #dist_z = torch.sqrt((prediction[it][2]-pos[2])**2)
                 map[x,y] = dist['2D']
@@ -135,4 +138,6 @@ def calcMap(args,map_split):
     error /= len(heatmap_dataset)
     if args.verbose:
         print("The average error over the entire heatmap {} is: {}".format(map_split, error))
+    if args.verbose and map_split == 'test_map':
+        print("The average error in 50x50 square equals: {}".format(sum(test_error)/len(test_error)))
     makeHeatMap(map, str(map_split)+'.pdf', 'Prediction error (cm)', error, args.result_root)
