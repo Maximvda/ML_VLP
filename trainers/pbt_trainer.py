@@ -41,33 +41,35 @@ def Pbt_trainer(args):
             #Delete checkpoint to free up the memory
             del checkpoint
 
-    #multiprocessing shared variables to keep track of progress
-    iter = mp.Value('i', _iter)
-    best_iter = mp.Value('i',_best_iter)
-    best_score = mp.Value('f', _best_score)
-    del _iter, _best_iter, _best_score
+    if _iter - _best_iter =< 5:
 
-    #Initialise score for every task in population
-    for i in range(args.population_size):
-        population.put(dict(id=i, score=0))
+        #multiprocessing shared variables to keep track of progress
+        iter = mp.Value('i', _iter)
+        best_iter = mp.Value('i',_best_iter)
+        best_score = mp.Value('f', _best_score)
+        del _iter, _best_iter, _best_score
 
-    #Setup the worker threads
-    workers = [Worker(args,i, iter,best_iter,best_score, population, finish_tasks)
-               for i in range(args.workers)]
-    workers.append(Explorer(iter, args.result_root, best_iter, population, finish_tasks, args.verbose))
+        #Initialise score for every task in population
+        for i in range(args.population_size):
+            population.put(dict(id=i, score=0))
 
-    #Start workers and wait for them to finish
-    [w.start() for w in workers]
-    [w.join() for w in workers]
-    task = []
-    while not finish_tasks.empty():
-        task.append(finish_tasks.get())
-    while not population.empty():
-        task.append(population.get())
-    #Sort and report the obtained scores
-    task = sorted(task, key=lambda x: x['score'], reverse=False)
-    printMultiLine(1,"",offset=2, end=True)
-    print('best score for task: ', task[0]['id'], ' with score: ', task[0]['score'])
+        #Setup the worker threads
+        workers = [Worker(args,i, iter,best_iter,best_score, population, finish_tasks)
+                   for i in range(args.workers)]
+        workers.append(Explorer(iter, args.result_root, best_iter, population, finish_tasks, args.verbose))
+
+        #Start workers and wait for them to finish
+        [w.start() for w in workers]
+        [w.join() for w in workers]
+        task = []
+        while not finish_tasks.empty():
+            task.append(finish_tasks.get())
+        while not population.empty():
+            task.append(population.get())
+        #Sort and report the obtained scores
+        task = sorted(task, key=lambda x: x['score'], reverse=False)
+        printMultiLine(1,"",offset=2, end=True)
+        print('best score for task: ', task[0]['id'], ' with score: ', task[0]['score'])
 
     file = 'checkpoints/best_model.pth'
     obj = Eval_obj(args, file)
