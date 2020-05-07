@@ -29,7 +29,10 @@ class Worker(mp.Process):
 
             #Re initialise datasets if data configuration is changed
             if any([par in par_dict for par in ['blockage', 'rotations', 'cell_type', 'output_nf', 'dataset_path']]):
-                self.trainer.set_dataset()
+                if 'dataset_path' in par_dict:
+                    self.trainer.set_dataset(reload=True)
+                else:
+                    self.trainer.set_dataset()
 
             #Initialise model in trainer for task id
             self.trainer.set_id(task['id'])

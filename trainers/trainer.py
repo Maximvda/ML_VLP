@@ -147,10 +147,15 @@ class Trainer(object):
         self.val_data_loader = DataLoader(self.val_dataset, batch_size = self.batch_size, shuffle=True, num_workers=0)
         self.step = int(len(self.data_loader)/10);
 
-    def set_dataset(self):
+    def set_dataset(self, reload=False):
         #Re initialise datasets with different data configurations
-        self.train_dataset.set_params(self.blockage, self.rotations, self.cell_type)
-        self.val_dataset.set_params(self.blockage, self.rotations, self.cell_type)
+        if reload:
+            self.train_dataset = Data(self.dataset_path['train'], self.blockage, self.rotations, self.cell_type, self.output_nf)
+            self.val_dataset = Data(self.dataset_path['val'], self.blockage, self.rotations, self.cell_type, self.output_nf)
+        else:
+            self.train_dataset.set_params(self.blockage, self.rotations, self.cell_type)
+            self.val_dataset.set_params(self.blockage, self.rotations, self.cell_type)
+
         #If configuration is changed model size has to be adapted
         self.size = cell2size(self.cell_type)
 
