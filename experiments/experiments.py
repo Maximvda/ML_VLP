@@ -56,12 +56,14 @@ def experiment(args):
             obj.demo()
             if i == 0:
                 obj.heatMap()
+            print("\n")
 
-        print("Performance using real blockage for different models.")
+        print("\n\nPerformance using real blockage for different models.")
         for file in rotation_files:
             obj = Eval_obj(args, file, blockage=True)
             obj.stateModel()
             obj.demo()
+            print("\n")
 
         if args.verbose:
             print("Results of experiment 1 saved at {}".format(args.result_root))

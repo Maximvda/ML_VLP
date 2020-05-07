@@ -77,7 +77,7 @@ class Eval_obj(object):
             else:
                 dist_dict[key] /= len(self.test_dataset)
 
-        print("Distance on val set 2D: {} cm\t Z: {} cm\t 3D: {} cm".format(
+        print("Distance on test set 2D: {} cm\t Z: {} cm\t 3D: {} cm".format(
                 round(dist_dict['2D'],2),round(dist_dict['z'],2), round(dist_dict['3D'],2)))
 
         print("Bias on x: {}\ton y: {}".format(sum(x)/len(x), sum(y)/len(y)))

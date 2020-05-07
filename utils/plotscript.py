@@ -36,12 +36,12 @@ def plot_exp_1(result_root):
     print("Plots for experiment 1 saved to {}".format(result_root))
 
     dict = get_best_three(root, files)
-    print("Best:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: 2D {}, 3D {}".format(
-        dict['1']['model_type'], dict['1']['nf'],dict['1']['hidden_layers'], dict['1']['min_dist']['2D'], dict['1']['min_dist']['3D']))
-    print("Second:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: 2D {}, 3D {}".format(
-        dict['2']['model_type'], dict['2']['nf'],dict['2']['hidden_layers'], dict['2']['min_dist']['2D'], dict['2']['min_dist']['3D']))
-    print("Third:\tType: {}\tNF: {}\tHidden_layers: {}\tScore: 2D {}, 3D {}".format(
-        dict['3']['model_type'], dict['3']['nf'],dict['3']['hidden_layers'], dict['3']['min_dist']['2D'], dict['3']['min_dist']['3D']))
+    print("Best:\tType: {}\tBlockage: {}\tRotations: {}\tScore: 2D {}, 3D {}".format(
+        dict['1']['cell_type'], dict['1']['blockage'],dict['1']['rotations'], dict['1']['min_dist']['2D'], dict['1']['min_dist']['3D']))
+    print("Second:\tType: {}\tBlockage: {}\tRotations: {}\tScore: 2D {}, 3D {}".format(
+        dict['2']['cell_type'], dict['2']['blockage'],dict['2']['rotations'], dict['2']['min_dist']['2D'], dict['2']['min_dist']['3D']))
+    print("Third:\tType: {}\tBlockage: {}\tRotations: {}\tScore: 2D {}, 3D {}".format(
+        dict['3']['cell_type'], dict['3']['blockage'],dict['3']['rotations'], dict['3']['min_dist']['2D'], dict['3']['min_dist']['3D']))
 
     return dict['files'], get_rotation_files(root, files)
 
