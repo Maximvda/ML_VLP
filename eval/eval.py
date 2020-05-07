@@ -29,11 +29,17 @@ class Eval_obj(object):
 
         #Setup dataset and dataloaders
         self.test_dataset = Data(args.dataset_path['test'], self.blockage, self.rotations, self.cell_type, self.output_nf, real_block=blockage)
-        self.test_data_loader = DataLoader(self.test_dataset, batch_size = self.batch_size, shuffle=True, num_workers=4)
+        self.test_data_loader = DataLoader(self.test_dataset, batch_size = self.batch_size, shuffle=True, num_workers=0)
 
         #Setting the model to evaluation mode
         self.model.eval()
         self.result_root = args.result_root
+
+    #Prints model properties
+    def stateModel(self):
+        print("Type: {}".format(self.cell_type))
+        print("Blockage: {}".format(self.blockage))
+        print("Rotations: {}".format(self.rotations))
 
     #Calculates the distance between predicted and real position of the samples in the test set
     #If visualise is enables these distances are visualy plotted
