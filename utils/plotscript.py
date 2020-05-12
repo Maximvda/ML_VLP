@@ -76,7 +76,7 @@ def get_rotation_files(root, files):
     for file in files:
         if 'task' in file:
             cp = torch.load(os.path.join(root,file),map_location=torch.device('cpu'))
-            if cp["rotations"] == True:
+            if cp["cell_type"] == "2x2":
                 sorter.append(cp['min_dist']['2D'])
                 file_names.append(file)
 

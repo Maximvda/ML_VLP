@@ -71,7 +71,7 @@ def augment_data(input, output, rotations, blockage, real_block, cell_type):
     #Otherwise it is always a fixed percentage of blocked TXs
     if real_block:
         prob = random.random()
-        prob = min(prob, 0.7)
+        prob = min(prob, 0.6)
         indices = np.random.choice(np.arange(len(input)), replace=False, size=int(prob*len(input)))
     else:
         indices = np.random.choice(np.arange(len(input)), replace=False, size=int(blockage*len(input)))

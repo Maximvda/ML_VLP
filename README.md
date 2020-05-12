@@ -96,6 +96,7 @@ python main.py --experiment=2 --gpu_number=[0,1] --workers=4
 * Refinement of simulation example: add model for the PD, add reflections
 * Path approximation following a moving device with for example Kalman filter
 * Comparison of model for each position coordinate compared to one model predicting all coordinates
+* Combining multiple unit cell predictions
 
 ## Authors
 
