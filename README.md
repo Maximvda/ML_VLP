@@ -105,6 +105,7 @@ Using these models decreases inference time and thus decreases the computational
 Its also interesting to look at some heatmaps of the positioning accuracy.
 In the images below, a heatmap for the entire testbed, a heatmap by a unit cell from the train set and a heatmap by a unit cell from the test set are displayed.
 | Entire testbed | Train heatmap | Test heatmap |
+| --- | --- | --- |
 | <img src="https://github.com/Maximvda/ML_VLP/blob/media/grid.png" width="256"> | <img src="https://github.com/Maximvda/ML_VLP/blob/media/train_map.png" width="256"> | <img  src="https://github.com/Maximvda/ML_VLP/blob/media/test_map.png" width="256"> |
 
 
