@@ -1,4 +1,5 @@
 # Visible Light Positioning with Machine Learning
+
 ## Modular approach
 
 The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2x1.2m^<sup>2</sup> while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 9m<sup>2</sup>. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each LED. These measurements are then used as input for our machine learning algorithm, while the position of the measurement is used as our desired output. The experimental setup is graphically shown in the figure below.
@@ -36,7 +37,7 @@ Or by looking at the configuration file [config](https://github.com/Maximvda/ML_
 Parameters are mainly used to adapt the model architecture and change dataset options.
 The model architecture is defined by three parameters: model_type, nf and hidden_layers.
 How exactly the model is constructed from these parameters can be seen in the figure below.
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/models.png" width="256">
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/models.png" width="400">
 
 Other parameters mostly optional and used to change behaviour of data processing, training behaviour and system settings.
 
@@ -70,13 +71,13 @@ Interesting enough at high amounts of blockage the 2x2 cell starts outperforming
 The reason for this is that the 2x2 cell prediction area is smaller than that of the 3x3 cell, a circle with a radius of 90 cm compared to the 1.25 meter radius.
 In the experiment it is assumed that the correct unit cell can be located and therefore the position estimate of the 2x2 cell is already better defined without any intervention of the trained model at all.
 The models are not able to reliably predict the position when such high amounts of blockage are introduced and therefore the 2x2 cell starts to outperform the 3x3 cell.
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/type_infl_blockage.png" width="256">
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/type_infl_blockage.png" width="512">
 
 The second plot is used to study influence of data rotations on the performance.
 Therefore, the 2D accuracy on the validation set is plotted in function of the amount of blockage for both a model that uses rotational data augmentations and one cell that does not.
 This plot is shown in the image below, it shows that there is actually a decrease in performance with rotational data augmentations.
 As previously mentioned this decrease is likely caused due to the imperfections of the dataset.
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/rotation_infl_blockage.png" width="256">
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/rotation_infl_blockage.png" width="512">
 
 ### PBT training
 Training a model using the Population Based Training algorithm can be done by setting the parameter --pbt_training to true.
@@ -101,9 +102,8 @@ Using these models decreases inference time and thus decreases the computational
 
 Its also interesting to look at some heatmaps of the positioning accuracy.
 In the images below, a heatmap for the entire testbed, a heatmap by a unit cell from the train set and a heatmap by a unit cell from the test set are displayed.
-
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/grid.png" width="256">
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/train_map.png" width="256"><img src="https://github.com/Maximvda/ML_VLP/blob/media/test_map.png" width="256">
+| Entire testbed | Train heatmap | Test heatmap |
+|<img src="https://github.com/Maximvda/ML_VLP/blob/media/grid.png" width="256"> | <img src="https://github.com/Maximvda/ML_VLP/blob/media/train_map.png" width="256"> | <img  src="https://github.com/Maximvda/ML_VLP/blob/media/test_map.png" width="256"> |
 
 
 ## Training and running tests
