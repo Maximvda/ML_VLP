@@ -1,10 +1,10 @@
 # Visible Light Positioning with Machine Learning
-
 ## Modular approach
 
 The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2x1.2m^<sup>2</sup> while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 9m<sup>2</sup>. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each LED. These measurements are then used as input for our machine learning algorithm, while the position of the measurement is used as our desired output. The experimental setup is graphically shown in the figure below.
+
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/Experimental%20setup.png" width="512">
----
+
 Questions can be sent to: maximvda123@gmail.com
 
 ## Getting Started
@@ -37,6 +37,7 @@ Or by looking at the configuration file [config](https://github.com/Maximvda/ML_
 Parameters are mainly used to adapt the model architecture and change dataset options.
 The model architecture is defined by three parameters: model_type, nf and hidden_layers.
 How exactly the model is constructed from these parameters can be seen in the figure below.
+
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/models.png" width="400">
 
 Other parameters mostly optional and used to change behaviour of data processing, training behaviour and system settings.
@@ -54,6 +55,7 @@ The rotations boolean, from the parameters, is used to indicate whether the rota
 An example of how the data is rotated for the 3x3 unit cell can be seen in the figure below.
 These rotations however do cause difficulties since the used dataset does not use perfect unit cells.
 Unit cells in the dataset have slight misalignments causing errors when rotating the data samples and thus increasing the difficulty of the regression task.
+
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/rotation.png" width="256">
 
 ## Experiments
@@ -85,7 +87,7 @@ The obtained results however are similar to the obtained results without using P
 Below, the three best models and there parameters are listed.
 
 | | Model type | Number of features | Hidden layers | batch size | rotations | 2D / 3D on val |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- | --- |
 | **Best** | Type 2 | 146 | 6 | 1416 | false | 5.52 / 8.07 cm |
 | **Second** | Type 2 | 61 | 6 | 738 | false | 5.56 / 8.06 cm |
 | **Third** | Type 2 | 153 | 6 | 581 | false | 5.58 / 8.31 cm |
@@ -95,7 +97,7 @@ These models have very little parameters and still obtain incredible results.
 Using these models decreases inference time and thus decreases the computational overhead.
 
 | | Model type | Number of features | Hidden layers | batch size | rotations | 2D / 3D on val |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- | --- |
 | **Best** | Type 2 | 294 | 2 | 183 | false | 5.70 / 8.22 cm |
 | **Second** | Type 1 | 292 | 2 | 494 | false | 5.74 / 7.97 cm |
 | **Third** | Type 1 | 292 | 3 | 190 | false | 5.81 / 8.50 cm |
@@ -103,7 +105,7 @@ Using these models decreases inference time and thus decreases the computational
 Its also interesting to look at some heatmaps of the positioning accuracy.
 In the images below, a heatmap for the entire testbed, a heatmap by a unit cell from the train set and a heatmap by a unit cell from the test set are displayed.
 | Entire testbed | Train heatmap | Test heatmap |
-|<img src="https://github.com/Maximvda/ML_VLP/blob/media/grid.png" width="256"> | <img src="https://github.com/Maximvda/ML_VLP/blob/media/train_map.png" width="256"> | <img  src="https://github.com/Maximvda/ML_VLP/blob/media/test_map.png" width="256"> |
+| <img src="https://github.com/Maximvda/ML_VLP/blob/media/grid.png" width="256"> | <img src="https://github.com/Maximvda/ML_VLP/blob/media/train_map.png" width="256"> | <img  src="https://github.com/Maximvda/ML_VLP/blob/media/test_map.png" width="256"> |
 
 
 ## Training and running tests
