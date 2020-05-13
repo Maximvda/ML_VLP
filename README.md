@@ -3,6 +3,8 @@
 
 The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2x1.2m^<sup>2</sup> while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 9m<sup>2</sup>. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each LED. These measurements are then used as input for our machine learning algorithm, while the position of the measurement is used as our desired output. The experimental setup is graphically shown in the figure below.
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/Experimental%20setup.png" width="512">
+---
+Questions can be sent to: maximvda123@gmail.com
 
 ## Getting Started
 
@@ -30,55 +32,79 @@ Additional arguments can be passed to change the behaviour and execution of the 
 ```
 python main.py --help
 ```
-Or by looking at the configuration file [config](https://github.com/Maximvda/ML_VLP/blob/master/utils/config.py) where the default values can be directly changes as well.
-The main things that can be changed by the parameters are the model architecture which is defined by three parameters: model_type, nf, hidden_layers. How exactly the model is constructed from these parameters can be seen in the figure below.
+Or by looking at the configuration file [config](https://github.com/Maximvda/ML_VLP/blob/modular_approach/utils/config.py) where the default values can be directly changes as well.
+Parameters are mainly used to adapt the model architecture and change dataset options.
+The model architecture is defined by three parameters: model_type, nf and hidden_layers.
+How exactly the model is constructed from these parameters can be seen in the figure below.
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/models.png" width="256">
 
-Other parameters are mainly used to change behaviour of data processing, training behaviour and system settings.
+Other parameters mostly optional and used to change behaviour of data processing, training behaviour and system settings.
+
+### Unit cells
+Different unit cells can be defined, the code already provides two cells, a 3x3 and a 2x2 unit cell.
+It should be easy to add new unit cells by expanding two functions, get_cell_mask and get_cel_center_position.
+The cell mask should indicate which TXs need to be used in the unit cell, the mask is then shifted across the entire dataset to find all unit cells.
+An optional third function can be expanded, cell_rotation, this is only necessary when the rotational data augmentations are used.
+All three functions can be expanded in the [config](https://github.com/Maximvda/ML_VLP/blob/modular_approach/utils/config.py) file.
 
 
-### Different TX configurations
-One of the arguments allows you to change the TX configuration. This makes it possible to run multiple experiments using the 6x6 LED grid. Choosing a specific configuration means that all the TX which are not selected are set to zero. The different possible configurations that are implemented can be seen in the figure below. If you wish to add a different configuration then that is possible in the [config](https://github.com/Maximvda/ML_VLP/blob/master/dataset/config.py) file by adding it to the get_configuration_dict function.
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/LED_Configuartions.png" width="512">
+### Data rotations
+The rotations boolean, from the parameters, is used to indicate whether the rotational data augmentations should be used or not.
+An example of how the data is rotated for the 3x3 unit cell can be seen in the figure below.
+These rotations however do cause difficulties since the used dataset does not use perfect unit cells.
+Unit cells in the dataset have slight misalignments causing errors when rotating the data samples and thus increasing the difficulty of the regression task.
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/rotation.png" width="256">
 
 ## Experiments
-A couple of predefined experiments can also be run by using the argument --experiment.
+One predefined experiment can be run by using the argument --experiment.
 For these experiments multiple gpu's and workers can be used to speed up training by training multiple models in parallel.
 Using single gpu: --gpu_number=0 for multi gpu: --gpu_number=[0,2,3] which uses gpu 0,2 and 3. Number of workers is set with the --workers argument.
 
 ### Experiment 1
-Experiment one performs a hyperparameter search to find a good model architecture. The best three obtained models and their performance are listed the table below. The default values are also changed in the config file to correspond with the best found model in this experiment.
-| | Model type | Number of features | Hidden layers | 2D / 3D on val | 2D / 3D on test |
+Experiment one studies influence of the cell type and data rotations on the amount of blockage.
+Two plots are made in this experiment.
+The first is shown below and plots the 2D accuracy on the validation set in function of the amount of blockage for both the 3x3 and 2x2 unit cell.
+It shows that the 3x3 unit cell almost always outperforms the 2x2 cell.
+This is expected as the 3x3 unit cell uses 9 TXs compared to the 4 of the other cell, this redundancy should make it easyer to make accurate predictions.
+Interesting enough at high amounts of blockage the 2x2 cell starts outperforming the 3x3 cell.
+The reason for this is that the 2x2 cell prediction area is smaller than that of the 3x3 cell, a circle with a radius of 90 cm compared to the 1.25 meter radius.
+In the experiment it is assumed that the correct unit cell can be located and therefore the position estimate of the 2x2 cell is already better defined without any intervention of the trained model at all.
+The models are not able to reliably predict the position when such high amounts of blockage are introduced and therefore the 2x2 cell starts to outperform the 3x3 cell.
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/type_infl_blockage.png" width="256">
+
+The second plot is used to study influence of data rotations on the performance.
+Therefore, the 2D accuracy on the validation set is plotted in function of the amount of blockage for both a model that uses rotational data augmentations and one cell that does not.
+This plot is shown in the image below, it shows that there is actually a decrease in performance with rotational data augmentations.
+As previously mentioned this decrease is likely caused due to the imperfections of the dataset.
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/rotation_infl_blockage.png" width="256">
+
+### PBT training
+Training a model using the Population Based Training algorithm can be done by setting the parameter --pbt_training to true.
+The obtained results however are similar to the obtained results without using PBT.
+Below, the three best models and there parameters are listed.
+
+| | Model type | Number of features | Hidden layers | batch size | rotations | 2D / 3D on val |
 | --- | --- | --- | --- | --- | --- |
-| **Best** |
-| **Second** |
-| **Third** |
+| **Best** | Type 2 | 146 | 6 | 1416 | false | 5.52 / 8.07 cm |
+| **Second** | Type 2 | 61 | 6 | 738 | false | 5.56 / 8.06 cm |
+| **Third** | Type 2 | 153 | 6 | 581 | false | 5.58 / 8.31 cm |
 
-### Experiment 2
-The second experiment investigates the performance difference between different TX configurations. A sweep is performed over the 6 different, predefined TX configurations. For each of these a model is trained and the performance of these is evaluated against each other. A plot is made showing the distance on the validation set during the training process. The table below shows the best obtained score on the test set for each model.
+More interesting though are the smaller models in the population of the PBT algorithm.
+These models have very little parameters and still obtain incredible results.
+Using these models decreases inference time and thus decreases the computational overhead.
 
-| | Config 1| Config 2| Config 3| Config 4| Config 5| Config 6 |
-| --- | --- | --- | --- | --- | --- |--- |
-| **2D accuracy** | 0.87 cm | 3.4 cm | 41.39 cm | 1.17 cm| 4.37 cm | 11.37 cm |
+| | Model type | Number of features | Hidden layers | batch size | rotations | 2D / 3D on val |
+| --- | --- | --- | --- | --- | --- |
+| **Best** | Type 2 | 294 | 2 | 183 | false | 5.70 / 8.22 cm |
+| **Second** | Type 1 | 292 | 2 | 494 | false | 5.74 / 7.97 cm |
+| **Third** | Type 1 | 292 | 3 | 190 | false | 5.81 / 8.50 cm |
 
-### Experiment 3
-Experiment three looks at how much performance improvement you get by using more received signals as input for the network. The experiment starts with a model that only uses one signal as input. This signal is the received signal with the highest RSS. More signals are added throughout the experiment each time adding the next best signal, the one with the highest RSS. Of course, when only one signal is used the position estimate will be bad. A plot of the obtained accuracies for each of these models is made at the end of the experiment. This result can be seen in the figure below.
-<img src="https://github.com/Maximvda/ML_VLP/blob/media/Best_TX_input-1.png" width="256">
+Its also interesting to look at some heatmaps of the positioning accuracy.
+In the images below, a heatmap for the entire testbed, a heatmap by a unit cell from the train set and a heatmap by a unit cell from the test set are displayed.
 
-### Experiment 4
-Experiment four looks at the influence of blockage of the TXs. 10 models are trained in this experiment each time increasing the amount of blockage.
-The blockage is introduced by setting the signal to zero of randomly selected TXs. The obtained scores are listed in the table below.
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/grid.png" width="256">
+<img src="https://github.com/Maximvda/ML_VLP/blob/media/train_map.png" width="256"><img src="https://github.com/Maximvda/ML_VLP/blob/media/test_map.png" width="256">
 
-| | Model 1| Model 2| Model 3| Model 4| Model 5|
-| --- | --- | --- | --- | --- | --- |--- |
-| **# blockage** | 10% | 20% | 30% | 40%| 50% |
-| **2D accuracy** | 1.25 cm | 1.52 cm | 1.62 cm | 2.46 cm| 3.46 cm |
-| | Model 6| Model 7| Model 8| Model 9| Model 10|
-| **# blockage** | 60% | 70% | 80% | 90%| 100% |
-| **2D accuracy** | 5.95 cm | 9.48 cm | 17.70 cm | 52.54 cm| 117.22 cm |
-
-### Exeperiment 5
-Experiment five performs quick comparisons between a variety of parameters and settings, more information on this experiment in the thesis.
 
 ## Training and running tests
 
@@ -96,10 +122,8 @@ python main.py --experiment=2 --gpu_number=[0,1] --workers=4
 ```
 
 ## Interesting additional features (future research)
-* Experiment using transfer learning (adding a bit of real data to the simulation data to improve performance)
 * Experiment investigating the influence of how much data is needed for accurate predictions
-* Refinement of simulation example: add model for the PD, add reflections
-* Path approximation following a moving device with for example Kalman filter
+* Path approximation following a moving device with for example a Kalman filter
 * Comparison of model for each position coordinate compared to one model predicting all coordinates
 * Combining multiple unit cell predictions
 
