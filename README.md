@@ -128,7 +128,7 @@ python main.py --experiment=2 --gpu_number=[0,1] --workers=4
 * Experiment investigating the influence of how much data is needed for accurate predictions
 * Path approximation following a moving device with for example a Kalman filter
 * Comparison of model for each position coordinate compared to one model predicting all coordinates
-* Combining multiple unit cell predictions
+* Combine multiple unit cell predictions with a weighted average
 
 ## Authors
 
