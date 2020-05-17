@@ -11,6 +11,7 @@ The number of users for every day during one week are listed in the table below.
 |Users | 4 | 5 | 5 | 3 | 3 | 3 | 4 |
 
 Histograms for each angle can also be found below.
+
 <img src="https://github.com/Maximvda/ML_VLP/blob/deviceOrientation/result/azimut_week.png" width="512">
 <img src="https://github.com/Maximvda/ML_VLP/blob/deviceOrientation/result/pitch_week.png" width="512">
 <img src="https://github.com/Maximvda/ML_VLP/blob/deviceOrientation/result/roll_week.png" width="512">
