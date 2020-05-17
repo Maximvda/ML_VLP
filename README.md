@@ -5,7 +5,7 @@ The goal of this project is to use machine learning techniques for Visible Light
 
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/Experimental%20setup.png" width="512">
 
-Also checkout the [modular system](https://github.com/Maximvda/ML_VLP/tree/modular_approach) and the [device orientation](https://github.com/Maximvda/ML_VLP/tree/deviceOrientation) study.
+Also checkout the [modular system](https://github.com/Maximvda/ML_VLP/tree/modular_approach) and the [device orientation](https://github.com/Maximvda/ML_VLP/tree/deviceOrientation) study.\
 Questions can be sent to: maximvda123@gmail.com
 
 ## Getting Started
