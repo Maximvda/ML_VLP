@@ -16,7 +16,6 @@ def plot_exp_1(result_root):
     for key in [32,64,128,256]:
         constraints = {'model_type': 'Type_1', 'nf':key}
         acc_list = getDist(root, files, constraints, 'hidden_layers')
-        acc_list.insert(0,np.inf)       #Add value in front of list to indicate hidden layers = 0
         dist.append(acc_list)
 
     data_labels = ['number of features = 32', 'number of features = 64', 'number of features = 128', 'number of features = 256']
@@ -29,7 +28,6 @@ def plot_exp_1(result_root):
         for key in [128,256]:
             constraints = {'model_type': model, 'nf':key}
             acc_list = getDist(root, files, constraints, 'hidden_layers')
-            acc_list.insert(0,np.inf)
             dist.append(acc_list)
 
     data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
@@ -102,18 +100,17 @@ def plot_exp_2(result_root, dict_list):
 #Makes plot for experiment 3 showing influence of Number of TX inputs
 def plot_exp_3(result_root):
     #init list to store results
-    dist = []
     root = os.path.join(result_root, 'checkpoints')
     files = os.listdir(root)
     #Get the required results
-    for key in range(1,37):
-        constraints = {}
-        dist.append(getDist(root, files, constraints, 'TX_input')[0])
-
-    #Add element in front of list as TX_input = 0 is not possible
+    dist = getDist(root, files, constraints, 'TX_input')
     dist.insert(0,np.inf)
 
-    makePlot(dist, 'Best_TX_input.pdf', 'Error on validation set', ['Number of TX', 'Accuracy 2D (cm)'],  result_root)
+    #x x_ticks
+    x_ticks = [i*3 for i in range(0,13)]
+    x_ticks[0] = 1
+
+    makePlot(dist, 'Best_TX_input.pdf', 'Error on validation set', ['Number of TXs', 'Accuracy 2D (cm)'],  result_root, ticks=x_ticks)
 
 
 #Makes plot for experiment 4 showing influence of amount of blockage
@@ -125,9 +122,9 @@ def plot_exp_4(result_root):
     #Get the required results
     for i in range(1,11):
         constraints = {'blockage':0.1*i}
-        dist.append(getDist(root, files, constraints, 'blockage'))
+        dist.append(getDist(root, files, constraints, 'blockage')[0])
 
-    makePlot(dist, 'influence_blockage.pdf', 'Error on validation set', ['Amount of blockage', 'Accuracy 2D (cm)'],  result_root, ticks=np.linspace(0,100,11))
+    makePlot(dist, 'influence_blockage.pdf', 'Error on validation set', ['Amount of blockage (%)', 'Accuracy 2D (cm)'],  result_root, ticks=np.linspace(10,100,10))
 
 #Just print the obtained scores of both models
 def plot_exp_5(result_root):

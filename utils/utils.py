@@ -52,6 +52,8 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
     plt.title(title)
     if data_labels == None:
         plt.plot(data)
+        if not ticks is None:
+            plt.xticks(ticks)
         ind = data.index(min(data))
         plt.axvline(x=ind, color='red')
         plt.text(ind+0.1,data[1]/2,'Min = {} for TX = {}'.format(round(min(data),2),ind))
@@ -62,6 +64,7 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
                     plt.plot(data[i], label=data_labels[i])
                 else:
                     plt.plot(ticks,data[i], label=data_labels[i])
+                    plt.xticks(ticks)
             else:
                 plt.plot(data[i], label=data_labels[i], color=colors[i])
     plt.xlabel(labels[0])
