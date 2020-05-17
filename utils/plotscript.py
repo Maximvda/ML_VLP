@@ -20,7 +20,8 @@ def plot_exp_1(result_root):
         dist.append(acc_list)
 
     data_labels = ['number of features = 32', 'number of features = 64', 'number of features = 128', 'number of features = 256']
-    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Accuracy 2D (cm)'], result_root, data_labels)
+    x_ticks = [1,2,3,4,5]
+    makePlot(dist, 'NF_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Accuracy 2D (cm)'], result_root, data_labels, ticks=x_ticks)
 
     dist = []
     #Get the required results
@@ -32,7 +33,7 @@ def plot_exp_1(result_root):
             dist.append(acc_list)
 
     data_labels = ['Type 1: number of features = 128', 'Type 1: number of features = 256', 'Type 2: number of features = 128', 'Type 2: number of features = 256']
-    makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Distance (cm)'], result_root, data_labels)
+    makePlot(dist, 'type_infl.pdf', 'Error on validation set', ['Number of hidden layers', 'Accuracy 2D (cm)'], result_root, data_labels, ticks=x_ticks)
     print("Plots for experiment 1 saved to {}".format(result_root))
 
     dict = get_best_three(root, files)
@@ -126,7 +127,7 @@ def plot_exp_4(result_root):
         constraints = {'blockage':0.1*i}
         dist.append(getDist(root, files, constraints, 'blockage'))
 
-    makePlot(dist, 'influence_blockage.pdf', 'Error on validation set', ['Amount of blockage', 'Accuracy 2D (cm)'],  result_root)
+    makePlot(dist, 'influence_blockage.pdf', 'Error on validation set', ['Amount of blockage', 'Accuracy 2D (cm)'],  result_root, ticks=np.linspace(0,100,11))
 
 #Just print the obtained scores of both models
 def plot_exp_5(result_root):
