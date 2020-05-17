@@ -1,8 +1,12 @@
 # Visible Light Positioning with Machine Learning
+## Environment restricted system
 
-The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2x1.2m^<sup>2</sup> while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 9m<sup>2</sup>. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each LED. These measurements are then used as input for our machine learning algorithm, while the position of the measurement is used as our desired output. The experimental setup is graphically shown in the figure below.
+The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project, data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2x1.2m^<sup>2</sup> while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 9m<sup>2</sup>. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each LED. These measurements are then used as input for our machine learning algorithm, while the position of the measurement is used as our desired output. The experimental setup is graphically shown in the figure below.
 
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/Experimental%20setup.png" width="512">
+
+Also checkout the [modular system](https://github.com/Maximvda/ML_VLP/tree/modular_approach) and the [device orientation](https://github.com/Maximvda/ML_VLP/tree/deviceOrientation) study.
+Questions can be sent to: maximvda123@gmail.com
 
 ## Getting Started
 
@@ -86,7 +90,7 @@ Obtained results are shown in the table below.
 | --- | --- | ---| --- | --- | --- |
 | 40 | Type 2 | 512 |5 | 304 | 0.711 cm |
  | 55 |   Type 2  | 705 | 5 | 128 | 0.592 cm  |
-  |98 |Type 2 |736 |5 |1906 |0.533 cm | 
+  |98 |Type 2 |736 |5 |1906 |0.533 cm |
 
 ### Experiment 6
 Experiment six performs quick comparisons between a variety of parameters and settings, more information on this experiment in the thesis.
