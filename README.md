@@ -1,6 +1,6 @@
 # Device orientation from mobile application
 
-The code for the android application can be found in the zip file. This code can be adapted to setup a new experiment, for this adaptation have to be made to the backend cause a different server should be used to receive the logger files.
+The code for the android application can be found in the zip file. This code can be adapted to set up a new experiment, for this adaptation has to be made to the backend cause a different server should be used to receive the logger files.
 The main python script includes the code to create three plots of the measured angles: azimuth, pitch and roll.
 
 ## Results
