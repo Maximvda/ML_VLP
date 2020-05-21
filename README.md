@@ -1,5 +1,5 @@
 # Visible Light Positioning with Machine Learning
-## Modular approach
+## Modular system
 
 The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project, data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2x1.2m<sup>2</sup> while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 9m<sup>2</sup>. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each LED. These measurements are then used as input for our machine learning algorithm, while the position of the measurement is used as our desired output. The experimental setup is graphically shown in the figure below.
 
