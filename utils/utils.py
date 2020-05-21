@@ -117,7 +117,7 @@ def makeHeatMap(map, filename, title, error, result_root):
     plt.imshow(map, cmap='viridis', vmin=0, vmax=7.5, interpolation='nearest')
     plt.colorbar()
     plt.suptitle(title,fontsize=14, fontweight='bold')
-    plt.title('Average error: {} cm'.format(round(error,2)))
+    plt.title('Accuracy: {} cm'.format(round(error,2)))
     plt.xlabel('x-axis (cm)')
     plt.ylabel('y-axis (cm)')
     plt.gca().invert_yaxis()

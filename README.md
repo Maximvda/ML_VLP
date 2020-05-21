@@ -1,7 +1,7 @@
 # Visible Light Positioning with Machine Learning
 ## Modular approach
 
-The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2x1.2m^<sup>2</sup> while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 9m<sup>2</sup>. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each LED. These measurements are then used as input for our machine learning algorithm, while the position of the measurement is used as our desired output. The experimental setup is graphically shown in the figure below.
+The goal of this project is to use machine learning techniques for Visible Light Positioning. For this project, data is gathered using an experimental setup at Telemic. The setup consists of 4 receivers and 36 LEDs. The LEDs are mounted on the ceiling in a 6x6 grid while the receivers are positioned on the ground. Each receiver can move in a square grid of approximately 1.2x1.2m<sup>2</sup> while each receiver is separated over a distance of approximately 1.5m resulting in a total coverage of almost 9m<sup>2</sup>. For each position a measurement can be taken giving a 6x6 matrix of the received signal strength of each LED. These measurements are then used as input for our machine learning algorithm, while the position of the measurement is used as our desired output. The experimental setup is graphically shown in the figure below.
 
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/Experimental%20setup.png" width="512">
 
@@ -13,7 +13,7 @@ The code can be cloned to a local directory by using the standard git command.
 ```
 git clone https://github.com/Maximvda/ML_VLP.git
 ```
-As of now the code cannot be instantly run as the dataset is not yet publicly available. If you still desire to use this code, adaptations will be required to the dataset and the preprocessing of it. For new datasets it is likely that adaptations will also be required to the network architecture.
+As of now the code cannot be instantly run as the dataset is not yet publicly available. If you still desire to use this code, adaptations will be required to the dataset and the preprocessing of it. For new datasets, it is likely that adaptations will also be required to the network architecture.
 
 ### Prerequisites
 
@@ -33,14 +33,14 @@ Additional arguments can be passed to change the behaviour and execution of the 
 ```
 python main.py --help
 ```
-Or by looking at the configuration file [config](https://github.com/Maximvda/ML_VLP/blob/modular_approach/utils/config.py) where the default values can be directly changes as well.
+Or by looking at the configuration file [config](https://github.com/Maximvda/ML_VLP/blob/modular_approach/utils/config.py) where the default values can be directly changed as well.
 Parameters are mainly used to adapt the model architecture and change dataset options.
 The model architecture is defined by three parameters: model_type, nf and hidden_layers.
 How exactly the model is constructed from these parameters can be seen in the figure below.
 
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/models.png" width="400">
 
-Other parameters mostly optional and used to change behaviour of data processing, training behaviour and system settings.
+Other parameters are mostly optional and used to change behaviour of data processing, training behaviour and system settings.
 
 ### Unit cells
 Different unit cells can be defined, the code already provides two cells, a 3x3 and a 2x2 unit cell.
@@ -60,15 +60,15 @@ Unit cells in the dataset have slight misalignments causing errors when rotating
 
 ## Experiments
 One predefined experiment can be run by using the argument --experiment.
-For these experiments multiple gpu's and workers can be used to speed up training by training multiple models in parallel.
-Using single gpu: --gpu_number=0 for multi gpu: --gpu_number=[0,2,3] which uses gpu 0,2 and 3. Number of workers is set with the --workers argument.
+For these experiments multiple GPUs and workers can be used to speed up training by training multiple models in parallel.
+Using single GPU: --gpu_number=0 for multi GPU: --gpu_number=[0,2,3] which uses GPU 0,2 and 3. Number of workers is set with the --workers argument.
 
 ### Experiment 1
 Experiment one studies influence of the cell type and data rotations on the amount of blockage.
 Two plots are made in this experiment.
 The first is shown below and plots the 2D accuracy on the validation set in function of the amount of blockage for both the 3x3 and 2x2 unit cell.
 It shows that the 3x3 unit cell almost always outperforms the 2x2 cell.
-This is expected as the 3x3 unit cell uses 9 TXs compared to the 4 of the other cell, this redundancy should make it easyer to make accurate predictions.
+This is expected as the 3x3 unit cell uses 9 TXs compared to the 4 of the other cell. This redundancy should make it easier to make accurate predictions.
 Interesting enough at high amounts of blockage the 2x2 cell starts outperforming the 3x3 cell.
 The reason for this is that the 2x2 cell prediction area is smaller than that of the 3x3 cell, a circle with a radius of 90 cm compared to the 1.25 meter radius.
 In the experiment it is assumed that the correct unit cell can be located and therefore the position estimate of the 2x2 cell is already better defined without any intervention of the trained model at all.
@@ -77,14 +77,14 @@ The models are not able to reliably predict the position when such high amounts 
 
 The second plot is used to study influence of data rotations on the performance.
 Therefore, the 2D accuracy on the validation set is plotted in function of the amount of blockage for both a model that uses rotational data augmentations and one cell that does not.
-This plot is shown in the image below, it shows that there is actually a decrease in performance with rotational data augmentations.
-As previously mentioned this decrease is likely caused due to the imperfections of the dataset.
+This plot is shown in the image below. Tt shows that there is actually a decrease in performance with rotational data augmentations.
+As previously mentioned, this decrease is likely caused due to the imperfections of the dataset.
 <img src="https://github.com/Maximvda/ML_VLP/blob/media/rotation_infl_blockage.png" width="512">
 
 ### PBT training
 Training a model using the Population Based Training algorithm can be done by setting the parameter --pbt_training to true.
 The obtained results however are similar to the obtained results without using PBT.
-Below, the three best models and there parameters are listed.
+Below, the three best models and their parameters are listed.
 
 | | Model type | Number of features | Hidden layers | batch size | rotations | 2D / 3D on val |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -102,7 +102,7 @@ Using these models decreases inference time and thus decreases the computational
 | **Second** | Type 1 | 292 | 2 | 494 | false | 5.74 / 7.97 cm |
 | **Third** | Type 1 | 292 | 3 | 190 | false | 5.81 / 8.50 cm |
 
-Its also interesting to look at some heatmaps of the positioning accuracy.
+It's also interesting to look at some heatmaps of the positioning accuracy.
 In the images below, a heatmap for the entire testbed, a heatmap by a unit cell from the train set and a heatmap by a unit cell from the test set are displayed.
 | Entire testbed | Train heatmap | Test heatmap |
 | --- | --- | --- |
@@ -111,7 +111,7 @@ In the images below, a heatmap for the entire testbed, a heatmap by a unit cell 
 
 ## Training and running tests
 
-Training a model with the default argument values is as simple as running
+Training a model with the default argument values is as simple as running.
 ```
 python main.py
 ```
