@@ -5,6 +5,9 @@ import sys
 
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
+plt.rcParams.update({'font.size': 14})
+plt.rc('axes', labelsize=20)
+plt.rc('legend', fontsize=15)
 
 #Shows a grid of the possible positions of the measurement device
 #The predicted positions for a batch are plotted in red
@@ -70,6 +73,7 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
     plt.xlabel(labels[0])
     plt.ylabel(labels[1])
     plt.legend()
+    plt.tight_layout()
     resultpath = os.path.join(result_root, filename)
     plt.savefig(resultpath)
     plt.close()
