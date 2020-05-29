@@ -102,7 +102,7 @@ def calcMap(args,map_split):
     dataLoader = DataLoader(heatmap_dataset, batch_size = args.batch_size, shuffle=True, num_workers=4)
 
     center_pos = get_cel_center_position()[args.cell_type]
-    max = int((550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10)
+    max = int((300+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10)
 
     if 'grid' == map_split:
         map = np.full((300,300),np.inf)

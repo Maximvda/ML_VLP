@@ -65,7 +65,7 @@ def process_data(args,split):
 
 def calc_dist(x,y, cell_type):
     center_pos = get_cel_center_position()[cell_type]
-    norm = (550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10
+    norm = (300+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10
 
     dist_2D = np.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*norm
     dist_2D = np.mean(dist_2D)

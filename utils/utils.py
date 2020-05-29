@@ -69,7 +69,7 @@ def visualise(target, prediction, pause=0.0001):
 def calcDistance(x,y, cell_type):
     #Calculate normalisation constant
     center_pos = get_cel_center_position()[cell_type]
-    norm = (550+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10
+    norm = (300+np.sqrt(center_pos[0]**2+center_pos[1]**2))/10
 
     dist_2D = torch.sqrt((x[:,0]-y[:,0])**2+(x[:,1]-y[:,1])**2)*norm
     dist_2D = torch.mean(dist_2D).item()*x.size()[0]
@@ -106,11 +106,13 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
                     plt.plot(data[i], label=data_labels[i])
                 else:
                     plt.plot(ticks,data[i], label=data_labels[i])
+                    plt.xticks(ticks)
             else:
                 plt.plot(data[i], label=data_labels[i], color=colors[i])
     plt.xlabel(labels[0])
     plt.ylabel(labels[1])
     plt.legend()
+    plt.tight_layout()
     resultpath = os.path.join(result_root, filename)
     plt.savefig(resultpath)
     plt.close()

@@ -90,7 +90,7 @@ def read_mat_file(file, normalise, mask, center_pos, cell_dict, data_dict):
 #Process one measurement and return all data that is used for training of unit cell approach
 def process_measurement(measurement, height, measurement_pos, mask, center_pos, cell_dict, data_dict, bool):
     #Max distance from center of cell
-    max = 550+np.sqrt(center_pos[0]**2+center_pos[1]**2)
+    max = 300+np.sqrt(center_pos[0]**2+center_pos[1]**2)
     #Get the most likely cell where measurement was taken
     cel = convolution2d(measurement, mask, cell_dict['all'])
     #print(cel)
