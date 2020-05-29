@@ -5,6 +5,9 @@ import sys
 
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
+plt.rcParams.update({'font.size': 14})
+plt.rc('axes', labelsize=20)
+plt.rc('legend', fontsize=15)
 
 from utils.config import get_cel_center_position
 
