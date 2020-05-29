@@ -11,6 +11,7 @@ from dataset.dataset import Data
 from utils.utils import printProgBar
 from utils.config import get_cel_center_position
 from utils.utils import getCelPosition
+from dataset.setup_database import setup_database
 
 #Object to evaluate the performance of the model on the test set
 class Eval_obj(object):
@@ -25,7 +26,7 @@ class Eval_obj(object):
 
         #Load model from file
         setup_model(self, file, reload_model=True)
-        args.cell_type = self.cell_type; args.normalise = self.normalise
+        args.cell_type = self.cell_type
         seupt_database(args)
         self.dataset_path = args.dataset_path
 
