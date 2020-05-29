@@ -54,8 +54,10 @@ def makePlot(data, filename, title, labels, result_root, data_labels=None, color
     plt.figure(figsize=(10,5))
     plt.title(title)
     if data_labels == None:
-        plt.plot(data)
-        if not ticks is None:
+        if ticks is None:
+            plt.plot(data)
+        else:
+            plt.plot(ticks, data)
             plt.xticks(ticks)
         ind = data.index(min(data))
         plt.axvline(x=ind, color='red')

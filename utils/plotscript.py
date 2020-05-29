@@ -103,7 +103,7 @@ def plot_exp_3(result_root):
     root = os.path.join(result_root, 'checkpoints')
     files = os.listdir(root)
     #Get the required results
-    dist = getDist(root, files, constraints, 'TX_input')
+    dist = getDist(root, files, {}, 'TX_input')
     dist.insert(0,np.inf)
 
     #x x_ticks
