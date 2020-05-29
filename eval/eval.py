@@ -20,12 +20,14 @@ class Eval_obj(object):
         #Initialising some variables
         self.device = args.device;  self.result_root = args.result_root
         self.visualise = args.visualise; self.verbose = args.verbose
-        self.dataset_path = args.dataset_path
         if file == None:
             file = 'model.pth'
 
         #Load model from file
         setup_model(self, file, reload_model=True)
+        args.cell_type = self.cell_type; args.normalise = self.normalise
+        seupt_database(args)
+        self.dataset_path = args.dataset_path
 
         #Setup dataset and dataloaders
         self.test_dataset = Data(args.dataset_path['test'], self.blockage, self.rotations, self.cell_type, self.output_nf, real_block=blockage)

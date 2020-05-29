@@ -3,7 +3,7 @@ import os
 from dataset.preprocess import preprocess
 
 #Checks if dataset is already pre-processed and returns its path
-def setup_database(args, split="train"):
+def setup_database(args):
     #Init path dictionary
     path_dict = {}
 
