@@ -1,5 +1,7 @@
 import os
 import matplotlib.pyplot as plt
+#plt.rcParams.update({'font.size': 14})
+#plt.rc('axes', labelsize=20)
 import csv
 import numpy as np
 
@@ -64,6 +66,7 @@ def main():
     plt.xticks([-180,-90,0,90,180], ("South", 'West', 'North', 'East', 'South'))
     plt.xlabel("Orientation")
     plt.ylabel("Probability")
+    plt.tight_layout()
     plt.savefig(os.path.join(result,'azimut_week.png'))
 
     plt.figure()
@@ -72,6 +75,7 @@ def main():
     plt.xticks([-90,-45,0,45,90], ('-90°','-45°', '0°', '45°', '90°'))
     plt.xlabel("Angle")
     plt.ylabel("Probability")
+    plt.tight_layout()
     plt.savefig(os.path.join(result,'pitch_week.png'))
 
     plt.figure()
@@ -80,6 +84,7 @@ def main():
     plt.xticks([-180,-90,0,90,180], ('-180°','-90°', '0°', '90°', '180°'))
     plt.xlabel("Angle")
     plt.ylabel("Probability")
+    plt.tight_layout()
     plt.savefig(os.path.join(result,'roll_week.png'))
 
 if __name__ == '__main__':
